@@ -7,18 +7,46 @@ from utils.tools import simulate_allgather_pipeline_bfs, build_subchunk_weights_
 
 
 def main(policy):
-    datacenter = load_topology(packet_size=config.packet_size,num_chunk=config.num_chunk,chassis=config.chassis, name = 'NVD2')
+    datacenter = load_topology(packet_size=config.packet_size, num_chunk=config.num_chunk, chassis=config.chassis, name=config.topology_name)
     G = datacenter.topology
     GPU_list = []
     for node in G.nodes:
         if G.nodes[node]['type'] == 'GPU' or G.nodes[node]['type'] == 'gpu':
             GPU_list.append(node)
 
-    subchunk_weight_dict = build_subchunk_weights_from_policy(policy)
-    print(subchunk_weight_dict)
-    features, makespan = simulate_allgather_pipeline_bfs(G=G, packet_size_per_subchunk=config.packet_size/config.num_chunk, subchunk_priority_mats=subchunk_weight_dict,gpu_nodes=GPU_list)
-    print(makespan)
-    print(features)
+    # subchunk_weight_dict = build_subchunk_weights_from_policy(policy)
+    # # print(subchunk_weight_dict)
+    # reward = simulate_allgather_pipeline_bfs(G=G, packet_size_per_subchunk=config.packet_size / config.num_chunk,
+    #                                          subchunk_priority_mats=subchunk_weight_dict, gpu_nodes=GPU_list,
+    #                                          verbose=False)
+    # print(reward)
+
+    # Build simple list-based inputs from topology
+    nodes = list(G.nodes())
+    edges = []
+    for u, v, data in G.edges(data=True):
+        tx_lat = data.get('transmission_latency', None)
+        prop_lat = data.get('propagation_latency', None)
+        edges.append((u, v, tx_lat, prop_lat))
+
+    # adjacency as dict of neighbor lists
+    adjacency = {n: list(G.neighbors(n)) for n in G.nodes()}
+    node_subchunks = {}
+    for node in G.nodes:
+        if node not in node_subchunks.keys():
+            node_subchunks[node] = []
+            for id, value in G.nodes[node]['memory'].items():
+                if value['buffer'] is not None:
+                    node_subchunks[node].append(value['buffer'])
+
+    print("Nodes:", nodes)
+    print("Edges (u, v, tx_lat, prop_lat):", edges[:10], "...")  # print first 10 for brevity
+    print("Adjacency:", {k: adjacency[k] for k in list(adjacency)[:5]})  # preview
+    print("Node subchunks:", node_subchunks)
+
+
+
+
 
 
 
@@ -29,6 +57,7 @@ if __name__ == '__main__':
     config.num_chunk = 1
     config.packet_size = Decimal(1/1024)
     config.connectivity = 0.5
-    config.collective = 'Allgather'
+    config.collective = 'ALLGATHER'
+    config.topology_name = 'NVD2'
 
     main(policy=policy)

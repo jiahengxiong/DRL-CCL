@@ -1,4 +1,5 @@
 from decimal import Decimal
+import math
 import config
 from collections import defaultdict
 
@@ -48,6 +49,8 @@ def build_subchunk_weights_from_policy(policy, eps: float = 1e-12, normalize: bo
                     d[(u, v)] = 0.0
     return mats
 # ========= Packet 级 allgather 仿真（严格按 link 队列优先级 + FIFO；权重<=0 不入队；BR cut-through；sub_id从0开始）=========
+worst_reward_so_far = 0.0  # global tracker for worst reward (most negative)
+
 def simulate_allgather_pipeline_bfs(
     G,
     packet_size_per_subchunk: Decimal,
@@ -478,5 +481,174 @@ def simulate_allgather_pipeline_bfs(
     features['pyg_node_attr'] = node_features_list
     features['pyg_subchunk_edge_attr'] = subchunk_edge_features_list
 
-    # 返回 makespan 及 features
-    return features, makespan
+    # ---------- Reward Calculation (Refactored, with imbalance range) ----------
+    eps = 1e-12
+    subchunk_completion_times = list(per_sub_max.values()) if per_sub_max else []
+    incomplete = any(v == float("inf") or (hasattr(v, 'is_infinite') and v.is_infinite()) or (isinstance(v, float) and math.isinf(v)) for v in per_sub_max.values())
+    global worst_reward_so_far
+    if incomplete:
+        # Some subchunks are not delivered
+        num_unfinished = sum(1 for v in per_sub_max.values() if v == float("inf") or (hasattr(v, 'is_infinite') and v.is_infinite()) or (isinstance(v, float) and math.isinf(v)))
+        # Compute base_reward from finished subchunks (ignore unfinished)
+        finished_times = [float(x) for x in per_sub_max.values() if not (x == float("inf") or (hasattr(x, 'is_infinite') and x.is_infinite()) or (isinstance(x, float) and math.isinf(x)))]
+        if finished_times:
+            tail_finish = max(finished_times)
+            avg_finish = sum(finished_times) / len(finished_times)
+            if len(finished_times) > 1:
+                mean_finish = avg_finish
+                finish_var = sum((float(x) - mean_finish) ** 2 for x in finished_times) / len(finished_times)
+                finish_std = math.sqrt(finish_var)
+            else:
+                finish_std = 0.0
+            # send durations for finished subchunks
+            from collections import defaultdict
+            subchunk_send_durations = defaultdict(float)
+            for log_entry in send_logs:
+                t_start, t_end, t_recv_start, t_recv_end, u, v, sid = log_entry
+                if sid in per_sub_max and not (per_sub_max[sid] == float("inf") or (hasattr(per_sub_max[sid], 'is_infinite') and per_sub_max[sid].is_infinite()) or (isinstance(per_sub_max[sid], float) and math.isinf(per_sub_max[sid]))):
+                    duration = float(t_end - t_start)
+                    subchunk_send_durations[sid] += duration
+            send_durations_list = list(subchunk_send_durations.values())
+            send_avg = sum(send_durations_list) / len(send_durations_list) if send_durations_list else 0.0
+            send_max = max(send_durations_list) if send_durations_list else 0.0
+            if len(send_durations_list) > 1:
+                mean = send_avg
+                send_var = sum((x - mean) ** 2 for x in send_durations_list) / len(send_durations_list)
+                send_std = math.sqrt(send_var)
+            else:
+                send_std = 0.0
+            makespan_val = float(tail_finish)
+            # Imbalance metrics
+            min_finish = min(finished_times)
+            range_finish = tail_finish - min_finish
+            range_val = range_finish
+            mean_finish = avg_finish
+            cv_finish = finish_std / (mean_finish + eps)
+            sorted_finish = sorted(finished_times)
+            n = len(sorted_finish)
+            p10_idx = int(n * 0.1)
+            p90_idx = int(n * 0.9)
+            p10 = sorted_finish[p10_idx] if n > 1 else sorted_finish[0]
+            p90 = sorted_finish[p90_idx] if n > 1 else sorted_finish[-1]
+            p90_gap = (p90 - p10)
+            k = max(1, int(n * 0.1))
+            topk = sorted_finish[-k:]
+            botk = sorted_finish[:k]
+            topk_gap = (sum(topk)/len(topk) - sum(botk)/len(botk))
+        else:
+            makespan_val = 0.0
+            range_val = 0.0
+            cv_finish = 0.0
+            p90_gap = 0.0
+            topk_gap = 0.0
+            send_avg = 0.0
+            send_max = 0.0
+            send_std = 0.0
+        # --- Convert all time-related values to microseconds before reward calculation ---
+        scale = 1e6
+        makespan_val = makespan_val * scale
+        range_val = range_val * scale
+        p90_gap = p90_gap * scale
+        topk_gap = topk_gap * scale
+        send_avg = send_avg * scale
+        send_max = send_max * scale
+        send_std = send_std * scale
+        # Weighted reward (base)
+        w_makespan = 0.6
+        w_imbalance = 0.3
+        w_send = 0.1
+        # 将不均衡项转成“时间”等价量后再归一化到 makespan
+        imbalance_time = (0.4 * cv_finish * makespan_val) + (0.25 * p90_gap) + (0.2 * topk_gap) + (0.15 * range_val)
+        imbalance_norm = imbalance_time / (makespan_val + eps)
+        # 发送代价同样按 makespan 归一化
+        send_metric = 0.5 * send_avg + 0.3 * send_max + 0.2 * send_std
+        send_metric_norm = send_metric / (makespan_val + eps)
+        base_reward = -(
+            w_makespan * makespan_val
+            + w_imbalance * imbalance_norm
+            + w_send * send_metric_norm
+        )
+        # Penalty for unfinished subchunks
+        penalty = num_unfinished * 2 * abs(worst_reward_so_far if worst_reward_so_far != 0.0 else base_reward if base_reward != 0.0 else 1.0)
+        reward = base_reward - penalty
+        # Do not update worst_reward_so_far for incomplete cases
+        return reward
+    else:
+        # All subchunks delivered: normal reward calculation
+        # Make sure tail_finish is a float, not Decimal
+        tail_finish = float(max(subchunk_completion_times)) if subchunk_completion_times else 0.0
+        avg_finish = sum(float(x) for x in subchunk_completion_times) / len(subchunk_completion_times) if subchunk_completion_times else 0.0
+        if len(subchunk_completion_times) > 1:
+            mean_finish = avg_finish
+            finish_var = sum((float(x) - mean_finish) ** 2 for x in subchunk_completion_times) / len(subchunk_completion_times)
+            finish_std = math.sqrt(finish_var)
+        else:
+            finish_std = 0.0
+        # 2. Subchunk send durations: for each subchunk, sum all its send durations (across all links)
+        from collections import defaultdict
+        subchunk_send_durations = defaultdict(float)
+        for log_entry in send_logs:
+            t_start, t_end, t_recv_start, t_recv_end, u, v, sid = log_entry
+            duration = float(t_end - t_start)
+            subchunk_send_durations[sid] += duration
+        send_durations_list = list(subchunk_send_durations.values())
+        send_avg = sum(send_durations_list) / len(send_durations_list) if send_durations_list else 0.0
+        send_max = max(send_durations_list) if send_durations_list else 0.0
+        if len(send_durations_list) > 1:
+            mean = send_avg
+            send_var = sum((x - mean) ** 2 for x in send_durations_list) / len(send_durations_list)
+            send_std = math.sqrt(send_var)
+        else:
+            send_std = 0.0
+        makespan_val = float(makespan)
+        # 4. Imbalance metrics (updated: no normalization by makespan for p90_gap, topk_gap, range)
+        if subchunk_completion_times:
+            sorted_finish = sorted(float(x) for x in subchunk_completion_times)
+            min_finish = sorted_finish[0] if sorted_finish else 0.0
+            range_finish = tail_finish - min_finish
+            range_val = range_finish
+            mean_finish = avg_finish
+            cv_finish = finish_std / (mean_finish + eps)
+            n = len(sorted_finish)
+            p10_idx = int(n * 0.1)
+            p90_idx = int(n * 0.9)
+            p10 = sorted_finish[p10_idx] if n > 1 else sorted_finish[0]
+            p90 = sorted_finish[p90_idx] if n > 1 else sorted_finish[-1]
+            p90_gap = (p90 - p10)
+            k = max(1, int(n * 0.1))
+            topk = sorted_finish[-k:]
+            botk = sorted_finish[:k]
+            topk_gap = (sum(topk)/len(topk) - sum(botk)/len(botk))
+        else:
+            range_val = 0.0
+            cv_finish = 0.0
+            p90_gap = 0.0
+            topk_gap = 0.0
+        # --- Convert all time-related values to microseconds before reward calculation ---
+        scale = 1e6
+        makespan_val = makespan_val * scale
+        range_val = range_val * scale
+        p90_gap = p90_gap * scale
+        topk_gap = topk_gap * scale
+        send_avg = send_avg * scale
+        send_max = send_max * scale
+        send_std = send_std * scale
+        # 5. Weighted reward: makespan, imbalance, send durations
+        w_makespan = 0.6
+        w_imbalance = 0.3
+        w_send = 0.1
+        # 将不均衡项转成“时间”等价量后再归一化到 makespan
+        imbalance_time = (0.4 * cv_finish * makespan_val) + (0.25 * p90_gap) + (0.2 * topk_gap) + (0.15 * range_val)
+        imbalance_norm = imbalance_time / (makespan_val + eps)
+        # 发送代价同样按 makespan 归一化
+        send_metric = 0.5 * send_avg + 0.3 * send_max + 0.2 * send_std
+        send_metric_norm = send_metric / (makespan_val + eps)
+        reward = -(
+            w_makespan * makespan_val
+            + w_imbalance * imbalance_norm
+            + w_send * send_metric_norm
+        )
+        # Update worst_reward_so_far if this reward is more negative
+        if reward < worst_reward_so_far:
+            worst_reward_so_far = reward
+        return reward
