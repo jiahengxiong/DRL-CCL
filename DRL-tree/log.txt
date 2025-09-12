@@ -1,0 +1,199 @@
+/Users/xiongjiaheng/RDMA/CCL/.venv/bin/python /Users/xiongjiaheng/RDMA/CCL/DRL-tree/main_bfs_sim.py
+Capacity: [[0, 0, 12.5, 12.5, 12.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 12.5, 12.5, 0, 0, 0, 0, 0, 12.5, 0, 0, 0, 0, 0, 0], [12.5, 12.5, 0, 0, 0, 0, 0, 0, 0, 0, 12.5, 0, 0, 0, 0, 0], [12.5, 12.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12.5], [12.5, 0, 0, 0, 0, 25.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 25.0, 0, 25.0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 25.0, 0, 25.0, 0, 25.0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 25.0, 0, 25.0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 25.0, 0, 25.0, 0, 0, 0, 0, 0, 0], [0, 12.5, 0, 0, 0, 0, 25.0, 0, 25.0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 12.5, 0, 0, 0, 0, 0, 0, 0, 0, 25.0, 25.0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25.0, 0, 25.0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25.0, 25.0, 0, 25.0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25.0, 0, 25.0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25.0, 0, 25.0], [0, 0, 0, 12.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25.0, 0]]
+Topology: [[0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]]
+Alpha: [[-1, -1, 0.0, 0.0, 0.0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, 0.0, 0.0, -1, -1, -1, -1, -1, 0.0, -1, -1, -1, -1, -1, -1], [0.0, 0.0, -1, -1, -1, -1, -1, -1, -1, -1, 0.0, -1, -1, -1, -1, -1], [0.0, 0.0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0.0], [0.0, -1, -1, -1, -1, 0.0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, 0.0, -1, 0.0, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, 0.0, -1, 0.0, -1, 0.0, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, 0.0, -1, 0.0, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, 0.0, -1, 0.0, -1, -1, -1, -1, -1, -1], [-1, 0.0, -1, -1, -1, -1, 0.0, -1, 0.0, -1, -1, -1, -1, -1, -1, -1], [-1, -1, 0.0, -1, -1, -1, -1, -1, -1, -1, -1, 0.0, 0.0, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0.0, -1, 0.0, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0.0, 0.0, -1, 0.0, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0.0, -1, 0.0, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0.0, -1, 0.0], [-1, -1, -1, 0.0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0.0, -1]]
+Initializing NVD2_1_topology
+6.0
+0 {0: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 1: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 2: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 3: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 4: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 5: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 6: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 7: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 8: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 9: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 10: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 11: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}}
+1 {0: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 1: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 2: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 3: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 4: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 5: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 6: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 7: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 8: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 9: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 10: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 11: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}}
+2 {0: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 1: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 2: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 3: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 4: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 5: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 6: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 7: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 8: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 9: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 10: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 11: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}}
+3 {0: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 1: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 2: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 3: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 4: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 5: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 6: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 7: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 8: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 9: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 10: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 11: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}}
+4 {0: {'buffer': 0, 'send_time': 0, 'received_time': 0}, 1: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 2: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 3: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 4: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 5: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 6: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 7: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 8: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 9: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 10: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 11: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}}
+5 {0: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 1: {'buffer': 1, 'send_time': 0, 'received_time': 0}, 2: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 3: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 4: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 5: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 6: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 7: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 8: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 9: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 10: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 11: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}}
+6 {0: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 1: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 2: {'buffer': 2, 'send_time': 0, 'received_time': 0}, 3: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 4: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 5: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 6: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 7: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 8: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 9: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 10: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 11: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}}
+7 {0: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 1: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 2: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 3: {'buffer': 3, 'send_time': 0, 'received_time': 0}, 4: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 5: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 6: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 7: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 8: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 9: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 10: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 11: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}}
+8 {0: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 1: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 2: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 3: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 4: {'buffer': 4, 'send_time': 0, 'received_time': 0}, 5: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 6: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 7: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 8: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 9: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 10: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 11: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}}
+9 {0: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 1: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 2: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 3: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 4: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 5: {'buffer': 5, 'send_time': 0, 'received_time': 0}, 6: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 7: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 8: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 9: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 10: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}, 11: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 0}}
+10 {0: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 1: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 2: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 3: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 4: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 5: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 6: {'buffer': 6, 'send_time': 0, 'received_time': 0}, 7: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 8: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 9: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 10: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 11: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}}
+11 {0: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 1: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 2: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 3: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 4: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 5: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 6: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 7: {'buffer': 7, 'send_time': 0, 'received_time': 0}, 8: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 9: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 10: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 11: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}}
+12 {0: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 1: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 2: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 3: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 4: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 5: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 6: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 7: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 8: {'buffer': 8, 'send_time': 0, 'received_time': 0}, 9: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 10: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 11: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}}
+13 {0: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 1: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 2: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 3: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 4: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 5: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 6: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 7: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 8: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 9: {'buffer': 9, 'send_time': 0, 'received_time': 0}, 10: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 11: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}}
+14 {0: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 1: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 2: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 3: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 4: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 5: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 6: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 7: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 8: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 9: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 10: {'buffer': 10, 'send_time': 0, 'received_time': 0}, 11: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}}
+15 {0: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 1: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 2: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 3: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 4: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 5: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 6: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 7: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 8: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 9: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 10: {'buffer': None, 'send_time': None, 'received_time': None, 'DC': 1}, 11: {'buffer': 11, 'send_time': 0, 'received_time': 0}}
+Border-routers per DC: defaultdict(<class 'list'>, {0: [0, 1], 1: [2, 3]})
+Allowed BR pairs: [(0, 2), (0, 3), (1, 2), (1, 3)]
+GPU nodes: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+Per-subchunk size: 0.0009765625
+node 4 在时刻 0.000 us 发送 subchunk 0 到 node 0，在 78.825 us 发送完，在 0.700 us 开始接收，在 78.825 us 接收完
+node 4 在时刻 0.000 us 发送 subchunk 0 到 node 5，在 39.762 us 发送完，在 0.700 us 开始接收，在 39.762 us 接收完
+node 5 在时刻 0.000 us 发送 subchunk 1 到 node 4，在 39.762 us 发送完，在 0.700 us 开始接收，在 39.762 us 接收完
+node 5 在时刻 0.000 us 发送 subchunk 1 到 node 6，在 39.762 us 发送完，在 0.700 us 开始接收，在 39.762 us 接收完
+node 6 在时刻 0.000 us 发送 subchunk 2 到 node 5，在 39.762 us 发送完，在 0.700 us 开始接收，在 39.762 us 接收完
+node 6 在时刻 0.000 us 发送 subchunk 2 到 node 7，在 39.762 us 发送完，在 0.700 us 开始接收，在 39.762 us 接收完
+node 6 在时刻 0.000 us 发送 subchunk 2 到 node 9，在 39.762 us 发送完，在 0.700 us 开始接收，在 39.762 us 接收完
+node 7 在时刻 0.000 us 发送 subchunk 3 到 node 8，在 39.762 us 发送完，在 0.700 us 开始接收，在 39.762 us 接收完
+node 8 在时刻 0.000 us 发送 subchunk 4 到 node 7，在 39.762 us 发送完，在 0.700 us 开始接收，在 39.762 us 接收完
+node 9 在时刻 0.000 us 发送 subchunk 5 到 node 1，在 78.825 us 发送完，在 0.700 us 开始接收，在 78.825 us 接收完
+node 9 在时刻 0.000 us 发送 subchunk 5 到 node 8，在 39.762 us 发送完，在 0.700 us 开始接收，在 39.762 us 接收完
+node 9 在时刻 0.000 us 发送 subchunk 5 到 node 6，在 39.762 us 发送完，在 0.700 us 开始接收，在 39.762 us 接收完
+node 10 在时刻 0.000 us 发送 subchunk 6 到 node 11，在 39.762 us 发送完，在 0.700 us 开始接收，在 39.762 us 接收完
+node 11 在时刻 0.000 us 发送 subchunk 7 到 node 12，在 39.762 us 发送完，在 0.700 us 开始接收，在 39.762 us 接收完
+node 12 在时刻 0.000 us 发送 subchunk 8 到 node 13，在 39.762 us 发送完，在 0.700 us 开始接收，在 39.762 us 接收完
+node 12 在时刻 0.000 us 发送 subchunk 8 到 node 10，在 39.762 us 发送完，在 0.700 us 开始接收，在 39.762 us 接收完
+node 12 在时刻 0.000 us 发送 subchunk 8 到 node 11，在 39.762 us 发送完，在 0.700 us 开始接收，在 39.762 us 接收完
+node 13 在时刻 0.000 us 发送 subchunk 9 到 node 12，在 39.762 us 发送完，在 0.700 us 开始接收，在 39.762 us 接收完
+node 13 在时刻 0.000 us 发送 subchunk 9 到 node 14，在 39.762 us 发送完，在 0.700 us 开始接收，在 39.762 us 接收完
+node 14 在时刻 0.000 us 发送 subchunk 10 到 node 13，在 39.762 us 发送完，在 0.700 us 开始接收，在 39.762 us 接收完
+node 14 在时刻 0.000 us 发送 subchunk 10 到 node 15，在 39.762 us 发送完，在 0.700 us 开始接收，在 39.762 us 接收完
+node 15 在时刻 0.000 us 发送 subchunk 11 到 node 3，在 78.825 us 发送完，在 0.700 us 开始接收，在 78.825 us 接收完
+node 15 在时刻 0.000 us 发送 subchunk 11 到 node 14，在 39.762 us 发送完，在 0.700 us 开始接收，在 39.762 us 接收完
+node 0 在时刻 0.700 us 发送 subchunk 0 到 node 3，在 578.825 us 发送完，在 500.700 us 开始接收，在 578.825 us 接收完
+node 1 在时刻 0.700 us 发送 subchunk 5 到 node 2，在 578.825 us 发送完，在 500.700 us 开始接收，在 578.825 us 接收完
+node 3 在时刻 0.700 us 发送 subchunk 11 到 node 1，在 578.825 us 发送完，在 500.700 us 开始接收，在 578.825 us 接收完
+node 5 在时刻 39.762 us 发送 subchunk 0 到 node 6，在 79.525 us 发送完，在 40.462 us 开始接收，在 79.525 us 接收完
+node 4 在时刻 78.825 us 发送 subchunk 1 到 node 0，在 157.650 us 发送完，在 79.525 us 开始接收，在 157.650 us 接收完
+node 6 在时刻 39.762 us 发送 subchunk 1 到 node 7，在 79.525 us 发送完，在 40.462 us 开始接收，在 79.525 us 接收完
+node 6 在时刻 39.762 us 发送 subchunk 1 到 node 9，在 79.525 us 发送完，在 40.462 us 开始接收，在 79.525 us 接收完
+node 5 在时刻 39.762 us 发送 subchunk 2 到 node 4，在 79.525 us 发送完，在 40.462 us 开始接收，在 79.525 us 接收完
+node 9 在时刻 39.762 us 发送 subchunk 2 到 node 8，在 79.525 us 发送完，在 40.462 us 开始接收，在 79.525 us 接收完
+node 8 在时刻 39.762 us 发送 subchunk 3 到 node 9，在 79.525 us 发送完，在 40.462 us 开始接收，在 79.525 us 接收完
+node 7 在时刻 39.762 us 发送 subchunk 4 到 node 6，在 79.525 us 发送完，在 40.462 us 开始接收，在 79.525 us 接收完
+node 8 在时刻 39.762 us 发送 subchunk 5 到 node 7，在 79.525 us 发送完，在 40.462 us 开始接收，在 79.525 us 接收完
+node 6 在时刻 39.762 us 发送 subchunk 5 到 node 5，在 79.525 us 发送完，在 40.462 us 开始接收，在 79.525 us 接收完
+node 11 在时刻 39.762 us 发送 subchunk 6 到 node 12，在 79.525 us 发送完，在 40.462 us 开始接收，在 79.525 us 接收完
+node 12 在时刻 39.762 us 发送 subchunk 7 到 node 13，在 79.525 us 发送完，在 40.462 us 开始接收，在 79.525 us 接收完
+node 12 在时刻 39.762 us 发送 subchunk 7 到 node 10，在 79.525 us 发送完，在 40.462 us 开始接收，在 79.525 us 接收完
+node 13 在时刻 39.762 us 发送 subchunk 8 到 node 14，在 79.525 us 发送完，在 40.462 us 开始接收，在 79.525 us 接收完
+node 10 在时刻 39.762 us 发送 subchunk 8 到 node 2，在 118.588 us 发送完，在 40.462 us 开始接收，在 118.588 us 接收完
+node 12 在时刻 39.762 us 发送 subchunk 9 到 node 11，在 79.525 us 发送完，在 40.462 us 开始接收，在 79.525 us 接收完
+node 14 在时刻 39.762 us 发送 subchunk 9 到 node 15，在 79.525 us 发送完，在 40.462 us 开始接收，在 79.525 us 接收完
+node 13 在时刻 39.762 us 发送 subchunk 10 到 node 12，在 79.525 us 发送完，在 40.462 us 开始接收，在 79.525 us 接收完
+node 15 在时刻 78.825 us 发送 subchunk 10 到 node 3，在 157.650 us 发送完，在 79.525 us 开始接收，在 157.650 us 接收完
+node 14 在时刻 39.762 us 发送 subchunk 11 到 node 13，在 79.525 us 发送完，在 40.462 us 开始接收，在 79.525 us 接收完
+node 2 在时刻 40.462 us 发送 subchunk 8 到 node 1，在 618.588 us 发送完，在 540.462 us 开始接收，在 618.588 us 接收完
+node 6 在时刻 79.525 us 发送 subchunk 0 到 node 7，在 119.288 us 发送完，在 80.225 us 开始接收，在 119.288 us 接收完
+node 0 在时刻 79.525 us 发送 subchunk 1 到 node 2，在 657.650 us 发送完，在 579.525 us 开始接收，在 657.650 us 接收完
+node 9 在时刻 79.525 us 发送 subchunk 1 到 node 8，在 119.288 us 发送完，在 80.225 us 开始接收，在 119.288 us 接收完
+node 4 在时刻 157.650 us 发送 subchunk 2 到 node 0，在 236.475 us 发送完，在 158.350 us 开始接收，在 236.475 us 接收完
+node 9 在时刻 79.525 us 发送 subchunk 3 到 node 1，在 158.350 us 发送完，在 80.225 us 开始接收，在 158.350 us 接收完
+node 9 在时刻 79.525 us 发送 subchunk 3 到 node 6，在 119.288 us 发送完，在 80.225 us 开始接收，在 119.288 us 接收完
+node 6 在时刻 79.525 us 发送 subchunk 4 到 node 5，在 119.288 us 发送完，在 80.225 us 开始接收，在 119.288 us 接收完
+node 6 在时刻 79.525 us 发送 subchunk 4 到 node 9，在 119.288 us 发送完，在 80.225 us 开始接收，在 119.288 us 接收完
+node 5 在时刻 79.525 us 发送 subchunk 5 到 node 4，在 119.288 us 发送完，在 80.225 us 开始接收，在 119.288 us 接收完
+node 12 在时刻 79.525 us 发送 subchunk 6 到 node 13，在 119.288 us 发送完，在 80.225 us 开始接收，在 119.288 us 接收完
+node 13 在时刻 79.525 us 发送 subchunk 7 到 node 14，在 119.288 us 发送完，在 80.225 us 开始接收，在 119.288 us 接收完
+node 10 在时刻 118.588 us 发送 subchunk 7 到 node 2，在 197.412 us 发送完，在 119.288 us 开始接收，在 197.412 us 接收完
+node 14 在时刻 79.525 us 发送 subchunk 8 到 node 15，在 119.288 us 发送完，在 80.225 us 开始接收，在 119.288 us 接收完
+node 11 在时刻 79.525 us 发送 subchunk 9 到 node 10，在 119.288 us 发送完，在 80.225 us 开始接收，在 119.288 us 接收完
+node 12 在时刻 79.525 us 发送 subchunk 10 到 node 10，在 119.288 us 发送完，在 80.225 us 开始接收，在 119.288 us 接收完
+node 3 在时刻 578.825 us 发送 subchunk 10 到 node 1，在 1156.950 us 发送完，在 1078.825 us 开始接收，在 1156.950 us 接收完
+node 13 在时刻 79.525 us 发送 subchunk 11 到 node 12，在 119.288 us 发送完，在 80.225 us 开始接收，在 119.288 us 接收完
+node 1 在时刻 578.825 us 发送 subchunk 3 到 node 2，在 1156.950 us 发送完，在 1078.825 us 开始接收，在 1156.950 us 接收完
+node 7 在时刻 119.288 us 发送 subchunk 0 到 node 8，在 159.050 us 发送完，在 119.987 us 开始接收，在 159.050 us 接收完
+node 6 在时刻 119.288 us 发送 subchunk 3 到 node 5，在 159.050 us 发送完，在 119.987 us 开始接收，在 159.050 us 接收完
+node 5 在时刻 119.288 us 发送 subchunk 4 到 node 4，在 159.050 us 发送完，在 119.987 us 开始接收，在 159.050 us 接收完
+node 9 在时刻 158.350 us 发送 subchunk 4 到 node 1，在 237.175 us 发送完，在 159.050 us 开始接收，在 237.175 us 接收完
+node 13 在时刻 119.288 us 发送 subchunk 6 到 node 14，在 159.050 us 发送完，在 119.987 us 开始接收，在 159.050 us 接收完
+node 14 在时刻 119.288 us 发送 subchunk 7 到 node 15，在 159.050 us 发送完，在 119.987 us 开始接收，在 159.050 us 接收完
+node 2 在时刻 618.588 us 发送 subchunk 7 到 node 1，在 1196.712 us 发送完，在 1118.588 us 开始接收，在 1196.712 us 接收完
+node 10 在时刻 197.412 us 发送 subchunk 9 到 node 2，在 276.238 us 发送完，在 198.113 us 开始接收，在 276.238 us 接收完
+node 10 在时刻 119.288 us 发送 subchunk 10 到 node 11，在 159.050 us 发送完，在 119.987 us 开始接收，在 159.050 us 接收完
+node 12 在时刻 119.288 us 发送 subchunk 11 到 node 10，在 159.050 us 发送完，在 119.987 us 开始接收，在 159.050 us 接收完
+node 12 在时刻 119.288 us 发送 subchunk 11 到 node 11，在 159.050 us 发送完，在 119.987 us 开始接收，在 159.050 us 接收完
+node 0 在时刻 657.650 us 发送 subchunk 2 到 node 2，在 1235.775 us 发送完，在 1157.650 us 开始接收，在 1235.775 us 接收完
+node 8 在时刻 159.050 us 发送 subchunk 0 到 node 9，在 198.812 us 发送完，在 159.750 us 开始接收，在 198.812 us 接收完
+node 5 在时刻 159.050 us 发送 subchunk 3 到 node 4，在 198.812 us 发送完，在 159.750 us 开始接收，在 198.812 us 接收完
+node 1 在时刻 1156.950 us 发送 subchunk 4 到 node 2，在 1735.075 us 发送完，在 1656.950 us 开始接收，在 1735.075 us 接收完
+node 14 在时刻 159.050 us 发送 subchunk 6 到 node 15，在 198.812 us 发送完，在 159.750 us 开始接收，在 198.812 us 接收完
+node 2 在时刻 1196.712 us 发送 subchunk 9 到 node 1，在 1774.838 us 发送完，在 1696.712 us 开始接收，在 1774.838 us 接收完
+node 15 在时刻 198.812 us 发送 subchunk 6 到 node 3，在 277.638 us 发送完，在 199.513 us 开始接收，在 277.638 us 接收完
+node 3 在时刻 199.513 us 发送 subchunk 6 到 node 0，在 777.638 us 发送完，在 699.512 us 开始接收，在 777.638 us 接收完
+node 3 在时刻 500.700 us 发送 subchunk 0 到 node 15，在 579.525 us 发送完，在 501.400 us 开始接收，在 579.525 us 接收完
+node 2 在时刻 500.700 us 发送 subchunk 5 到 node 10，在 579.525 us 发送完，在 501.400 us 开始接收，在 579.525 us 接收完
+node 1 在时刻 500.700 us 发送 subchunk 11 到 node 9，在 579.525 us 发送完，在 501.400 us 开始接收，在 579.525 us 接收完
+node 1 在时刻 579.525 us 发送 subchunk 8 到 node 9，在 658.350 us 发送完，在 580.225 us 开始接收，在 658.350 us 接收完
+node 2 在时刻 579.525 us 发送 subchunk 1 到 node 10，在 658.350 us 发送完，在 580.225 us 开始接收，在 658.350 us 接收完
+node 15 在时刻 579.525 us 发送 subchunk 0 到 node 14，在 619.288 us 发送完，在 580.225 us 开始接收，在 619.288 us 接收完
+node 10 在时刻 579.525 us 发送 subchunk 5 到 node 12，在 619.288 us 发送完，在 580.225 us 开始接收，在 619.288 us 接收完
+node 9 在时刻 579.525 us 发送 subchunk 11 到 node 6，在 619.288 us 发送完，在 580.225 us 开始接收，在 619.288 us 接收完
+node 9 在时刻 579.525 us 发送 subchunk 11 到 node 8，在 619.288 us 发送完，在 580.225 us 开始接收，在 619.288 us 接收完
+node 14 在时刻 619.288 us 发送 subchunk 0 到 node 13，在 659.050 us 发送完，在 619.987 us 开始接收，在 659.050 us 接收完
+node 12 在时刻 619.288 us 发送 subchunk 5 到 node 13，在 659.050 us 发送完，在 619.987 us 开始接收，在 659.050 us 接收完
+node 12 在时刻 619.288 us 发送 subchunk 5 到 node 11，在 659.050 us 发送完，在 619.987 us 开始接收，在 659.050 us 接收完
+node 6 在时刻 619.288 us 发送 subchunk 11 到 node 5，在 659.050 us 发送完，在 619.987 us 开始接收，在 659.050 us 接收完
+node 6 在时刻 619.288 us 发送 subchunk 11 到 node 7，在 659.050 us 发送完，在 619.987 us 开始接收，在 659.050 us 接收完
+node 9 在时刻 658.350 us 发送 subchunk 8 到 node 8，在 698.113 us 发送完，在 659.050 us 开始接收，在 698.113 us 接收完
+node 9 在时刻 658.350 us 发送 subchunk 8 到 node 6，在 698.113 us 发送完，在 659.050 us 开始接收，在 698.113 us 接收完
+node 10 在时刻 658.350 us 发送 subchunk 1 到 node 12，在 698.113 us 发送完，在 659.050 us 开始接收，在 698.113 us 接收完
+node 13 在时刻 659.050 us 发送 subchunk 0 到 node 12，在 698.812 us 发送完，在 659.750 us 开始接收，在 698.812 us 接收完
+node 13 在时刻 659.050 us 发送 subchunk 5 到 node 14，在 698.812 us 发送完，在 659.750 us 开始接收，在 698.812 us 接收完
+node 5 在时刻 659.050 us 发送 subchunk 11 到 node 4，在 698.812 us 发送完，在 659.750 us 开始接收，在 698.812 us 接收完
+node 6 在时刻 698.113 us 发送 subchunk 8 到 node 5，在 737.875 us 发送完，在 698.812 us 开始接收，在 737.875 us 接收完
+node 6 在时刻 698.113 us 发送 subchunk 8 到 node 7，在 737.875 us 发送完，在 698.812 us 开始接收，在 737.875 us 接收完
+node 12 在时刻 698.113 us 发送 subchunk 1 到 node 13，在 737.875 us 发送完，在 698.812 us 开始接收，在 737.875 us 接收完
+node 12 在时刻 698.113 us 发送 subchunk 1 到 node 11，在 737.875 us 发送完，在 698.812 us 开始接收，在 737.875 us 接收完
+node 12 在时刻 737.875 us 发送 subchunk 0 到 node 11，在 777.638 us 发送完，在 738.575 us 开始接收，在 777.638 us 接收完
+node 14 在时刻 698.812 us 发送 subchunk 5 到 node 15，在 738.575 us 发送完，在 699.512 us 开始接收，在 738.575 us 接收完
+node 0 在时刻 699.512 us 发送 subchunk 6 到 node 4，在 778.337 us 发送完，在 700.212 us 开始接收，在 778.337 us 接收完
+node 5 在时刻 737.875 us 发送 subchunk 8 到 node 4，在 777.638 us 发送完，在 738.575 us 开始接收，在 777.638 us 接收完
+node 13 在时刻 737.875 us 发送 subchunk 1 到 node 14，在 777.638 us 发送完，在 738.575 us 开始接收，在 777.638 us 接收完
+node 11 在时刻 777.638 us 发送 subchunk 0 到 node 10，在 817.400 us 发送完，在 778.337 us 开始接收，在 817.400 us 接收完
+node 14 在时刻 777.638 us 发送 subchunk 1 到 node 15，在 817.400 us 发送完，在 778.337 us 开始接收，在 817.400 us 接收完
+node 4 在时刻 778.337 us 发送 subchunk 6 到 node 5，在 818.100 us 发送完，在 779.037 us 开始接收，在 818.100 us 接收完
+node 5 在时刻 818.100 us 发送 subchunk 6 到 node 6，在 857.862 us 发送完，在 818.800 us 开始接收，在 857.862 us 接收完
+node 6 在时刻 857.862 us 发送 subchunk 6 到 node 7，在 897.625 us 发送完，在 858.562 us 开始接收，在 897.625 us 接收完
+node 7 在时刻 897.625 us 发送 subchunk 6 到 node 8，在 937.387 us 发送完，在 898.325 us 开始接收，在 937.387 us 接收完
+node 8 在时刻 937.387 us 发送 subchunk 6 到 node 9，在 977.150 us 发送完，在 938.088 us 开始接收，在 977.150 us 接收完
+node 1 在时刻 1078.825 us 发送 subchunk 10 到 node 9，在 1157.650 us 发送完，在 1079.525 us 开始接收，在 1157.650 us 接收完
+node 2 在时刻 1078.825 us 发送 subchunk 3 到 node 10，在 1157.650 us 发送完，在 1079.525 us 开始接收，在 1157.650 us 接收完
+node 1 在时刻 1157.650 us 发送 subchunk 7 到 node 9，在 1236.475 us 发送完，在 1158.350 us 开始接收，在 1236.475 us 接收完
+node 2 在时刻 1157.650 us 发送 subchunk 2 到 node 10，在 1236.475 us 发送完，在 1158.350 us 开始接收，在 1236.475 us 接收完
+node 9 在时刻 1157.650 us 发送 subchunk 10 到 node 6，在 1197.413 us 发送完，在 1158.350 us 开始接收，在 1197.413 us 接收完
+node 9 在时刻 1157.650 us 发送 subchunk 10 到 node 8，在 1197.413 us 发送完，在 1158.350 us 开始接收，在 1197.413 us 接收完
+node 10 在时刻 1157.650 us 发送 subchunk 3 到 node 11，在 1197.413 us 发送完，在 1158.350 us 开始接收，在 1197.413 us 接收完
+node 6 在时刻 1197.413 us 发送 subchunk 10 到 node 5，在 1237.175 us 发送完，在 1198.112 us 开始接收，在 1237.175 us 接收完
+node 8 在时刻 1197.413 us 发送 subchunk 10 到 node 7，在 1237.175 us 发送完，在 1198.112 us 开始接收，在 1237.175 us 接收完
+node 11 在时刻 1197.413 us 发送 subchunk 3 到 node 12，在 1237.175 us 发送完，在 1198.112 us 开始接收，在 1237.175 us 接收完
+node 9 在时刻 1236.475 us 发送 subchunk 7 到 node 8，在 1276.237 us 发送完，在 1237.175 us 开始接收，在 1276.237 us 接收完
+node 10 在时刻 1236.475 us 发送 subchunk 2 到 node 12，在 1276.237 us 发送完，在 1237.175 us 开始接收，在 1276.237 us 接收完
+node 10 在时刻 1236.475 us 发送 subchunk 2 到 node 11，在 1276.237 us 发送完，在 1237.175 us 开始接收，在 1276.237 us 接收完
+node 5 在时刻 1237.175 us 发送 subchunk 10 到 node 4，在 1276.938 us 发送完，在 1237.875 us 开始接收，在 1276.938 us 接收完
+node 12 在时刻 1237.175 us 发送 subchunk 3 到 node 13，在 1276.938 us 发送完，在 1237.875 us 开始接收，在 1276.938 us 接收完
+node 8 在时刻 1276.237 us 发送 subchunk 7 到 node 7，在 1316.000 us 发送完，在 1276.938 us 开始接收，在 1316.000 us 接收完
+node 12 在时刻 1276.938 us 发送 subchunk 2 到 node 13，在 1316.700 us 发送完，在 1277.638 us 开始接收，在 1316.700 us 接收完
+node 13 在时刻 1276.938 us 发送 subchunk 3 到 node 14，在 1316.700 us 发送完，在 1277.638 us 开始接收，在 1316.700 us 接收完
+node 7 在时刻 1316.000 us 发送 subchunk 7 到 node 6，在 1355.762 us 发送完，在 1316.700 us 开始接收，在 1355.762 us 接收完
+node 13 在时刻 1316.700 us 发送 subchunk 2 到 node 14，在 1356.463 us 发送完，在 1317.400 us 开始接收，在 1356.463 us 接收完
+node 14 在时刻 1316.700 us 发送 subchunk 3 到 node 15，在 1356.463 us 发送完，在 1317.400 us 开始接收，在 1356.463 us 接收完
+node 6 在时刻 1355.762 us 发送 subchunk 7 到 node 5，在 1395.525 us 发送完，在 1356.463 us 开始接收，在 1395.525 us 接收完
+node 14 在时刻 1356.463 us 发送 subchunk 2 到 node 15，在 1396.225 us 发送完，在 1357.163 us 开始接收，在 1396.225 us 接收完
+node 5 在时刻 1395.525 us 发送 subchunk 7 到 node 4，在 1435.288 us 发送完，在 1396.225 us 开始接收，在 1435.288 us 接收完
+node 2 在时刻 1656.950 us 发送 subchunk 4 到 node 10，在 1735.775 us 发送完，在 1657.650 us 开始接收，在 1735.775 us 接收完
+node 1 在时刻 1696.712 us 发送 subchunk 9 到 node 9，在 1775.537 us 发送完，在 1697.413 us 开始接收，在 1775.537 us 接收完
+node 10 在时刻 1735.775 us 发送 subchunk 4 到 node 12，在 1775.537 us 发送完，在 1736.475 us 开始接收，在 1775.537 us 接收完
+node 9 在时刻 1775.537 us 发送 subchunk 9 到 node 6，在 1815.300 us 发送完，在 1776.237 us 开始接收，在 1815.300 us 接收完
+node 12 在时刻 1775.537 us 发送 subchunk 4 到 node 13，在 1815.300 us 发送完，在 1776.237 us 开始接收，在 1815.300 us 接收完
+node 12 在时刻 1775.537 us 发送 subchunk 4 到 node 11，在 1815.300 us 发送完，在 1776.237 us 开始接收，在 1815.300 us 接收完
+node 6 在时刻 1815.300 us 发送 subchunk 9 到 node 5，在 1855.062 us 发送完，在 1816.000 us 开始接收，在 1855.062 us 接收完
+node 6 在时刻 1815.300 us 发送 subchunk 9 到 node 7，在 1855.062 us 发送完，在 1816.000 us 开始接收，在 1855.062 us 接收完
+node 13 在时刻 1815.300 us 发送 subchunk 4 到 node 14，在 1855.062 us 发送完，在 1816.000 us 开始接收，在 1855.062 us 接收完
+node 5 在时刻 1855.062 us 发送 subchunk 9 到 node 4，在 1894.825 us 发送完，在 1855.762 us 开始接收，在 1894.825 us 接收完
+node 7 在时刻 1855.062 us 发送 subchunk 9 到 node 8，在 1894.825 us 发送完，在 1855.762 us 开始接收，在 1894.825 us 接收完
+node 14 在时刻 1855.062 us 发送 subchunk 4 到 node 15，在 1894.825 us 发送完，在 1855.762 us 开始接收，在 1894.825 us 接收完
+
+===== Summary =====
+subchunk 0 fully delivered by time 817.400 us
+subchunk 1 fully delivered by time 817.400 us
+subchunk 2 fully delivered by time 1396.225 us
+subchunk 3 fully delivered by time 1356.463 us
+subchunk 4 fully delivered by time 1894.825 us
+subchunk 5 fully delivered by time 738.575 us
+subchunk 6 fully delivered by time 977.150 us
+subchunk 7 fully delivered by time 1435.288 us
+subchunk 8 fully delivered by time 777.638 us
+subchunk 9 fully delivered by time 1894.825 us
+subchunk 10 fully delivered by time 1276.938 us
+subchunk 11 fully delivered by time 698.812 us
+TOTAL makespan: 1894.825 us
+
+进程已结束，退出代码为 0
