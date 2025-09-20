@@ -56,7 +56,7 @@ def simulate_allgather_pipeline_bfs(
     packet_size_per_subchunk: Decimal,
     gpu_nodes,
     trees_override=None, depths_override=None, max_depths_override=None,  # 兼容占位，不使用
-    verbose=True,
+    verbose=False,
     subchunk_priority_mats=None,   # { sub_id: 2D矩阵(list/tuple/ndarray) 或 {(u,v): weight} }
     is_border_router_fn=None,      # 新增：可选回调，判定节点是否为边界路由器（BR）
 ):
@@ -159,26 +159,28 @@ def simulate_allgather_pipeline_bfs(
         eid += 1
 
     # ---------- 入队 + 排序 + 如果空闲则尝试发送 ----------
-    def enqueue(u, v, sid, now: _Dec):
+    def enqueue(u, v, sid, now: _Dec, *, force: bool = False, pri_override: float = None):
         nonlocal aseq_counter
-        if have_time[(v, sid)] is not None:
-            return
+        # Prevent duplicate enqueue for the same (sid, u, v)
         if (sid, u, v) in enqueued:
-            return
+            return  # already enqueued this subchunk on this link
         w = get_weight(sid, u, v)
-        if w <= 0.0:
+        if w <= 0.0 and not force:
             return
+        pri = float(w) if not force else (float(pri_override) if pri_override is not None else 1e-6)
         enqueued.add((sid, u, v))
-        item = {'sid': sid, 'pri': float(w), 'enq_time': now, 'aseq': aseq_counter}
+        item = {'sid': sid, 'pri': pri, 'enq_time': now, 'aseq': aseq_counter}
         aseq_counter += 1
         q = edge_q[(u, v)]
         q.append(item)
         # 立刻按 (-priority, aseq) 排序
         q.sort(key=lambda x: (-x['pri'], x['aseq']))
-        # 新增: 记录 rank, qlen, 入队时刻
+        # 记录 rank, qlen, 入队时刻
         rank = 1 + next(i for i,x in enumerate(q) if x is item)
         enqueue_meta[(sid,u,v)] = {'rank_enq': rank, 'qlen_enq': len(q), 't_enq': now}
         try_start_next(u, v, now)
+
+    # ---------- 原始: 仅对权重>0的出边入队 ----------
 
     # ---------- 尝试在 (u,v) 上启动下一次发送 ----------
     def try_start_next(u, v, now: _Dec):
@@ -216,9 +218,10 @@ def simulate_allgather_pipeline_bfs(
         if is_br(v):
             # 新增: BR cut-through 时 eligibility
             elig_time[(v, sid)] = now
-            for w in G.successors(v):
-                if have_time[(w, sid)] is None:
-                    enqueue(v, w, sid, now)
+            # revert to original: only enqueue to edges with weight>0
+            for w_node in G.successors(v):
+                if get_weight(sid, v, w_node) > 0.0:
+                    enqueue(v, w_node, sid, now)
 
     def on_recv_end(u, v, sid, now: _Dec):
         if have_time[(v, sid)] is None:
@@ -227,9 +230,9 @@ def simulate_allgather_pipeline_bfs(
             elig_time[(v, sid)] = now
             # 对于非 BR（GPU），store-forward：recv_end 再把 sid 往所有出边入队
             if not is_br(v):
-                for w in G.successors(v):
-                    if have_time[(w, sid)] is None:
-                        enqueue(v, w, sid, now)
+                for w_node in G.successors(v):
+                    if get_weight(sid, v, w_node) > 0.0:
+                        enqueue(v, w_node, sid, now)
 
     # ---------- 初始化：源 GPU 自身在 t=0 已拥有自己的 subchunk ----------
     for sid in subchunks:
@@ -237,9 +240,9 @@ def simulate_allgather_pipeline_bfs(
         have_time[(src, sid)] = _Dec(0)
         elig_time[(src, sid)] = _Dec(0)
         # 源节点按节点类型立即/稍后入队？——源是 GPU，等价于“已经完成接收”，因此 t=0 即入队
-        for w in G.successors(src):
-            if have_time[(w, sid)] is None:
-                enqueue(src, w, sid, _Dec(0))
+        for w_node in G.successors(src):
+            if get_weight(sid, src, w_node) > 0.0:
+                enqueue(src, w_node, sid, _Dec(0))
 
     # ---------- 事件循环 ----------
     while event_q:
@@ -290,6 +293,7 @@ def simulate_allgather_pipeline_bfs(
         for s in sorted(per_sub_max):
             log(f"subchunk {s} fully delivered by time {float(per_sub_max[s])*1e6:.3f} us")
         log(f"TOTAL makespan: {float(makespan)*1e6:.3f} us")
+    # print(f"TOTAL makespan: {float(makespan)*1e6:.3f} us")
 
     # ---------- 特征提取 ----------
     # node_features: {node_id: {"type": str, "is_br": int, "in_degree": int, "out_degree": int, ...}}
@@ -481,174 +485,29 @@ def simulate_allgather_pipeline_bfs(
     features['pyg_node_attr'] = node_features_list
     features['pyg_subchunk_edge_attr'] = subchunk_edge_features_list
 
-    # ---------- Reward Calculation (Refactored, with imbalance range) ----------
-    eps = 1e-12
-    subchunk_completion_times = list(per_sub_max.values()) if per_sub_max else []
-    incomplete = any(v == float("inf") or (hasattr(v, 'is_infinite') and v.is_infinite()) or (isinstance(v, float) and math.isinf(v)) for v in per_sub_max.values())
-    global worst_reward_so_far
-    if incomplete:
-        # Some subchunks are not delivered
-        num_unfinished = sum(1 for v in per_sub_max.values() if v == float("inf") or (hasattr(v, 'is_infinite') and v.is_infinite()) or (isinstance(v, float) and math.isinf(v)))
-        # Compute base_reward from finished subchunks (ignore unfinished)
-        finished_times = [float(x) for x in per_sub_max.values() if not (x == float("inf") or (hasattr(x, 'is_infinite') and x.is_infinite()) or (isinstance(x, float) and math.isinf(x)))]
-        if finished_times:
-            tail_finish = max(finished_times)
-            avg_finish = sum(finished_times) / len(finished_times)
-            if len(finished_times) > 1:
-                mean_finish = avg_finish
-                finish_var = sum((float(x) - mean_finish) ** 2 for x in finished_times) / len(finished_times)
-                finish_std = math.sqrt(finish_var)
-            else:
-                finish_std = 0.0
-            # send durations for finished subchunks
-            from collections import defaultdict
-            subchunk_send_durations = defaultdict(float)
-            for log_entry in send_logs:
-                t_start, t_end, t_recv_start, t_recv_end, u, v, sid = log_entry
-                if sid in per_sub_max and not (per_sub_max[sid] == float("inf") or (hasattr(per_sub_max[sid], 'is_infinite') and per_sub_max[sid].is_infinite()) or (isinstance(per_sub_max[sid], float) and math.isinf(per_sub_max[sid]))):
-                    duration = float(t_end - t_start)
-                    subchunk_send_durations[sid] += duration
-            send_durations_list = list(subchunk_send_durations.values())
-            send_avg = sum(send_durations_list) / len(send_durations_list) if send_durations_list else 0.0
-            send_max = max(send_durations_list) if send_durations_list else 0.0
-            if len(send_durations_list) > 1:
-                mean = send_avg
-                send_var = sum((x - mean) ** 2 for x in send_durations_list) / len(send_durations_list)
-                send_std = math.sqrt(send_var)
-            else:
-                send_std = 0.0
-            makespan_val = float(tail_finish)
-            # Imbalance metrics
-            min_finish = min(finished_times)
-            range_finish = tail_finish - min_finish
-            range_val = range_finish
-            mean_finish = avg_finish
-            cv_finish = finish_std / (mean_finish + eps)
-            sorted_finish = sorted(finished_times)
-            n = len(sorted_finish)
-            p10_idx = int(n * 0.1)
-            p90_idx = int(n * 0.9)
-            p10 = sorted_finish[p10_idx] if n > 1 else sorted_finish[0]
-            p90 = sorted_finish[p90_idx] if n > 1 else sorted_finish[-1]
-            p90_gap = (p90 - p10)
-            k = max(1, int(n * 0.1))
-            topk = sorted_finish[-k:]
-            botk = sorted_finish[:k]
-            topk_gap = (sum(topk)/len(topk) - sum(botk)/len(botk))
-        else:
-            makespan_val = 0.0
-            range_val = 0.0
-            cv_finish = 0.0
-            p90_gap = 0.0
-            topk_gap = 0.0
-            send_avg = 0.0
-            send_max = 0.0
-            send_std = 0.0
-        # --- Convert all time-related values to microseconds before reward calculation ---
-        scale = 1e6
-        makespan_val = makespan_val * scale
-        range_val = range_val * scale
-        p90_gap = p90_gap * scale
-        topk_gap = topk_gap * scale
-        send_avg = send_avg * scale
-        send_max = send_max * scale
-        send_std = send_std * scale
-        # Weighted reward (base)
-        w_makespan = 0.6
-        w_imbalance = 0.3
-        w_send = 0.1
-        # 将不均衡项转成“时间”等价量后再归一化到 makespan
-        imbalance_time = (0.4 * cv_finish * makespan_val) + (0.25 * p90_gap) + (0.2 * topk_gap) + (0.15 * range_val)
-        imbalance_norm = imbalance_time / (makespan_val + eps)
-        # 发送代价同样按 makespan 归一化
-        send_metric = 0.5 * send_avg + 0.3 * send_max + 0.2 * send_std
-        send_metric_norm = send_metric / (makespan_val + eps)
-        base_reward = -(
-            w_makespan * makespan_val
-            + w_imbalance * imbalance_norm
-            + w_send * send_metric_norm
-        )
-        # Penalty for unfinished subchunks
-        penalty = num_unfinished * 2 * abs(worst_reward_so_far if worst_reward_so_far != 0.0 else base_reward if base_reward != 0.0 else 1.0)
-        reward = base_reward - penalty
-        # Do not update worst_reward_so_far for incomplete cases
-        return reward
+    # ---------- Reward Calculation (Simplified, unfinished subchunks and makespan) ----------
+    # After computing per_sub_max and makespan:
+    # - Count how many subchunks are unfinished (float('inf'))
+    # - Define completion_rate = finished / total
+    # - If not all are finished, set reward = completion_rate in [0,1]
+    # - If all are finished, set reward = 1.0 / (1.0 + float(makespan)) (smaller makespan gets higher reward)
+    per_sub_values = list(per_sub_max.values()) if per_sub_max else []
+    total = len(per_sub_values)
+    # unfinished: those with infinite makespan
+    unfinished = [
+        v for v in per_sub_values
+        if v == float("inf") or (hasattr(v, 'is_infinite') and v.is_infinite()) or (isinstance(v, float) and math.isinf(v))
+    ]
+    unfinished_count = len(unfinished)
+    finished = total - unfinished_count
+    completion_rate = finished / total if total > 0 else 0.0
+
+    if unfinished_count > 0:
+        reward = -30.0 * unfinished_count
     else:
-        # All subchunks delivered: normal reward calculation
-        # Make sure tail_finish is a float, not Decimal
-        tail_finish = float(max(subchunk_completion_times)) if subchunk_completion_times else 0.0
-        avg_finish = sum(float(x) for x in subchunk_completion_times) / len(subchunk_completion_times) if subchunk_completion_times else 0.0
-        if len(subchunk_completion_times) > 1:
-            mean_finish = avg_finish
-            finish_var = sum((float(x) - mean_finish) ** 2 for x in subchunk_completion_times) / len(subchunk_completion_times)
-            finish_std = math.sqrt(finish_var)
-        else:
-            finish_std = 0.0
-        # 2. Subchunk send durations: for each subchunk, sum all its send durations (across all links)
-        from collections import defaultdict
-        subchunk_send_durations = defaultdict(float)
-        for log_entry in send_logs:
-            t_start, t_end, t_recv_start, t_recv_end, u, v, sid = log_entry
-            duration = float(t_end - t_start)
-            subchunk_send_durations[sid] += duration
-        send_durations_list = list(subchunk_send_durations.values())
-        send_avg = sum(send_durations_list) / len(send_durations_list) if send_durations_list else 0.0
-        send_max = max(send_durations_list) if send_durations_list else 0.0
-        if len(send_durations_list) > 1:
-            mean = send_avg
-            send_var = sum((x - mean) ** 2 for x in send_durations_list) / len(send_durations_list)
-            send_std = math.sqrt(send_var)
-        else:
-            send_std = 0.0
-        makespan_val = float(makespan)
-        # 4. Imbalance metrics (updated: no normalization by makespan for p90_gap, topk_gap, range)
-        if subchunk_completion_times:
-            sorted_finish = sorted(float(x) for x in subchunk_completion_times)
-            min_finish = sorted_finish[0] if sorted_finish else 0.0
-            range_finish = tail_finish - min_finish
-            range_val = range_finish
-            mean_finish = avg_finish
-            cv_finish = finish_std / (mean_finish + eps)
-            n = len(sorted_finish)
-            p10_idx = int(n * 0.1)
-            p90_idx = int(n * 0.9)
-            p10 = sorted_finish[p10_idx] if n > 1 else sorted_finish[0]
-            p90 = sorted_finish[p90_idx] if n > 1 else sorted_finish[-1]
-            p90_gap = (p90 - p10)
-            k = max(1, int(n * 0.1))
-            topk = sorted_finish[-k:]
-            botk = sorted_finish[:k]
-            topk_gap = (sum(topk)/len(topk) - sum(botk)/len(botk))
-        else:
-            range_val = 0.0
-            cv_finish = 0.0
-            p90_gap = 0.0
-            topk_gap = 0.0
-        # --- Convert all time-related values to microseconds before reward calculation ---
-        scale = 1e6
-        makespan_val = makespan_val * scale
-        range_val = range_val * scale
-        p90_gap = p90_gap * scale
-        topk_gap = topk_gap * scale
-        send_avg = send_avg * scale
-        send_max = send_max * scale
-        send_std = send_std * scale
-        # 5. Weighted reward: makespan, imbalance, send durations
-        w_makespan = 0.6
-        w_imbalance = 0.3
-        w_send = 0.1
-        # 将不均衡项转成“时间”等价量后再归一化到 makespan
-        imbalance_time = (0.4 * cv_finish * makespan_val) + (0.25 * p90_gap) + (0.2 * topk_gap) + (0.15 * range_val)
-        imbalance_norm = imbalance_time / (makespan_val + eps)
-        # 发送代价同样按 makespan 归一化
-        send_metric = 0.5 * send_avg + 0.3 * send_max + 0.2 * send_std
-        send_metric_norm = send_metric / (makespan_val + eps)
-        reward = -(
-            w_makespan * makespan_val
-            + w_imbalance * imbalance_norm
-            + w_send * send_metric_norm
-        )
-        # Update worst_reward_so_far if this reward is more negative
-        if reward < worst_reward_so_far:
-            worst_reward_so_far = reward
-        return reward
+        # 使用倒数型 reward: makespan 越小 reward 越大，且变化平滑
+        makespan_us = float(makespan) * 1e6
+        reward = (1e4 / (makespan_us + 1.0)) ** 3
+
+    # print(f"[Sim] finished={finished}/{total}, unfinished={unfinished_count}, makespan={makespan}, reward={reward}")
+    return reward

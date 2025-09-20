@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 
 from utils.NVD2_1_topology import NVD2_1_topology
 from decimal import Decimal
-from Allgather_new_scaleCCL_DRL.utils.tools import add_node_job, select_node_job, start_send, combine_job, end_send, start_receive, end_receive, \
+from Allgather_AgentinBR.utils.tools import add_node_job, select_node_job, start_send, combine_job, end_send, start_receive, end_receive, \
     check_buffer,queue
-from Allgather_new_scaleCCL_DRL.utils.util import load_topology
+from Allgather_AgentinBR.utils.util import load_topology
 
 
 def decimal_range(start, stop, step):
@@ -165,7 +165,7 @@ def main(collective_time, policy):
             add_node_job(topology=NVD2_topology, src=node, time=time, memory_state=buffer_matrix,
                          sent_matrix=sent_matrix, DC0=DC_0_buffer,DC1=DC_1_buffer, WAN_buffer=WAN_buffer, buffer_num_dict=buffer_num_dict)
 
-        queue(topology=NVD2_topology,memory_state=buffer_matrix,time=time)
+        queue(topology=NVD2_topology,memory_state=buffer_matrix,)
 
         for node in node_list:
             start_send(topology=NVD2_topology, node=node, time=time, memory_state=buffer_matrix, WAN_buffer=WAN_buffer,DC0=DC_0_buffer,DC1=DC_1_buffer, policy=policy)
@@ -284,7 +284,7 @@ def build_rate_and_latency_matrices(G):
 
 if __name__ == "__main__":
     num_chunk_list = [1]
-    chunk_size_list = [64]
+    chunk_size_list = [1]
     connectivity_list = [0.5]
     collective_time = {}
     execute_time = {}
