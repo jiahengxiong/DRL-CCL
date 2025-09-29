@@ -165,7 +165,7 @@ def main(collective_time, policy):
             add_node_job(topology=NVD2_topology, src=node, time=time, memory_state=buffer_matrix,
                          sent_matrix=sent_matrix, DC0=DC_0_buffer,DC1=DC_1_buffer, WAN_buffer=WAN_buffer, buffer_num_dict=buffer_num_dict)
 
-        queue(topology=NVD2_topology,memory_state=buffer_matrix,)
+        queue(topology=NVD2_topology,memory_state=buffer_matrix,time=time)
 
         for node in node_list:
             start_send(topology=NVD2_topology, node=node, time=time, memory_state=buffer_matrix, WAN_buffer=WAN_buffer,DC0=DC_0_buffer,DC1=DC_1_buffer, policy=policy)
@@ -283,9 +283,9 @@ def build_rate_and_latency_matrices(G):
 
 
 if __name__ == "__main__":
-    num_chunk_list = [1]
-    chunk_size_list = [1]
-    connectivity_list = [0.5]
+    num_chunk_list = [1,2,4,8]
+    chunk_size_list = [1,4,16,64,256]
+    connectivity_list = [0.3,0.5,0.7,0.9]
     collective_time = {}
     execute_time = {}
 

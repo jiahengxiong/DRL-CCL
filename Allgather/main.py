@@ -283,9 +283,9 @@ def build_rate_and_latency_matrices(G):
 
 
 if __name__ == "__main__":
-    num_chunk_list = [1]
-    chunk_size_list = [1]
-    connectivity_list = [0.3]
+    num_chunk_list = [1,2,4,8]
+    chunk_size_list = [1,4,16,64,256]
+    connectivity_list = [0.3,0.5,0.7,0.9]
     collective_time = {}
     execute_time = {}
 
