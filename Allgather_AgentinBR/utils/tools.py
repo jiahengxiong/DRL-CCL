@@ -32,9 +32,80 @@ def end_receive(topology, link, time):
                 buf = link_job.get('buffer')
                 if buf is not None and buf in config.connect_matrix:
                     config.connect_matrix.remove(buf)
+def build_link_features(G, action_set, node, now):
+    """
+    返回: List[List[float]] ，每条可选链路一个 5 维特征
+    特征顺序（我们之前定的）：
+      [prop_delay, tx_delay, queue_len, hist_assigned_count, tail_finish_time - now]
+    说明：
+      - queue_len 取 G.nodes[node]['job'][(src, dst)] 的当前长度（不存在则 0）
+      - tail_finish_time - now = 当前正在发送剩余发送时间 + queue_len*tx + prop
+      - hist_assigned_count 取 edge['num_chunk']（不存在则 0）
+    """
+    feats = []
+    actions = action_set[node]  # 形如 {k: (src, dst), ...}
+
+    for _, (src, dst) in actions.items():
+        e = G.edges[src, dst]
+        tx = float(e.get('transmission_latency', 0.0))
+        prop = float(e.get('propagation_latency', 0.0))
+
+        # 队列长度（若无键则为 0）
+        qkey = (src, dst)
+        q = G.nodes[node].get('job', {}).get(qkey, [])
+        queue_len = int(len(q))
+
+        # 该出端口是否正忙 & 剩余发送时间
+        sender_flag_key = f'sender to {dst}'
+        sender_job_key  = f'sender to {dst} job'
+        busy = (G.nodes[node].get(sender_flag_key, 'free') == 'busy')
+
+        if busy:
+            sent_time = float(G.nodes[node].get(sender_job_key, {}).get('sent_time', now))
+            # 还没发完则有剩余；若已发完或时间已过，则剩余为 0
+            remaining_tx = max(0.0, sent_time - float(now))
+        else:
+            remaining_tx = 0.0
+
+        # 队尾完成时间相对 now：剩余发送 + 队列里还没发的 + 传播
+        tail_minus_now = remaining_tx + queue_len * tx + prop
+
+        # 历史已分配计数
+        hist_cnt = int(e.get('num_chunk', 0))
+
+        # 特征顺序：prop, tx, queue_len, hist_cnt, tail_finish_time - now
+        feats.append([now, prop, tx, float(queue_len), float(hist_cnt), tail_minus_now])
+
+    return feats
+def build_global_link_features(G, action_set, now):
+    global_feats = []
+    for BR in action_set.keys():
+        local_feats = build_link_features(G, action_set, BR, now)
+        global_feats.append(local_feats)
+    return global_feats
+
+def agent_BR(topology, dst, agent_set, action_set, buffer, time,  BR_ac):
+    agent = agent_set[dst]
+    # link_feats = [
+    #     [0.2, 1.0, 3.0, 5.0, 12.0],  # link 0 features: Trans, Pro, rear delay, current queue length, total record
+    #     [0.4, 0.8, 2.0, 1.0, 8.0]  # link 1
+    # ]
+    link_feats = build_link_features(topology, action_set, dst, time)
+    probs = agent.scores_prob(link_feats, method="softmax")  # 0–1
+    # probs = probs.tolist()
+    act = probs.argmax()
+    # _, act = scores.max(dim=0)
+    (src_node, dst_node) = action_set[dst][act.item()]
+    if buffer not in  topology.nodes[dst]['added_job'][(src_node, dst_node)]:
+        topology.nodes[dst]['job'][(src_node, dst_node)].append({'buffer': buffer})
+        topology.nodes[dst]['added_job'][(src_node, dst_node)].append(buffer)
+        print(f"Agent: node {dst} will send the buffer {buffer} to {dst_node}")
+        global_feats = build_global_link_features(topology, action_set, time)
+        # probs = probs.tolist()
+        BR_ac[dst].append([link_feats, global_feats, act.item(), probs, -link_feats[act.item()][-1]])
 
 
-def start_receive(topology, link, time):
+def start_receive(topology, link, time, agent_set, action_set, BR_ac):
     src = link[0]
     dst = link[1]
     link_job_list = topology.edges[link]['job']
@@ -47,6 +118,8 @@ def start_receive(topology, link, time):
                 if link_job not in topology.nodes[dst]['receive_buffer']:
 
                     topology.nodes[dst]['receive_buffer'].append(link_job)
+                    if (topology.nodes[dst]['type'] == 'switch' or topology.nodes[dst]['type'] == 'Switch') and (topology.nodes[src]['type'] == 'gpu' or topology.nodes[src]['type'] == 'GPU'):
+                        agent_BR(topology, dst, agent_set, action_set, link_job['buffer'], time=time,  BR_ac=BR_ac)
                     # break
             # break
             # if topology.nodes[dst]['type'] == 'switch':
@@ -90,6 +163,7 @@ def start_send(topology, node, time, memory_state, WAN_buffer, DC0, DC1,policy):
             selected_job = select_node_job(topology=topology, dst=dst, time=time, node=node)
             # selected_job = select_node_job_refactored(topology, dst, time, node, config.connect_matrix)
             # jobs = jobs_list[(node, dst)]
+            # todo: skip the BR nodes
             if len(selected_job) > 0:
                 job = selected_job[0]
                 # job = jobs[0]
@@ -100,6 +174,7 @@ def start_send(topology, node, time, memory_state, WAN_buffer, DC0, DC1,policy):
                     {'buffer': job['buffer'], 'send_time': time, 'sent_time': time + transmission_latency,
                      'receive_time': time + propagation_latency,
                      'received_time': time + transmission_latency + propagation_latency})
+                topology.edges[node, dst]['num_chunk'] += 1
                 # print(job, topology.nodes[node]['job'][(node, dst)])
                 topology.nodes[node]['job'][(node, dst)].remove(job)
                 topology.nodes[node][f'sender to {dst}'] = 'busy'
@@ -531,7 +606,7 @@ def add_node_job(topology, src, time, memory_state, sent_matrix, DC0, DC1, WAN_b
         # print(Switch2gpu_job)
 
 
-        # todo: comment it to activate agent
+
         switch_job=deduplicate_balanced(switch_job)
         Switch2gpu_job=deduplicate_balanced(Switch2gpu_job)
         for (src, dst), value in switch_job.items():
@@ -544,13 +619,14 @@ def add_node_job(topology, src, time, memory_state, sent_matrix, DC0, DC1, WAN_b
                     Switch2gpu_job[(src, dst)].append(B['buffer'])
         switch_switch = []
         switch_gpu = []
-        for (src, dst), value in switch_job.items():
-            topology.nodes[src]['job'][(src, dst)] = []
-            for buffer in value:
-                if buffer > -1:
-                    topology.nodes[src]['job'][(src, dst)].append({'buffer': buffer})
-                    topology.nodes[src]['added_job'][(src, dst)].append(buffer)
-                    switch_switch.append(buffer)
+        # todo: comment this code to activate agent
+        # for (src, dst), value in switch_job.items():
+        #     topology.nodes[src]['job'][(src, dst)] = []
+        #     for buffer in value:
+        #         if buffer > -1:
+        #             topology.nodes[src]['job'][(src, dst)].append({'buffer': buffer})
+        #             topology.nodes[src]['added_job'][(src, dst)].append(buffer)
+        #             switch_switch.append(buffer)
         for (src, dst), value in switch_job.items():
             existing = topology.nodes[src]['added_job'][(src, dst)]
             topology.nodes[src]['added_job'][(src, dst)] = list(set(existing).union(switch_switch))

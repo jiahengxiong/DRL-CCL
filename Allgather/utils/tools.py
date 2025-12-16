@@ -1,3 +1,5 @@
+import decimal
+
 import config
 from Allgather.utils.custom import select_node_job_refactored
 # from config import WAN_buffer
@@ -107,9 +109,9 @@ import random
 def start_send(topology, node, time, memory_state, WAN_buffer, DC0, DC1,policy):
     jobs_list = topology.nodes[node]['job']
     successors = list(topology.successors(node))
-    # num_nodes = len(topology.nodes)
-    # DC_0_GPUs = list(range(4, 4 + int((num_nodes - 4) / 2)))
-    # DC_1_GPUs = list(range(4 + int((num_nodes - 4) / 2), num_nodes))
+    num_nodes = len(topology.nodes)
+    DC_0_GPUs = list(range(4, 4 + int((num_nodes - 4) / 2)))
+    DC_1_GPUs = list(range(4 + int((num_nodes - 4) / 2), num_nodes))
     for dst in successors:
         # dst_out_degree = len(list(topology.successors(dst)))
         # dst_GPU = 0
@@ -152,10 +154,10 @@ def start_send(topology, node, time, memory_state, WAN_buffer, DC0, DC1,policy):
                 if topology.nodes[dst]['type'] == 'switch':
                     if job['buffer'] not in WAN_buffer:
                         WAN_buffer.append(job['buffer'])
-                # elif dst in DC_0_GPUs:
-                #     DC0.append(job['buffer'])
-                # elif dst in DC_1_GPUs:
-                #     DC1.append(job['buffer'])
+                elif dst in DC_0_GPUs:
+                    DC0.append(job['buffer'])
+                elif dst in DC_1_GPUs:
+                    DC1.append(job['buffer'])
                 policy.append([job['buffer'], node, dst, time + transmission_latency + propagation_latency])
                 print(
                     f"In time {time}, node {node} sent buffer {job} to node {dst} will be received at {time + transmission_latency + propagation_latency} via {link_type}")
@@ -361,69 +363,186 @@ def select_node_job(topology, dst, time, node):
 from collections import defaultdict
 import heapq
 
-def deduplicate_balanced(input_dict):
+# def deduplicate_balanced(input_dict):
+#     """
+#     对输入字典中的元素进行去重，确保每个元素在最终结果的整体中只出现一次。
+#     同时，在处理重复元素时，会优先分配给当前列表长度最短的键，以实现均衡。
+#     元素不会被移动到它原始不存在的键的列表中。
+#
+#     Args:
+#         input_dict (dict): 键为字符串，值为包含元素的列表的字典。
+#                            示例: {'a': [1, 2, 3], 'b': [2, 3, 4], 'c': [1, 5]}
+#
+#     Returns:
+#         dict: 一个新的字典，其中元素已去重，并尽可能均衡地分配到其原始归属的键中。
+#               示例: {'a': [1, 5], 'b': [2, 4], 'c': [3]} (元素的顺序可能不同，均衡结果可能略有差异)
+#     """
+#
+#     # # 1. 记录每个元素出现在哪些键中
+#     # # {元素: [key1, key2, ...]}
+#     #
+#     # # 打乱顺序
+#     # items = list(input_dict.items())
+#     # random.shuffle(items)
+#     #
+#     # # 构建新字典
+#     # input_dict = dict(items)
+#     element_to_keys = defaultdict(list)
+#     for key, lst in input_dict.items():
+#         # 对每个键的原始列表先进行内部去重，避免同一个键内部的重复干扰后续判断
+#         # 这一步是确保最终结果中，每个元素即使在某个键下出现多次，也只处理一次其"归属"问题
+#         for item in set(lst): # 使用set进行内部去重
+#             element_to_keys[item].append(key)
+#
+#     # 2. 初始化结果字典和跟踪每个键的当前长度
+#     result = {k: [] for k in input_dict}
+#     key_lengths = {k: 0 for k in input_dict}
+#
+#     # 3. 为每个键创建一个优先级队列（小顶堆）来跟踪其当前长度
+#     # 堆中存储 (当前长度, 键的索引, 键名)
+#     # 键的索引用于在长度相同时进行tie-break，确保稳定性或避免总选字典序小的
+#     key_index = {k: idx for idx, k in enumerate(input_dict.keys())}# 确保索引一致性
+#
+#     # 4. 遍历所有元素，进行分配
+#     # 排序元素以确保每次运行结果一致（如果顺序不重要可以不排序）
+#     for item in sorted(element_to_keys.keys()):
+#         possible_keys = element_to_keys[item]
+#
+#         if len(possible_keys) == 1:
+#             # 如果元素只存在于一个键中，直接分配给它
+#             chosen_key = possible_keys[0]
+#             result[chosen_key].append(item)
+#             key_lengths[chosen_key] += 1
+#         else:
+#             # 如果元素存在于多个键中，找到这些键中当前列表最短的那个
+#             # 使用一个小顶堆来选择最佳键 (长度, 键的索引, 键名)
+#             candidates_heap = []
+#             for k in possible_keys:
+#                 heapq.heappush(candidates_heap, (key_lengths[k], key_index[k], k))
+#
+#             # 弹出最短的键
+#             _, _, chosen_key = heapq.heappop(candidates_heap)
+#
+#             # 将元素添加到 chosen_key 的结果列表中
+#             result[chosen_key].append(item)
+#             key_lengths[chosen_key] += 1
+#
+#     return result
+
+
+
+from collections import defaultdict
+import heapq
+
+def deduplicate_balanced(input_dict, topology, time):
     """
-    对输入字典中的元素进行去重，确保每个元素在最终结果的整体中只出现一次。
-    同时，在处理重复元素时，会优先分配给当前列表长度最短的键，以实现均衡。
-    元素不会被移动到它原始不存在的键的列表中。
-
-    Args:
-        input_dict (dict): 键为字符串，值为包含元素的列表的字典。
-                           示例: {'a': [1, 2, 3], 'b': [2, 3, 4], 'c': [1, 5]}
-
-    Returns:
-        dict: 一个新的字典，其中元素已去重，并尽可能均衡地分配到其原始归属的键中。
-              示例: {'a': [1, 5], 'b': [2, 4], 'c': [3]} (元素的顺序可能不同，均衡结果可能略有差异)
+    时间感知版本：
+    - 保证每个元素（buffer_id）在所有 key 中只出现一次
+    - key 是 (src, dst)，表示一条边
+    - 对于出现在多个 key 下的同一个 buffer，选择“预计完成时间”最小的那条边：
+        finish_time = 当前这条边的排队时间 + transmission_latency
+      逻辑和 select_node_job 里的 estimated_time 一致
+    - 不会把元素移动到它原本不存在的 key 中
+    - 对于负数元素（例如 -1 当 busy 标记），不参与去重或负载均衡，原样留在各自 key 下
     """
 
-    # # 1. 记录每个元素出现在哪些键中
-    # # {元素: [key1, key2, ...]}
-    #
-    # # 打乱顺序
-    # items = list(input_dict.items())
-    # random.shuffle(items)
-    #
-    # # 构建新字典
-    # input_dict = dict(items)
+    # -------------------------
+    # 1. 收集元素 -> 能出现在哪些 key (src,dst) 下
+    # -------------------------
     element_to_keys = defaultdict(list)
     for key, lst in input_dict.items():
-        # 对每个键的原始列表先进行内部去重，避免同一个键内部的重复干扰后续判断
-        # 这一步是确保最终结果中，每个元素即使在某个键下出现多次，也只处理一次其"归属"问题
-        for item in set(lst): # 使用set进行内部去重
+        # 忽略负数标记，例如 busy_state = -1
+        real_items = {item for item in lst if item >= 0}
+        for item in real_items:
             element_to_keys[item].append(key)
 
-    # 2. 初始化结果字典和跟踪每个键的当前长度
+    # -------------------------
+    # 2. 初始化结果 & 每条边的 estimated_time
+    # -------------------------
+    # result: 去重后的 (src,dst) -> [buffer_id, ...]
     result = {k: [] for k in input_dict}
-    key_lengths = {k: 0 for k in input_dict}
 
-    # 3. 为每个键创建一个优先级队列（小顶堆）来跟踪其当前长度
-    # 堆中存储 (当前长度, 键的索引, 键名)
-    # 键的索引用于在长度相同时进行tie-break，确保稳定性或避免总选字典序小的
-    key_index = {k: idx for idx, k in enumerate(input_dict.keys())}# 确保索引一致性
+    # estimated_time[(src,dst)]：完全仿照 select_node_job 的写法
+    estimated_time = {}
+    for (src, dst) in input_dict.keys():
+        est = 0.0
+        # 这条边上已经排队的 job
+        if (src, dst) in topology.edges:
+            link_jobs = topology.edges[src, dst]['job']
+            for link_job in link_jobs:
+                remain = link_job["sent_time"] - time
+                if remain > est:
+                    est = remain
+        estimated_time[(src, dst)] = est
 
-    # 4. 遍历所有元素，进行分配
-    # 排序元素以确保每次运行结果一致（如果顺序不重要可以不排序）
-    for item in sorted(element_to_keys.keys()):
-        possible_keys = element_to_keys[item]
+    # -------------------------
+    # 3. 构造一个 jobs dict，用来对 buffer 做类似 select_node_job 的处理
+    # -------------------------
+    jobs = {k: [] for k in input_dict}
 
-        if len(possible_keys) == 1:
-            # 如果元素只存在于一个键中，直接分配给它
-            chosen_key = possible_keys[0]
-            result[chosen_key].append(item)
-            key_lengths[chosen_key] += 1
-        else:
-            # 如果元素存在于多个键中，找到这些键中当前列表最短的那个
-            # 使用一个小顶堆来选择最佳键 (长度, 键的索引, 键名)
-            candidates_heap = []
-            for k in possible_keys:
-                heapq.heappush(candidates_heap, (key_lengths[k], key_index[k], k))
+    for key, lst in input_dict.items():
+        for item in lst:
+            if item >= 0:   # 只对真正的 buffer 做调度
+                jobs[key].append(item)
 
-            # 弹出最短的键
-            _, _, chosen_key = heapq.heappop(candidates_heap)
+    select_buffer = {}  # buffer_id -> [(src,dst), (src2,dst2), ...]
 
-            # 将元素添加到 chosen_key 的结果列表中
-            result[chosen_key].append(item)
-            key_lengths[chosen_key] += 1
+    # -------------------------
+    # 4. 遍历每条边的 buffer，判断是“唯一出现”还是“多条边都想发”
+    # -------------------------
+    for (src, dst_i), buffers in jobs.items():
+        for buffer_id in buffers:
+            only = True
+            for (checked_src, checked_dst_i), checked_buffers in jobs.items():
+                if (src, dst_i) != (checked_src, checked_dst_i):
+                    if buffer_id in checked_buffers:
+                        only = False
+                        if buffer_id not in select_buffer:
+                            select_buffer[buffer_id] = []
+            if only:
+                # 和 select_node_job 一样：只在这一条边出现，就直接把自己的 tx latency 加到 estimated_time 上
+                estimated_time[(src, dst_i)] = decimal.Decimal(estimated_time[(src, dst_i)])
+                estimated_time[(src, dst_i)] += topology.edges[src, dst_i]['transmission_latency']
+            else:
+                select_buffer[buffer_id].append((src, dst_i))
+
+    # -------------------------
+    # 5. 对“重复 buffer”先从所有 jobs 里删掉
+    # -------------------------
+    for buffer_id, key_list in select_buffer.items():
+        for (src, dst_i) in key_list:
+            if buffer_id in jobs[(src, dst_i)]:
+                jobs[(src, dst_i)].remove(buffer_id)
+
+    # -------------------------
+    # 6. 再给每个重复 buffer 选一条“预计完成时间最小”的边
+    # -------------------------
+    for buffer_id, key_list in select_buffer.items():
+        src_time = {}
+        for (src, dst_i) in key_list:
+            # 完全照抄 select_node_job 的公式
+            estimated_time[(src, dst_i)] = decimal.Decimal(estimated_time[(src, dst_i)])
+            src_time[(src, dst_i)] = (
+                estimated_time[(src, dst_i)]
+                + topology.edges[src, dst_i]['transmission_latency']
+            )
+
+        # 选一个 finish_time 最小的 (src,dst)
+        min_src_dst_i = min(key_list, key=lambda k: src_time[k])
+
+        jobs[min_src_dst_i].append(buffer_id)
+        # 把这个 buffer 的 tx latency 累加到这条边的 estimated_time 里
+        src, dst_i = min_src_dst_i
+        estimated_time[(src, dst_i)] += topology.edges[src, dst_i]['transmission_latency']
+
+    # -------------------------
+    # 7. 把 jobs 写回 result，同时恢复原来列表里的负数标记
+    # -------------------------
+    for key, lst in input_dict.items():
+        # 先保留原来该 key 里的负数标记（例如 busy_state = -1）
+        negative_items = [x for x in lst if x < 0]
+        # 再加上重新分配后的真实 buffer
+        result[key] = negative_items + jobs[key]
 
     return result
 
@@ -500,7 +619,7 @@ def add_node_job(topology, src, time, memory_state, sent_matrix, DC0, DC1, WAN_b
             #             switch_job[(src, dst)].append(B['buffer'])
                     # topology.nodes[src]['added_job'][(src, dst)].append(B['buffer'])
             # print('&&&&&', switch_job[(src, dst)])
-        switch_job = deduplicate_balanced(switch_job)
+        switch_job = deduplicate_balanced(switch_job, topology, time)
         switch_switch = []
         for (src, dst), value in switch_job.items():
                 topology.nodes[src]['job'][(src, dst)] = []
@@ -577,8 +696,8 @@ def add_node_job(topology, src, time, memory_state, sent_matrix, DC0, DC1, WAN_b
         # # print(switch_job)
 
 
-        switch_job=deduplicate_balanced(switch_job)
-        # Switch2gpu_job=deduplicate_balanced(Switch2gpu_job)
+        switch_job=deduplicate_balanced(switch_job, topology, time)
+        Switch2gpu_job=deduplicate_balanced(Switch2gpu_job, topology, time)
         for (src, dst), value in switch_job.items():
             if len(topology.nodes[src]['job'][(src, dst)]) > 0:
                 for B in topology.nodes[src]['job'][(src, dst)]:

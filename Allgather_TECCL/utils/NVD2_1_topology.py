@@ -34,12 +34,14 @@ class NDv2(Topology):
         if chassis == 2:
             # connectivity: 0.5, GPU: 6
             if config.connectivity == "test":
-                capacity = [[0, 0, 107, 107, 107, 0, 0, 0, 0, 0], [0, 0, 107, 107, 0, 107, 107, 0, 0, 0], [107, 107, 0, 0, 0, 0, 0, 107, 0, 0], [107, 107, 0, 0, 0, 0, 0, 107, 0, 107], [107, 0, 0, 0, 0, 46, 0, 0, 0, 0], [0, 107, 0, 0, 46, 0, 46, 0, 0, 0], [0, 107, 0, 0, 0, 46, 0, 0, 0, 0], [0, 0, 107, 107, 0, 0, 0, 0, 46, 0], [0, 0, 0, 0, 0, 0, 0, 46, 0, 46], [0, 0, 0, 107, 0, 0, 0, 0, 46, 0]]
+                import simplejson as json
+                topology_path = '/Users/xiongjiaheng/RDMA/CCL/network_topology.json'# ===== 读文件 =====
+                with open(topology_path, "r") as f:
+                    data = json.load(f, parse_float=Decimal, parse_int=Decimal)
 
-                self.pro = [[-1, -1, Decimal('0.001'), Decimal('0.001'), Decimal('7E-7'), -1, -1, -1, -1, -1], [-1, -1, Decimal('0.001'), Decimal('0.001'), -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1], [Decimal('0.001'), Decimal('0.001'), -1, -1, -1, -1, -1, Decimal('7E-7'), -1, -1], [Decimal('0.001'), Decimal('0.001'), -1, -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7')], [Decimal('7E-7'), -1, -1, -1, -1, Decimal('7E-7'), -1, -1, -1, -1], [-1, Decimal('7E-7'), -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), -1, -1, -1], [-1, Decimal('7E-7'), -1, -1, -1, Decimal('7E-7'), -1, -1, -1, -1], [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, Decimal('7E-7'), -1], [-1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7')], [-1, -1, -1, Decimal('7E-7'), -1, -1, -1, -1, Decimal('7E-7'), -1]]
-
-                self.TECCL_pro = [[-1, -1, 0.001, 0.001, 7e-07, -1, -1, -1, -1, -1], [-1, -1, 0.001, 0.001, -1, 7e-07, 7e-07, -1, -1, -1], [0.001, 0.001, -1, -1, -1, -1, -1, 7e-07, -1, -1], [0.001, 0.001, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07], [7e-07, -1, -1, -1, -1, 7e-07, -1, -1, -1, -1], [-1, 7e-07, -1, -1, 7e-07, -1, 7e-07, -1, -1, -1], [-1, 7e-07, -1, -1, -1, 7e-07, -1, -1, -1, -1], [-1, -1, 7e-07, 7e-07, -1, -1, -1, -1, 7e-07, -1], [-1, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07], [-1, -1, -1, 7e-07, -1, -1, -1, -1, 7e-07, -1]]
-
+                capacity = data["capacity"]
+                self.pro = data["propagation"]
+                self.TECCL_pro = data["float_propagation"]
             if config.connectivity == 0.5:
                 capacity = [[0, 0, 107, 107, 107, 0, 0, 107, 107, 0, 0, 0, 0, 0, 0, 0],
                             [0, 0, 107, 107, 107, 107, 0, 0, 0, 107, 0, 0, 0, 0, 0, 0],
@@ -57,16 +59,16 @@ class NDv2(Topology):
                             [0, 0, 107, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46, 0, 46, 46],
                             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46, 0, 46],
                             [0, 0, 107, 107, 0, 0, 0, 0, 0, 0, 0, 46, 0, 46, 46, 0]]
-                self.pro = [[-1, -1, Decimal('50E-5'), Decimal('50E-5'), Decimal('7E-7'), -1, -1, Decimal('7E-7'),
+                self.pro = [[-1, -1, Decimal('5E-5'), Decimal('5E-5'), Decimal('7E-7'), -1, -1, Decimal('7E-7'),
                              Decimal('7E-7'), -1,
                              -1, -1, -1, -1, -1, -1],
-                            [-1, -1, Decimal('50E-5'), Decimal('50E-5'), Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1,
+                            [-1, -1, Decimal('5E-5'), Decimal('5E-5'), Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1,
                              Decimal('7E-7'),
                              -1, -1, -1, -1, -1, -1],
-                            [Decimal('50E-5'), Decimal('50E-5'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1,
+                            [Decimal('5E-5'), Decimal('5E-5'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1,
                              Decimal('7E-7'),
                              Decimal('7E-7'), -1, Decimal('7E-7')],
-                            [Decimal('50E-5'), Decimal('50E-5'), -1, -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'),
+                            [Decimal('5E-5'), Decimal('5E-5'), -1, -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'),
                              -1, -1, -1,
                              Decimal('7E-7')],
                             [Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), -1,
@@ -94,10 +96,10 @@ class NDv2(Topology):
                             [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7')],
                             [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1,
                              Decimal('7E-7'), Decimal('7E-7'), -1]]
-                self.TECCL_pro = [[-1, -1, 50E-5, 50E-5, 7e-07, -1, -1, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1, -1],
-                                  [-1, -1, 50E-5, 50E-5, 7e-07, 7e-07, -1, -1, -1, 7e-07, -1, -1, -1, -1, -1, -1],
-                                  [50E-5, 50E-5, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07, 7e-07, -1, 7e-07],
-                                  [50E-5, 50E-5, -1, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, -1, -1, 7e-07],
+                self.TECCL_pro = [[-1, -1, 5E-5, 5E-5, 7e-07, -1, -1, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1, -1],
+                                  [-1, -1, 5E-5, 5E-5, 7e-07, 7e-07, -1, -1, -1, 7e-07, -1, -1, -1, -1, -1, -1],
+                                  [5E-5, 5E-5, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07, 7e-07, -1, 7e-07],
+                                  [5E-5, 5E-5, -1, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, -1, -1, 7e-07],
                                   [7e-07, 7e-07, -1, -1, -1, 7e-07, 7e-07, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1],
                                   [-1, 7e-07, -1, -1, 7e-07, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1, -1, -1],
                                   [-1, -1, -1, -1, 7e-07, 7e-07, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1, -1],
@@ -130,15 +132,15 @@ class NDv2(Topology):
                             [0, 0, 107, 0, 0, 0, 0, 0, 0, 0, 46, 46, 46, 46, 0, 46],
                             [0, 0, 107, 107, 0, 0, 0, 0, 0, 0, 0, 46, 0, 46, 46, 0]]
                 self.pro = [
-                    [-1, -1, Decimal('50E-5'), Decimal('50E-5'), Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'),
+                    [-1, -1, Decimal('5E-5'), Decimal('5E-5'), Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'),
                      -1, -1,
                      -1, -1, -1, -1, -1, -1],
-                    [-1, -1, Decimal('50E-5'), Decimal('50E-5'), -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'),
+                    [-1, -1, Decimal('5E-5'), Decimal('5E-5'), -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'),
                      Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1],
-                    [Decimal('50E-5'), Decimal('50E-5'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1,
+                    [Decimal('5E-5'), Decimal('5E-5'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1,
                      Decimal('7E-7'),
                      -1, Decimal('7E-7'), Decimal('7E-7')],
-                    [Decimal('50E-5'), Decimal('50E-5'), -1, -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1,
+                    [Decimal('5E-5'), Decimal('5E-5'), -1, -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1,
                      Decimal('7E-7'), -1, Decimal('7E-7')],
                     [Decimal('7E-7'), -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), -1, Decimal('7E-7'), -1, -1,
                      -1,
@@ -171,10 +173,10 @@ class NDv2(Topology):
                      Decimal('7E-7'), -1, Decimal('7E-7')],
                     [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1,
                      Decimal('7E-7'), Decimal('7E-7'), -1]]
-                self.TECCL_pro = [[-1, -1, 50E-5, 50E-5, 7e-07, -1, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1, -1, -1],
-                                  [-1, -1, 50E-5, 50E-5, -1, 7e-07, 7e-07, 7e-07, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1],
-                                  [50E-5, 50E-5, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07, -1, 7e-07, 7e-07],
-                                  [50E-5, 50E-5, -1, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07, -1, 7e-07],
+                self.TECCL_pro = [[-1, -1, 5E-5, 5E-5, 7e-07, -1, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1, -1, -1],
+                                  [-1, -1, 5E-5, 5E-5, -1, 7e-07, 7e-07, 7e-07, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1],
+                                  [5E-5, 5E-5, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07, -1, 7e-07, 7e-07],
+                                  [5E-5, 5E-5, -1, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07, -1, 7e-07],
                                   [7e-07, -1, -1, -1, -1, 7e-07, -1, 7e-07, -1, 7e-07, -1, -1, -1, -1, -1, -1],
                                   [-1, 7e-07, -1, -1, 7e-07, -1, 7e-07, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1],
                                   [7e-07, 7e-07, -1, -1, -1, 7e-07, -1, 7e-07, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1],
@@ -208,14 +210,14 @@ class NDv2(Topology):
                             [0, 0, 107, 107, 0, 0, 0, 0, 0, 0, 46, 0, 46, 46, 0, 46],
                             [0, 0, 107, 107, 0, 0, 0, 0, 0, 0, 0, 46, 46, 46, 46, 0]]
                 self.pro = [
-                    [-1, -1, Decimal('50E-5'), Decimal('50E-5'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1,
+                    [-1, -1, Decimal('5E-5'), Decimal('5E-5'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1,
                      Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1],
-                    [-1, -1, Decimal('50E-5'), Decimal('50E-5'), -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'),
+                    [-1, -1, Decimal('5E-5'), Decimal('5E-5'), -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'),
                      Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1],
-                    [Decimal('50E-5'), Decimal('50E-5'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'),
+                    [Decimal('5E-5'), Decimal('5E-5'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'),
                      Decimal('7E-7'),
                      Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7')],
-                    [Decimal('50E-5'), Decimal('50E-5'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'),
+                    [Decimal('5E-5'), Decimal('5E-5'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'),
                      Decimal('7E-7'),
                      Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7')],
                     [Decimal('7E-7'), -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'),
@@ -251,11 +253,11 @@ class NDv2(Topology):
                     [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'),
                      Decimal('7E-7'),
                      Decimal('7E-7'), Decimal('7E-7'), -1]]
-                self.TECCL_pro = [[-1, -1, 50E-5, 50E-5, 7e-07, 7e-07, 7e-07, -1, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1],
-                                  [-1, -1, 50E-5, 50E-5, -1, 7e-07, 7e-07, 7e-07, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1],
-                                  [50E-5, 50E-5, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, 7e-07, 7e-07, 7e-07, 7e-07,
+                self.TECCL_pro = [[-1, -1, 5E-5, 5E-5, 7e-07, 7e-07, 7e-07, -1, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1],
+                                  [-1, -1, 5E-5, 5E-5, -1, 7e-07, 7e-07, 7e-07, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1],
+                                  [5E-5, 5E-5, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, 7e-07, 7e-07, 7e-07, 7e-07,
                                    7e-07],
-                                  [50E-5, 50E-5, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, 7e-07, 7e-07, -1, 7e-07, 7e-07],
+                                  [5E-5, 5E-5, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, 7e-07, 7e-07, -1, 7e-07, 7e-07],
                                   [7e-07, -1, -1, -1, -1, 7e-07, -1, 7e-07, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1],
                                   [7e-07, 7e-07, -1, -1, 7e-07, -1, 7e-07, 7e-07, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1],
                                   [7e-07, 7e-07, -1, -1, -1, 7e-07, -1, 7e-07, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1],
@@ -286,15 +288,15 @@ class NDv2(Topology):
                             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46, 0, 46],
                             [0, 0, 0, 107, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46, 0]]
                 self.pro = [
-                    [-1, -1, Decimal('50E-5'), Decimal('50E-5'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, -1, -1,
+                    [-1, -1, Decimal('5E-5'), Decimal('5E-5'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, -1, -1,
                      -1,
                      -1],
-                    [-1, -1, Decimal('50E-5'), Decimal('50E-5'), -1, -1, -1, -1, -1, Decimal('7E-7'), -1, -1, -1, -1,
+                    [-1, -1, Decimal('5E-5'), Decimal('5E-5'), -1, -1, -1, -1, -1, Decimal('7E-7'), -1, -1, -1, -1,
                      -1,
                      -1],
-                    [Decimal('50E-5'), Decimal('50E-5'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, -1, -1,
+                    [Decimal('5E-5'), Decimal('5E-5'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, -1, -1,
                      -1,
-                     -1], [Decimal('50E-5'), Decimal('50E-5'), -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+                     -1], [Decimal('5E-5'), Decimal('5E-5'), -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                            Decimal('7E-7')],
                     [Decimal('7E-7'), -1, -1, -1, -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
                     [-1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, -1, -1],
@@ -309,10 +311,10 @@ class NDv2(Topology):
                      -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), -1],
                     [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7')],
                     [-1, -1, -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1]]
-                self.TECCL_pro = [[-1, -1, 50E-5, 50E-5, 7e-07, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-                                  [-1, -1, 50E-5, 50E-5, -1, -1, -1, -1, -1, 7e-07, -1, -1, -1, -1, -1, -1],
-                                  [50E-5, 50E-5, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, -1, -1, -1, -1],
-                                  [50E-5, 50E-5, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07],
+                self.TECCL_pro = [[-1, -1, 5E-5, 5E-5, 7e-07, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+                                  [-1, -1, 5E-5, 5E-5, -1, -1, -1, -1, -1, 7e-07, -1, -1, -1, -1, -1, -1],
+                                  [5E-5, 5E-5, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, -1, -1, -1, -1],
+                                  [5E-5, 5E-5, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07],
                                   [7e-07, -1, -1, -1, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
                                   [-1, -1, -1, -1, 7e-07, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1, -1, -1],
                                   [-1, -1, -1, -1, -1, 7e-07, -1, 7e-07, -1, 7e-07, -1, -1, -1, -1, -1, -1],
@@ -326,7 +328,7 @@ class NDv2(Topology):
                                   [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07],
                                   [-1, -1, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1]]
 
-            # self.pro = [[-1, -1, Decimal('50E-5'), Decimal('50E-5'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1], [-1, -1, Decimal('50E-5'), Decimal('50E-5'), -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1], [Decimal('50E-5'), Decimal('50E-5'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7')], [Decimal('50E-5'), Decimal('50E-5'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7')], [Decimal('7E-7'), -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1], [Decimal('7E-7'), Decimal('7E-7'), -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1], [Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1], [-1, Decimal('7E-7'), -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1], [Decimal('7E-7'), Decimal('7E-7'), -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1], [Decimal('7E-7'), Decimal('7E-7'), -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1], [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1], [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7')], [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7')], [-1, -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7')], [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7')], [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1]]
+            # self.pro = [[-1, -1, Decimal('5E-5'), Decimal('5E-5'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1], [-1, -1, Decimal('5E-5'), Decimal('5E-5'), -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1], [Decimal('5E-5'), Decimal('5E-5'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7')], [Decimal('5E-5'), Decimal('5E-5'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7')], [Decimal('7E-7'), -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1], [Decimal('7E-7'), Decimal('7E-7'), -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1], [Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1], [-1, Decimal('7E-7'), -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1], [Decimal('7E-7'), Decimal('7E-7'), -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1], [Decimal('7E-7'), Decimal('7E-7'), -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1], [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1], [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7')], [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7')], [-1, -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7')], [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7')], [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1]]
             # capacity = [[0, 0, 107, 107, 107, 107, 107, 0, 107, 107, 0, 0, 0, 0, 0, 0], [0, 0, 107, 107, 0, 107, 107, 107, 107, 107, 0, 0, 0, 0, 0, 0], [107, 107, 0, 0, 0, 0, 0, 0, 0, 0, 107, 107, 107, 107, 107, 107], [107, 107, 0, 0, 0, 0, 0, 0, 0, 0, 107, 107, 107, 0, 107, 107], [107, 0, 0, 0, 0, 46, 0, 46, 46, 46, 0, 0, 0, 0, 0, 0], [107, 107, 0, 0, 46, 0, 46, 46, 46, 46, 0, 0, 0, 0, 0, 0], [107, 107, 0, 0, 0, 46, 0, 46, 46, 46, 0, 0, 0, 0, 0, 0], [0, 107, 0, 0, 46, 46, 46, 0, 46, 46, 0, 0, 0, 0, 0, 0], [107, 107, 0, 0, 46, 46, 46, 46, 0, 46, 0, 0, 0, 0, 0, 0], [107, 107, 0, 0, 46, 46, 46, 46, 46, 0, 0, 0, 0, 0, 0, 0], [0, 0, 107, 107, 0, 0, 0, 0, 0, 0, 0, 46, 46, 46, 46, 0], [0, 0, 107, 107, 0, 0, 0, 0, 0, 0, 46, 0, 46, 46, 0, 46], [0, 0, 107, 107, 0, 0, 0, 0, 0, 0, 46, 46, 0, 46, 46, 46], [0, 0, 107, 0, 0, 0, 0, 0, 0, 0, 46, 46, 46, 0, 46, 46], [0, 0, 107, 107, 0, 0, 0, 0, 0, 0, 46, 0, 46, 46, 0, 46], [0, 0, 107, 107, 0, 0, 0, 0, 0, 0, 0, 46, 46, 46, 46, 0]]
 
 
@@ -362,8 +364,8 @@ class NDv2(Topology):
                          for r in capacity]
         self.topology = [list(map(lambda x: int(x > 0), r))
                          for r in self.capacity]
-        print("Capacity:", self.capacity)
-        print("Topology:", self.topology)
+        # print("Capacity:", self.capacity)
+        # print("Topology:", self.topology)
         self.alpha = []
         for r in capacity:
             row = []
@@ -376,13 +378,13 @@ class NDv2(Topology):
                 else:
                     row.append(-1)
             self.alpha.append(row)
-        print("Alpha:", self.alpha)
+        # print("Alpha:", self.alpha)
 
 
 class NVD2_1_topology(NDv2):
     def __init__(self, packet_size, num_chunk):
         super().__init__()
-        print("Initializing NVD2_1_topology")
+        # print("Initializing NVD2_1_topology")
         self.capacity = [
             [Decimal(str(x)) for x in row] for row in self.capacity
         ]  # 转化为高精度
@@ -392,14 +394,14 @@ class NVD2_1_topology(NDv2):
         self.num_gpu = len(self.capacity) - 4
 
         self.topology = self.get_topology()
-        for node in self.topology.nodes:
-            print(node, self.topology.nodes[node]['memory'])
+        # for node in self.topology.nodes:
+        #     print(node, self.topology.nodes[node]['memory'])
 
     def get_topology(self):
         G = nx.DiGraph()  # 使用有向图
         DC_1 = [0, 1]
         DC_2 = [2, 3]
-        print(self.num_gpu / 2)
+        # print(self.num_gpu / 2)
         DC_1_GPU = list(range(4, 4 + int(self.num_gpu / 2)))
         DC_2_GPU = list(range(4 + self.num_gpu, self.num_gpu + 4))
         self.DC_1 = DC_1_GPU + DC_1
@@ -429,6 +431,7 @@ class NVD2_1_topology(NDv2):
                                job=[],
                                type='NVlink',
                                weight=propagation_latency + transmission_latency,
+                               num_chunk = 0,
                                connect=False)
                 if self.capacity[i][j] == 12.5:
                     propagation_latency = self.pro[self.nodes[i]][self.nodes[j]]
@@ -442,6 +445,7 @@ class NVD2_1_topology(NDv2):
                                job=[],
                                type='Switch',
                                weight=propagation_latency + transmission_latency,
+                               num_chunk = 0,
                                connect=True)
 
                 # 新增功能：根据 self.chassis 删除节点 0 并调整其他节点编号

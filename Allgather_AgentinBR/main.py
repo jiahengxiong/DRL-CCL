@@ -1,10 +1,11 @@
 import bisect
 import sys
 import time
-
+import os
 import config
 import networkx as nx
 import matplotlib.pyplot as plt
+import torch
 
 
 from utils.NVD2_1_topology import NVD2_1_topology
@@ -12,6 +13,8 @@ from decimal import Decimal
 from Allgather_AgentinBR.utils.tools import add_node_job, select_node_job, start_send, combine_job, end_send, start_receive, end_receive, \
     check_buffer,queue
 from Allgather_AgentinBR.utils.util import load_topology
+from Allgather_AgentinBR.utils.Agent import LinkPolicyAgent
+from Allgather_AgentinBR.utils.Critics import ValueCritic
 
 
 def decimal_range(start, stop, step):
@@ -91,11 +94,41 @@ def broad_cast(tree, current_roots, visited, completion_times, packet_size):
 
 def main(collective_time, policy):
     # datacenter = NVD2_1_topology(packet_size=config.packet_size, num_chunk=config.num_chunk)  # Packet size in GB
+    agent_folder = '/Users/xiongjiaheng/RDMA/CCL/Allgather_AgentinBR/Modules'
     datacenter = load_topology(packet_size=config.packet_size, num_chunk=config.num_chunk, chassis=config.chassis, name=config.topology_name)
     node_list = datacenter.topology.nodes()
     print(f'Number of nodes: {len(node_list)}')
     # gpu_list = datacenter.gpus
     NVD2_topology = datacenter.topology
+    action_set = {}
+    agent_set = {}
+    BR_ac = {}
+    total_links = 0
+    for node in node_list:
+        if NVD2_topology.nodes[node]['type'] == 'switch':
+            agent_path = agent_folder + '/' + f"BR_{node}_agent.pth"
+            L = 0
+            action_set[node] = {}
+            for neighbor in NVD2_topology.successors(node):
+                if NVD2_topology.nodes[neighbor]['type'] == 'switch':
+                    action_set[node][L] = (node, neighbor)
+                    L = L + 1
+                    total_links = total_links + 1
+            if os.path.exists(agent_path) is False:
+                agent = LinkPolicyAgent(L)
+                torch.save(agent, agent_path)
+            agent = torch.load(agent_path, map_location="mps", weights_only=False)
+            agent.eval()
+            agent_set[node] = agent
+            BR_ac[node] = []
+    Critics_path = agent_folder + '/' + 'Critics.pth'
+    if os.path.exists(Critics_path) is False:
+        critics_value = ValueCritic(total_links)
+        torch.save(critics_value, Critics_path)
+    critics_value = torch.load(Critics_path, map_location="cpu", weights_only=False)
+
+
+
     buffer_matrix = [[0 for _ in range(len(node_list) * config.num_chunk * config.buffer_constant)] for _ in
                      range(len(node_list) * config.num_chunk * config.buffer_constant)]
     sent_matrix = [[0 for _ in range(len(node_list) * config.num_chunk * config.buffer_constant)] for _ in
@@ -103,7 +136,7 @@ def main(collective_time, policy):
     DC_0_buffer = []
     DC_1_buffer = []
 
-    print(len(node_list) * config.num_chunk)
+    # print(len(node_list) * config.num_chunk)
     for node in node_list:
         memory = NVD2_topology.nodes[node]['memory']
         for buffer_index, buffer in memory.items():
@@ -113,8 +146,9 @@ def main(collective_time, policy):
                     DC_0_buffer.append(buffer['buffer'])
                 else:
                     DC_1_buffer.append(buffer['buffer'])
-    print("DC_0_buffer", DC_0_buffer)
-    print("DC_1_buffer", DC_1_buffer)
+    # print("DC_0_buffer", DC_0_buffer)
+    # print("DC_1_buffer", DC_1_buffer)
+    print(action_set)
 
 
     # Generate the BFS trees
@@ -157,7 +191,7 @@ def main(collective_time, policy):
         for link in NVD2_topology.edges:
             end_send(topology=NVD2_topology, link=link, time=time, WAN_buffer=WAN_buffer)
         for link in NVD2_topology.edges:
-            start_receive(topology=NVD2_topology, link=link, time=time)
+            start_receive(topology=NVD2_topology, link=link, time=time, agent_set=agent_set, action_set=action_set,  BR_ac=BR_ac)
         for link in NVD2_topology.edges:
             end_receive(topology=NVD2_topology, link=link, time=time)
 
@@ -169,6 +203,7 @@ def main(collective_time, policy):
 
         for node in node_list:
             start_send(topology=NVD2_topology, node=node, time=time, memory_state=buffer_matrix, WAN_buffer=WAN_buffer,DC0=DC_0_buffer,DC1=DC_1_buffer, policy=policy)
+        # todo: Add the BR node send logic to enable Agent
 
 
         event_list = []
@@ -242,6 +277,9 @@ def main(collective_time, policy):
             time_in_us = Decimal(str(time)) * Decimal('1000000')
             normalized_time = time_in_us.normalize()
             collective_time[connectivity][num_chunk][chunk] = f'{normalized_time} us'
+            for BR in BR_ac:
+                # print(BR_ac[BR][-1][-1], time)
+                BR_ac[BR][-1][-1] = BR_ac[BR][-1][-1] - float(time)
             break
     trans_mat, pro_mat = build_rate_and_latency_matrices(NVD2_topology)
     print("trans_mat", trans_mat)
@@ -283,9 +321,9 @@ def build_rate_and_latency_matrices(G):
 
 
 if __name__ == "__main__":
-    num_chunk_list = [1,2,4,8]
-    chunk_size_list = [1,4,16,64,256]
-    connectivity_list = [0.3,0.5,0.7,0.9]
+    num_chunk_list = [1]
+    chunk_size_list = [1]
+    connectivity_list = [0.3]
     collective_time = {}
     execute_time = {}
 
