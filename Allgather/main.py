@@ -1,7 +1,11 @@
 import bisect
+import os
 import sys
 import time
 
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
 import config
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -94,6 +98,7 @@ def main(collective_time, policy):
     datacenter = load_topology(packet_size=config.packet_size, num_chunk=config.num_chunk, chassis=config.chassis, name=config.topology_name)
     node_list = datacenter.topology.nodes()
     print(f'Number of nodes: {len(node_list)}')
+    print(f'Number of edges: {len(datacenter.topology.edges())}')
     # gpu_list = datacenter.gpus
     NVD2_topology = datacenter.topology
     buffer_matrix = [[0 for _ in range(len(node_list) * config.num_chunk * config.buffer_constant)] for _ in
@@ -284,8 +289,8 @@ def build_rate_and_latency_matrices(G):
 
 if __name__ == "__main__":
     num_chunk_list = [1]
-    chunk_size_list = [4]
-    connectivity_list = [0.9]
+    chunk_size_list = [1]
+    connectivity_list = [0.5]
     collective_time = {}
     execute_time = {}
 

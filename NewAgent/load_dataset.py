@@ -132,8 +132,10 @@ def load_snvang_dataset_by_day(
 
 if __name__ == "__main__":
     data = load_snvang_dataset_by_day(
-        "SNVAng__STTLng.txt", train_ratio=0.8, scale_range=(0.01, 1.0)
+        "NewAgent/SNVAng__STTLng.txt", train_ratio=0.8, scale_range=(0.01, 1.0)
     )
     print("train days:", len(data["train_days"]))
     print("test days:", len(data["test_days"]))
     print("first train day:", data["train_days"][0].day, data["train_days"][0].x.shape)
+
+    print("test days:", data["test_days"][0])

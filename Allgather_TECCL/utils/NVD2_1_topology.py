@@ -4,7 +4,13 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 import config
-from generate_topo import gen_topo
+import os
+import random
+import glob
+try:
+    import simplejson as json
+except ImportError:
+    import json
 
 
 # 模拟 topologies.topology 模块中的 Topology 类
@@ -21,365 +27,40 @@ class NDv2(Topology):
         self.construct_topology()
 
     def construct_topology(self):
-        chassis = self.chassis
-
-        # 定义 conversion_map，确保没有重复赋值
-        conversion_map = {}
-        conversion_map[0] = 0
-        conversion_map[23] = 50 / self.chunk_size  # 使用最终赋值
-        conversion_map[46] = 50 / (2 * self.chunk_size)
-        conversion_map[107] = 12.5 / self.chunk_size
-
         self.switch_indices = [0, 1, 2, 3]
-        if chassis == 2:
-            # connectivity: 0.5, GPU: 6
-            if config.connectivity == "test":
-                import simplejson as json
-                topology_path = '/Users/xiongjiaheng/RDMA/CCL/network_topology.json'# ===== 读文件 =====
-                with open(topology_path, "r") as f:
-                    data = json.load(f, parse_float=Decimal, parse_int=Decimal)
+        
+        # Load topology from TOPO folder based on config.connectivity
+        # Assuming file structure: RDMA/CCL/TOPO/{connectivity}/*.json
+        
+        # Determine paths
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # Go up 2 levels to RDMA/CCL/
+        project_root = os.path.dirname(os.path.dirname(current_dir))
+        
+        topo_folder = os.path.join(project_root, 'TOPO', str(config.connectivity))
+        
+        if not os.path.exists(topo_folder):
+            raise FileNotFoundError(f"Topology directory not found: {topo_folder}")
 
-                capacity = data["capacity"]
-                self.pro = data["propagation"]
-                self.TECCL_pro = data["float_propagation"]
-            if config.connectivity == 0.5:
-                capacity = [[0, 0, 107, 107, 107, 0, 0, 107, 107, 0, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 107, 107, 107, 107, 0, 0, 0, 107, 0, 0, 0, 0, 0, 0],
-                            [107, 107, 0, 0, 0, 0, 0, 0, 0, 0, 107, 0, 107, 107, 0, 107],
-                            [107, 107, 0, 0, 0, 0, 0, 0, 0, 0, 0, 107, 0, 0, 0, 107],
-                            [107, 107, 0, 0, 0, 46, 46, 0, 46, 0, 0, 0, 0, 0, 0, 0],
-                            [0, 107, 0, 0, 46, 0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 0, 0, 46, 46, 0, 46, 0, 0, 0, 0, 0, 0, 0, 0],
-                            [107, 0, 0, 0, 0, 0, 46, 0, 46, 0, 0, 0, 0, 0, 0, 0],
-                            [107, 0, 0, 0, 46, 0, 0, 46, 0, 46, 0, 0, 0, 0, 0, 0],
-                            [0, 107, 0, 0, 0, 0, 0, 0, 46, 0, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 107, 0, 0, 0, 0, 0, 0, 0, 0, 46, 0, 0, 0, 0],
-                            [0, 0, 0, 107, 0, 0, 0, 0, 0, 0, 46, 0, 46, 0, 0, 46],
-                            [0, 0, 107, 0, 0, 0, 0, 0, 0, 0, 0, 46, 0, 46, 0, 0],
-                            [0, 0, 107, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46, 0, 46, 46],
-                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46, 0, 46],
-                            [0, 0, 107, 107, 0, 0, 0, 0, 0, 0, 0, 46, 0, 46, 46, 0]]
-                self.pro = [[-1, -1, Decimal('5E-5'), Decimal('5E-5'), Decimal('7E-7'), -1, -1, Decimal('7E-7'),
-                             Decimal('7E-7'), -1,
-                             -1, -1, -1, -1, -1, -1],
-                            [-1, -1, Decimal('5E-5'), Decimal('5E-5'), Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1,
-                             Decimal('7E-7'),
-                             -1, -1, -1, -1, -1, -1],
-                            [Decimal('5E-5'), Decimal('5E-5'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1,
-                             Decimal('7E-7'),
-                             Decimal('7E-7'), -1, Decimal('7E-7')],
-                            [Decimal('5E-5'), Decimal('5E-5'), -1, -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'),
-                             -1, -1, -1,
-                             Decimal('7E-7')],
-                            [Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), -1,
-                             Decimal('7E-7'), -1,
-                             -1, -1, -1, -1, -1, -1],
-                            [-1, Decimal('7E-7'), -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1,
-                             -1, -1, -1],
-                            [-1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7'), -1, -1, -1, -1, -1,
-                             -1, -1, -1],
-                            [Decimal('7E-7'), -1, -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), -1, -1, -1, -1,
-                             -1, -1, -1],
-                            [Decimal('7E-7'), -1, -1, -1, Decimal('7E-7'), -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'),
-                             -1, -1, -1,
-                             -1, -1, -1],
-                            [-1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1],
-                            [-1, -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, -1, -1, -1],
-                            [-1, -1, -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'),
-                             -1, -1,
-                             Decimal('7E-7')],
-                            [-1, -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1,
-                             Decimal('7E-7'), -1, -1],
-                            [-1, -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1,
-                             Decimal('7E-7'),
-                             Decimal('7E-7')],
-                            [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7')],
-                            [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1,
-                             Decimal('7E-7'), Decimal('7E-7'), -1]]
-                self.TECCL_pro = [[-1, -1, 5E-5, 5E-5, 7e-07, -1, -1, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1, -1],
-                                  [-1, -1, 5E-5, 5E-5, 7e-07, 7e-07, -1, -1, -1, 7e-07, -1, -1, -1, -1, -1, -1],
-                                  [5E-5, 5E-5, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07, 7e-07, -1, 7e-07],
-                                  [5E-5, 5E-5, -1, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, -1, -1, 7e-07],
-                                  [7e-07, 7e-07, -1, -1, -1, 7e-07, 7e-07, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1],
-                                  [-1, 7e-07, -1, -1, 7e-07, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-                                  [-1, -1, -1, -1, 7e-07, 7e-07, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1, -1],
-                                  [7e-07, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1],
-                                  [7e-07, -1, -1, -1, 7e-07, -1, -1, 7e-07, -1, 7e-07, -1, -1, -1, -1, -1, -1],
-                                  [-1, 7e-07, -1, -1, -1, -1, -1, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1],
-                                  [-1, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, -1, -1, -1],
-                                  [-1, -1, -1, 7e-07, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07, -1, -1, 7e-07],
-                                  [-1, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07, -1, -1],
-                                  [-1, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07, 7e-07],
-                                  [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07],
-                                  [-1, -1, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07, 7e-07, -1]]
-            elif config.connectivity == 0.7:
-
-                # connectivity = 0.7, GPU:6
-                capacity = [[0, 0, 107, 107, 107, 0, 107, 107, 0, 0, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 107, 107, 0, 107, 107, 107, 107, 107, 0, 0, 0, 0, 0, 0],
-                            [107, 107, 0, 0, 0, 0, 0, 0, 0, 0, 107, 0, 107, 0, 107, 107],
-                            [107, 107, 0, 0, 0, 0, 0, 0, 0, 0, 0, 107, 0, 107, 0, 107],
-                            [107, 0, 0, 0, 0, 46, 0, 46, 0, 46, 0, 0, 0, 0, 0, 0],
-                            [0, 107, 0, 0, 46, 0, 46, 0, 46, 0, 0, 0, 0, 0, 0, 0],
-                            [107, 107, 0, 0, 0, 46, 0, 46, 46, 46, 0, 0, 0, 0, 0, 0],
-                            [107, 107, 0, 0, 46, 0, 46, 0, 46, 0, 0, 0, 0, 0, 0, 0],
-                            [0, 107, 0, 0, 0, 46, 46, 46, 0, 46, 0, 0, 0, 0, 0, 0],
-                            [0, 107, 0, 0, 46, 0, 46, 0, 46, 0, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 107, 0, 0, 0, 0, 0, 0, 0, 0, 46, 0, 0, 46, 0],
-                            [0, 0, 0, 107, 0, 0, 0, 0, 0, 0, 46, 0, 46, 46, 46, 46],
-                            [0, 0, 107, 0, 0, 0, 0, 0, 0, 0, 0, 46, 0, 46, 46, 0],
-                            [0, 0, 0, 107, 0, 0, 0, 0, 0, 0, 0, 46, 46, 0, 46, 46],
-                            [0, 0, 107, 0, 0, 0, 0, 0, 0, 0, 46, 46, 46, 46, 0, 46],
-                            [0, 0, 107, 107, 0, 0, 0, 0, 0, 0, 0, 46, 0, 46, 46, 0]]
-                self.pro = [
-                    [-1, -1, Decimal('5E-5'), Decimal('5E-5'), Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'),
-                     -1, -1,
-                     -1, -1, -1, -1, -1, -1],
-                    [-1, -1, Decimal('5E-5'), Decimal('5E-5'), -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'),
-                     Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1],
-                    [Decimal('5E-5'), Decimal('5E-5'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1,
-                     Decimal('7E-7'),
-                     -1, Decimal('7E-7'), Decimal('7E-7')],
-                    [Decimal('5E-5'), Decimal('5E-5'), -1, -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1,
-                     Decimal('7E-7'), -1, Decimal('7E-7')],
-                    [Decimal('7E-7'), -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), -1, Decimal('7E-7'), -1, -1,
-                     -1,
-                     -1, -1, -1],
-                    [-1, Decimal('7E-7'), -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), -1, Decimal('7E-7'), -1, -1, -1,
-                     -1,
-                     -1, -1, -1],
-                    [Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'),
-                     Decimal('7E-7'),
-                     Decimal('7E-7'), -1, -1, -1, -1, -1, -1],
-                    [Decimal('7E-7'), Decimal('7E-7'), -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), -1,
-                     Decimal('7E-7'), -1,
-                     -1, -1, -1, -1, -1, -1],
-                    [-1, Decimal('7E-7'), -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1,
-                     Decimal('7E-7'),
-                     -1, -1, -1, -1, -1, -1],
-                    [-1, Decimal('7E-7'), -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), -1, Decimal('7E-7'), -1, -1, -1,
-                     -1,
-                     -1, -1, -1],
-                    [-1, -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, -1, Decimal('7E-7'),
-                     -1],
-                    [-1, -1, -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'),
-                     Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7')],
-                    [-1, -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'),
-                     Decimal('7E-7'), -1],
-                    [-1, -1, -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), -1,
-                     Decimal('7E-7'), Decimal('7E-7')],
-                    [-1, -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'),
-                     Decimal('7E-7'),
-                     Decimal('7E-7'), -1, Decimal('7E-7')],
-                    [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1,
-                     Decimal('7E-7'), Decimal('7E-7'), -1]]
-                self.TECCL_pro = [[-1, -1, 5E-5, 5E-5, 7e-07, -1, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1, -1, -1],
-                                  [-1, -1, 5E-5, 5E-5, -1, 7e-07, 7e-07, 7e-07, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1],
-                                  [5E-5, 5E-5, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07, -1, 7e-07, 7e-07],
-                                  [5E-5, 5E-5, -1, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07, -1, 7e-07],
-                                  [7e-07, -1, -1, -1, -1, 7e-07, -1, 7e-07, -1, 7e-07, -1, -1, -1, -1, -1, -1],
-                                  [-1, 7e-07, -1, -1, 7e-07, -1, 7e-07, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1],
-                                  [7e-07, 7e-07, -1, -1, -1, 7e-07, -1, 7e-07, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1],
-                                  [7e-07, 7e-07, -1, -1, 7e-07, -1, 7e-07, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1],
-                                  [-1, 7e-07, -1, -1, -1, 7e-07, 7e-07, 7e-07, -1, 7e-07, -1, -1, -1, -1, -1, -1],
-                                  [-1, 7e-07, -1, -1, 7e-07, -1, 7e-07, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1],
-                                  [-1, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, -1, 7e-07, -1],
-                                  [-1, -1, -1, 7e-07, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07, 7e-07, 7e-07, 7e-07],
-                                  [-1, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07, 7e-07, -1],
-                                  [-1, -1, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1, 7e-07, 7e-07, -1, 7e-07, 7e-07],
-                                  [-1, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1, 7e-07, 7e-07, 7e-07, 7e-07, -1, 7e-07],
-                                  [-1, -1, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07, 7e-07, -1]]
-
-
-            # # connectivity = 0.9, GPU = 6
-            elif config.connectivity == 0.9:
-                capacity = [[0, 0, 107, 107, 107, 107, 107, 0, 107, 107, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 107, 107, 0, 107, 107, 107, 107, 107, 0, 0, 0, 0, 0, 0],
-                            [107, 107, 0, 0, 0, 0, 0, 0, 0, 0, 107, 107, 107, 107, 107, 107],
-                            [107, 107, 0, 0, 0, 0, 0, 0, 0, 0, 107, 107, 107, 0, 107, 107],
-                            [107, 0, 0, 0, 0, 46, 0, 46, 46, 46, 0, 0, 0, 0, 0, 0],
-                            [107, 107, 0, 0, 46, 0, 46, 46, 46, 46, 0, 0, 0, 0, 0, 0],
-                            [107, 107, 0, 0, 0, 46, 0, 46, 46, 46, 0, 0, 0, 0, 0, 0],
-                            [0, 107, 0, 0, 46, 46, 46, 0, 46, 46, 0, 0, 0, 0, 0, 0],
-                            [107, 107, 0, 0, 46, 46, 46, 46, 0, 46, 0, 0, 0, 0, 0, 0],
-                            [107, 107, 0, 0, 46, 46, 46, 46, 46, 0, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 107, 107, 0, 0, 0, 0, 0, 0, 0, 46, 46, 46, 46, 0],
-                            [0, 0, 107, 107, 0, 0, 0, 0, 0, 0, 46, 0, 46, 46, 0, 46],
-                            [0, 0, 107, 107, 0, 0, 0, 0, 0, 0, 46, 46, 0, 46, 46, 46],
-                            [0, 0, 107, 0, 0, 0, 0, 0, 0, 0, 46, 46, 46, 0, 46, 46],
-                            [0, 0, 107, 107, 0, 0, 0, 0, 0, 0, 46, 0, 46, 46, 0, 46],
-                            [0, 0, 107, 107, 0, 0, 0, 0, 0, 0, 0, 46, 46, 46, 46, 0]]
-                self.pro = [
-                    [-1, -1, Decimal('5E-5'), Decimal('5E-5'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1,
-                     Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1],
-                    [-1, -1, Decimal('5E-5'), Decimal('5E-5'), -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'),
-                     Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1],
-                    [Decimal('5E-5'), Decimal('5E-5'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'),
-                     Decimal('7E-7'),
-                     Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7')],
-                    [Decimal('5E-5'), Decimal('5E-5'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'),
-                     Decimal('7E-7'),
-                     Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7')],
-                    [Decimal('7E-7'), -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'),
-                     Decimal('7E-7'),
-                     -1, -1, -1, -1, -1, -1],
-                    [Decimal('7E-7'), Decimal('7E-7'), -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'),
-                     Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1],
-                    [Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'),
-                     Decimal('7E-7'),
-                     Decimal('7E-7'), -1, -1, -1, -1, -1, -1],
-                    [-1, Decimal('7E-7'), -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1,
-                     Decimal('7E-7'),
-                     Decimal('7E-7'), -1, -1, -1, -1, -1, -1],
-                    [Decimal('7E-7'), Decimal('7E-7'), -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'),
-                     Decimal('7E-7'), -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1],
-                    [Decimal('7E-7'), Decimal('7E-7'), -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'),
-                     Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'),
-                     Decimal('7E-7'),
-                     Decimal('7E-7'), Decimal('7E-7'), -1],
-                    [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1,
-                     Decimal('7E-7'),
-                     Decimal('7E-7'), -1, Decimal('7E-7')],
-                    [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'),
-                     -1,
-                     Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7')],
-                    [-1, -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'),
-                     Decimal('7E-7'),
-                     -1, Decimal('7E-7'), Decimal('7E-7')],
-                    [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1,
-                     Decimal('7E-7'),
-                     Decimal('7E-7'), -1, Decimal('7E-7')],
-                    [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'),
-                     Decimal('7E-7'),
-                     Decimal('7E-7'), Decimal('7E-7'), -1]]
-                self.TECCL_pro = [[-1, -1, 5E-5, 5E-5, 7e-07, 7e-07, 7e-07, -1, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1],
-                                  [-1, -1, 5E-5, 5E-5, -1, 7e-07, 7e-07, 7e-07, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1],
-                                  [5E-5, 5E-5, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, 7e-07, 7e-07, 7e-07, 7e-07,
-                                   7e-07],
-                                  [5E-5, 5E-5, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, 7e-07, 7e-07, -1, 7e-07, 7e-07],
-                                  [7e-07, -1, -1, -1, -1, 7e-07, -1, 7e-07, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1],
-                                  [7e-07, 7e-07, -1, -1, 7e-07, -1, 7e-07, 7e-07, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1],
-                                  [7e-07, 7e-07, -1, -1, -1, 7e-07, -1, 7e-07, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1],
-                                  [-1, 7e-07, -1, -1, 7e-07, 7e-07, 7e-07, -1, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1],
-                                  [7e-07, 7e-07, -1, -1, 7e-07, 7e-07, 7e-07, 7e-07, -1, 7e-07, -1, -1, -1, -1, -1, -1],
-                                  [7e-07, 7e-07, -1, -1, 7e-07, 7e-07, 7e-07, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1, -1],
-                                  [-1, -1, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1, -1, 7e-07, 7e-07, 7e-07, 7e-07, -1],
-                                  [-1, -1, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07, 7e-07, -1, 7e-07],
-                                  [-1, -1, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1, 7e-07, 7e-07, -1, 7e-07, 7e-07, 7e-07],
-                                  [-1, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1, 7e-07, 7e-07, 7e-07, -1, 7e-07, 7e-07],
-                                  [-1, -1, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07, 7e-07, -1, 7e-07],
-                                  [-1, -1, 7e-07, 7e-07, -1, -1, -1, -1, -1, -1, -1, 7e-07, 7e-07, 7e-07, 7e-07, -1]]
-            elif config.connectivity == 0.3:
-                capacity = [[0, 0, 107, 107, 107, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 107, 107, 0, 0, 0, 0, 0, 107, 0, 0, 0, 0, 0, 0],
-                            [107, 107, 0, 0, 0, 0, 0, 0, 0, 0, 107, 0, 0, 0, 0, 0],
-                            [107, 107, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 107],
-                            [107, 0, 0, 0, 0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 0, 0, 46, 0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 0, 0, 0, 46, 0, 46, 0, 46, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 0, 0, 0, 0, 46, 0, 46, 0, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 0, 0, 0, 0, 0, 46, 0, 46, 0, 0, 0, 0, 0, 0],
-                            [0, 107, 0, 0, 0, 0, 46, 0, 46, 0, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 107, 0, 0, 0, 0, 0, 0, 0, 0, 46, 46, 0, 0, 0],
-                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46, 0, 46, 0, 0, 0],
-                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46, 46, 0, 46, 0, 0],
-                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46, 0, 46, 0],
-                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46, 0, 46],
-                            [0, 0, 0, 107, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 46, 0]]
-                self.pro = [
-                    [-1, -1, Decimal('5E-5'), Decimal('5E-5'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, -1, -1,
-                     -1,
-                     -1],
-                    [-1, -1, Decimal('5E-5'), Decimal('5E-5'), -1, -1, -1, -1, -1, Decimal('7E-7'), -1, -1, -1, -1,
-                     -1,
-                     -1],
-                    [Decimal('5E-5'), Decimal('5E-5'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, -1, -1,
-                     -1,
-                     -1], [Decimal('5E-5'), Decimal('5E-5'), -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-                           Decimal('7E-7')],
-                    [Decimal('7E-7'), -1, -1, -1, -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), -1, Decimal('7E-7'), -1, -1, -1, -1, -1,
-                     -1], [-1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1],
-                    [-1, Decimal('7E-7'), -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1,
-                     -1],
-                    [-1, -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1,
-                     -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), -1, -1, -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7'), -1,
-                     -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), -1],
-                    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7')],
-                    [-1, -1, -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1]]
-                self.TECCL_pro = [[-1, -1, 5E-5, 5E-5, 7e-07, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-                                  [-1, -1, 5E-5, 5E-5, -1, -1, -1, -1, -1, 7e-07, -1, -1, -1, -1, -1, -1],
-                                  [5E-5, 5E-5, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, -1, -1, -1, -1],
-                                  [5E-5, 5E-5, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07],
-                                  [7e-07, -1, -1, -1, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-                                  [-1, -1, -1, -1, 7e-07, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-                                  [-1, -1, -1, -1, -1, 7e-07, -1, 7e-07, -1, 7e-07, -1, -1, -1, -1, -1, -1],
-                                  [-1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1],
-                                  [-1, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07, -1, -1, -1, -1, -1, -1],
-                                  [-1, 7e-07, -1, -1, -1, -1, 7e-07, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1],
-                                  [-1, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, 7e-07, -1, -1, -1],
-                                  [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07, -1, -1, -1],
-                                  [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, 7e-07, -1, 7e-07, -1, -1],
-                                  [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07, -1],
-                                  [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1, 7e-07],
-                                  [-1, -1, -1, 7e-07, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 7e-07, -1]]
-
-            # self.pro = [[-1, -1, Decimal('5E-5'), Decimal('5E-5'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1], [-1, -1, Decimal('5E-5'), Decimal('5E-5'), -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1], [Decimal('5E-5'), Decimal('5E-5'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7')], [Decimal('5E-5'), Decimal('5E-5'), -1, -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7')], [Decimal('7E-7'), -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1], [Decimal('7E-7'), Decimal('7E-7'), -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1], [Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1], [-1, Decimal('7E-7'), -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1], [Decimal('7E-7'), Decimal('7E-7'), -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1], [Decimal('7E-7'), Decimal('7E-7'), -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1], [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1], [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7')], [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7')], [-1, -1, Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7')], [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, Decimal('7E-7'), -1, Decimal('7E-7'), Decimal('7E-7'), -1, Decimal('7E-7')], [-1, -1, Decimal('7E-7'), Decimal('7E-7'), -1, -1, -1, -1, -1, -1, -1, Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), Decimal('7E-7'), -1]]
-            # capacity = [[0, 0, 107, 107, 107, 107, 107, 0, 107, 107, 0, 0, 0, 0, 0, 0], [0, 0, 107, 107, 0, 107, 107, 107, 107, 107, 0, 0, 0, 0, 0, 0], [107, 107, 0, 0, 0, 0, 0, 0, 0, 0, 107, 107, 107, 107, 107, 107], [107, 107, 0, 0, 0, 0, 0, 0, 0, 0, 107, 107, 107, 0, 107, 107], [107, 0, 0, 0, 0, 46, 0, 46, 46, 46, 0, 0, 0, 0, 0, 0], [107, 107, 0, 0, 46, 0, 46, 46, 46, 46, 0, 0, 0, 0, 0, 0], [107, 107, 0, 0, 0, 46, 0, 46, 46, 46, 0, 0, 0, 0, 0, 0], [0, 107, 0, 0, 46, 46, 46, 0, 46, 46, 0, 0, 0, 0, 0, 0], [107, 107, 0, 0, 46, 46, 46, 46, 0, 46, 0, 0, 0, 0, 0, 0], [107, 107, 0, 0, 46, 46, 46, 46, 46, 0, 0, 0, 0, 0, 0, 0], [0, 0, 107, 107, 0, 0, 0, 0, 0, 0, 0, 46, 46, 46, 46, 0], [0, 0, 107, 107, 0, 0, 0, 0, 0, 0, 46, 0, 46, 46, 0, 46], [0, 0, 107, 107, 0, 0, 0, 0, 0, 0, 46, 46, 0, 46, 46, 46], [0, 0, 107, 0, 0, 0, 0, 0, 0, 0, 46, 46, 46, 0, 46, 46], [0, 0, 107, 107, 0, 0, 0, 0, 0, 0, 46, 0, 46, 46, 0, 46], [0, 0, 107, 107, 0, 0, 0, 0, 0, 0, 0, 46, 46, 46, 46, 0]]
-
-
-
-
-
-
-
-        else:
-            self.switch_indices = [0]
-            single_capacity = [
-                [0, 23, 46, 46, 23, 0, 0, 0],
-                [23, 0, 46, 23, 0, 46, 0, 0],
-                [46, 46, 0, 23, 0, 0, 23, 0],
-                [46, 23, 23, 0, 0, 0, 0, 46],
-                [23, 0, 0, 0, 0, 23, 46, 46],
-                [0, 46, 0, 0, 23, 0, 46, 23],
-                [0, 0, 23, 0, 46, 46, 0, 23],
-                [0, 0, 0, 46, 46, 23, 23, 0]
-            ]
-            capacity = [[0] * (8 * chassis + 1)]
-            for i in range(chassis):
-                for j in single_capacity:
-                    cap = [0] * (8 * chassis)
-                    for k in range(8):
-                        cap[8 * i + k] = j[k]
-                    capacity.append([0] + cap)
-            for i in range(chassis):
-                capacity[0][i * 8 + 1] = 107
-                capacity[i * 8 + 2][0] = 107
-        capacity = list(map(list, zip(*capacity)))
-        self.capacity = [list(map(lambda x: conversion_map[x], r))
-                         for r in capacity]
-        self.topology = [list(map(lambda x: int(x > 0), r))
-                         for r in self.capacity]
-        # print("Capacity:", self.capacity)
-        # print("Topology:", self.topology)
-        self.alpha = []
-        for r in capacity:
-            row = []
-            for i in r:
-                if i:
-                    if i == 107:
-                        row.append(0.0 * pow(10, -6))
-                    else:
-                        row.append(0.0 * pow(10, -6))
-                else:
-                    row.append(-1)
-            self.alpha.append(row)
-        # print("Alpha:", self.alpha)
-
+        # Get list of json files
+        json_files = glob.glob(os.path.join(topo_folder, '*.json'))
+        if not json_files:
+            raise FileNotFoundError(f"No JSON topology files found in {topo_folder}")
+            
+        # Select the first topology file deterministically
+        json_files_sorted = sorted(json_files)
+        selected_file = json_files_sorted[0]
+        print(f"Loading topology from: {selected_file}")
+        
+        with open(selected_file, "r") as f:
+            data = json.load(f, parse_float=Decimal, parse_int=Decimal)
+            
+        # Direct assignment as requested
+        self.capacity = data["capacity"]
+        self.pro = data["propagation"]
+        # Use .get() with default to self.pro if float_propagation is missing
+        self.TECCL_pro = data.get("float_propagation", self.pro)
+        
 
 class NVD2_1_topology(NDv2):
     def __init__(self, packet_size, num_chunk):
@@ -417,38 +98,37 @@ class NVD2_1_topology(NDv2):
                            DC=DC, receive_buffer=[])
             else:
                 G.add_node(node, memory=self.initial_buffer(node, DC), type='switch', job={}, added_job={}, policy=[],
-                           in_queue=[], out_queue=[], DC=DC, receive_buffer=[], buffer_limitation=0, right=0, left=0)
+                           in_queue=[], out_queue=[], DC=DC, receive_buffer=[], buffer_limitation=0, right=0, left=0,
+                           served_gpu_once=set())
+        
         for i in range(len(self.capacity)):
             for j in range(len(self.capacity[i])):
-                if self.capacity[i][j] == 25 or self.capacity[i][j] == 50:  # 如果有链路
-                    propagation_latency = self.pro[self.nodes[i]][self.nodes[j]]
-                    transmission_latency = self.packet_size / self.capacity[i][j]
-                    G.add_edge(self.nodes[i], self.nodes[j],
-                               link_capcapacity=self.capacity[i][j],
-                               propagation_latency=self.pro[self.nodes[i]][self.nodes[j]],  # Decimal(0.7e-7),
-                               transmission_latency=self.packet_size / self.capacity[i][j],
-                               state='free',
-                               job=[],
-                               type='NVlink',
-                               weight=propagation_latency + transmission_latency,
-                               num_chunk = 0,
-                               connect=False)
-                if self.capacity[i][j] == 12.5:
-                    propagation_latency = self.pro[self.nodes[i]][self.nodes[j]]
-                    transmission_latency = self.packet_size / self.capacity[i][j]
-                    G.add_edge(self.nodes[i], self.nodes[j],
-                               link_capcapacity=self.capacity[i][j],
-                               propagation_latency=self.pro[self.nodes[i]][self.nodes[j]],
-                               # Decimal(1.3e-7),self.pro[self.nodes[i]][self.nodes[j]],
-                               transmission_latency=self.packet_size / self.capacity[i][j],
-                               state='free',
-                               job=[],
-                               type='Switch',
-                               weight=propagation_latency + transmission_latency,
-                               num_chunk = 0,
-                               connect=True)
+                if self.capacity[i][j] > 0:  # 如果有链路
+                    # Determine link type based on connectivity to switches
+                    is_switch_link = (i in self.switch_indices or j in self.switch_indices)
+                    
+                    if is_switch_link:
+                        link_type = 'Switch'
+                        connect = True
+                    else:
+                        link_type = 'NVlink'
+                        connect = False
 
-                # 新增功能：根据 self.chassis 删除节点 0 并调整其他节点编号
+                    propagation_latency = self.pro[self.nodes[i]][self.nodes[j]]
+                    transmission_latency = self.packet_size / self.capacity[i][j]
+                    
+                    G.add_edge(self.nodes[i], self.nodes[j],
+                               link_capcapacity=self.capacity[i][j],
+                               propagation_latency=propagation_latency,
+                               transmission_latency=transmission_latency,
+                               state='free',
+                               job=[],
+                               type=link_type,
+                               weight=propagation_latency + transmission_latency,
+                               num_chunk = 0,
+                               connect=connect)
+
+        # 新增功能：根据 self.chassis 删除节点 0 并调整其他节点编号
         if self.chassis == 1:
             if 0 in G:
                 G.remove_node(0)
@@ -511,21 +191,3 @@ if __name__ == '__main__':
 
     # 设置图形布局
     pos = nx.spring_layout(G)
-
-    # 绘制节点
-    nx.draw_networkx_nodes(G, pos, node_size=700, node_color='lightblue')
-
-    # 绘制边
-    nx.draw_networkx_edges(G, pos, width=2, edge_color='gray', arrows=True)  # 添加箭头表示方向
-
-    # 绘制节点标签
-    nx.draw_networkx_labels(G, pos, font_size=12, font_color='black')
-
-    # 绘制边的权重
-    edge_labels = nx.get_edge_attributes(G, 'link_capcapacity')
-    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=7)
-
-    # 显示图形
-    plt.title("Directed Topology Visualization")
-    plt.axis('off')
-    plt.show()

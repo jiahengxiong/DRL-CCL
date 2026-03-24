@@ -4,7 +4,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from model import OneStepRNN
+from NewAgent.model import OneStepRNN
 
 
 def _infer_hidden_dim_from_state_dict(sd: dict) -> int:
@@ -115,11 +115,21 @@ class RNNDeployer:
         self.model.train()
 
         # recompute p_t under current params
-        h_tmp = self.model.cell(self._prev_x, self._prev_h_before)
-        p_t = self.model.head(h_tmp)
+        cell = self.model.cell
+        prev_mode = getattr(cell, "_cl_recompute_mode", False)
+        cell._cl_recompute_mode = True
+        try:
+            h_tmp = cell(self._prev_x, self._prev_h_before)
+        finally:
+            cell._cl_recompute_mode = prev_mode
+        p_t = self.model.out_act(self.model.head(h_tmp))
 
         loss = (p_t - x_t).pow(2).mean()  # plain MSE
         # loss = torch.nn.functional.smooth_l1_loss(p_t, x_t, beta=0.02)
+        # err = p_t - x_t  # (1,1)
+        # w_over = 4.0  # 高估惩罚倍数：先试 2~6
+        # w = torch.where(err > 0, w_over, 1.0)
+        # loss = (w * err.pow(2)).mean()
 
 
         self._optimizer.zero_grad(set_to_none=True)

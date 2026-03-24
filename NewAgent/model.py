@@ -26,6 +26,8 @@ class _PeakFeatureGRUCell(nn.Module):
 
         self.gru = nn.GRUCell(input_size=4, hidden_size=self.hidden_dim)
 
+        self._cl_recompute_mode = False
+
         # runtime feature buffers (current time)
         self._prev_x: Optional[torch.Tensor] = None  # (B,1)
         self._ema: Optional[torch.Tensor] = None     # (B,1)
@@ -102,9 +104,7 @@ class _PeakFeatureGRUCell(nn.Module):
         B = x_raw.size(0)
         self._ensure_buffers(B, x_raw.device, x_raw.dtype)
 
-        # Case A: Grad-enabled call => this is the EXTERNAL continual-learning recompute of prev step.
-        # We MUST use the one-step delayed pending feature-state (state BEFORE consuming prev_x).
-        if torch.is_grad_enabled():
+        if self._cl_recompute_mode:
             if self._pending_state is None:
                 # Not enough cached history to recompute safely
                 return self.gru(torch.cat([x_raw, x_raw * 0, x_raw * 0, x_raw * 0], dim=1), h_prev)  # harmless fallback
@@ -122,7 +122,7 @@ class _PeakFeatureGRUCell(nn.Module):
 
             return h_next
 
-        # Case B: No-grad call => normal deployment / inference.
+        # Case B: normal runtime (training or deployment/inference).
         # We must evolve the runtime feature buffers AND prepare caches for the next CL recompute.
         # Shift: if pending is empty and we already have a "next" (from previous step), promote it now.
         if self._pending_state is None and self._next_state is not None:
@@ -165,6 +165,7 @@ class OneStepRNN(nn.Module):
         # IMPORTANT: self.cell is now a wrapper that still accepts (B,1) input.
         self.cell = _PeakFeatureGRUCell(hidden_dim=self.hidden_dim, ema_alpha=ema_alpha)
         self.head = nn.Linear(self.hidden_dim, 1)
+        self.out_act = nn.Softplus()
 
         self._h: Optional[torch.Tensor] = None  # (B,H)
 
@@ -196,7 +197,7 @@ class OneStepRNN(nn.Module):
 
         # cell wrapper will internally build peak-aware features and update its own buffers
         self._h = self.cell(x_t, self._h)
-        return self.head(self._h)
+        return self.out_act(self.head(self._h))
 
     # -------------------------
     # training: full sequence

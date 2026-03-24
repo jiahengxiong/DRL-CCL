@@ -1,3 +1,8 @@
+import os
+import sys
+_PRJ_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if _PRJ_ROOT not in sys.path:
+    sys.path.insert(0, _PRJ_ROOT)
 import config
 from Allgather.utils.custom import select_node_job_refactored
 # from config import WAN_buffer
@@ -27,6 +32,11 @@ def end_receive(topology, link, time):
             topology.nodes[dst]['memory'][sent_buffer]['buffer'] = sent_buffer
             topology.nodes[dst]['memory'][sent_buffer]['received_time'] = time
 
+            if topology.nodes[dst]['type'] == 'switch':
+                if link_job not in topology.nodes[dst]['receive_buffer']:
+
+                    topology.nodes[dst]['receive_buffer'].append(link_job)
+
             # ✅ 正确按 buffer id 清理 connect_matrix
             if topology.edges[link]['connect']:
                 buf = link_job.get('buffer')
@@ -43,10 +53,10 @@ def start_receive(topology, link, time):
         if time >= link_job['receive_time']:
             flag = True
             topology.nodes[dst][f'receiver from {src}'] = 'busy'
-            if topology.nodes[dst]['type'] == 'switch':
-                if link_job not in topology.nodes[dst]['receive_buffer']:
+            # if topology.nodes[dst]['type'] == 'switch':
+            #     if link_job not in topology.nodes[dst]['receive_buffer']:
 
-                    topology.nodes[dst]['receive_buffer'].append(link_job)
+            #         topology.nodes[dst]['receive_buffer'].append(link_job)
                     # break
             # break
             # if topology.nodes[dst]['type'] == 'switch':
@@ -78,7 +88,7 @@ def end_send(topology, link, time, WAN_buffer):
             config.connect_matrix.remove(job)
 
 import random
-def start_send(topology, node, time, memory_state, WAN_buffer, DC0, DC1,policy):
+def start_send(topology, node, time, memory_state, WAN_buffer, DC0, DC1, policy, arrival_times=None):
     jobs_list = topology.nodes[node]['job']
     successors = list(topology.successors(node))
     # num_nodes = len(topology.nodes)
@@ -134,8 +144,21 @@ def start_send(topology, node, time, memory_state, WAN_buffer, DC0, DC1,policy):
                 # elif dst in DC_1_GPUs:
                 #     DC1.append(job['buffer'])
                 policy.append([job['buffer'], node, dst, time])
-                print(
-                    f"In time {time}, node {node} sent buffer {job} to node {dst} will start receive at {time + transmission_latency}, finish received at {time + transmission_latency + propagation_latency} via {link_type}")
+                if arrival_times is not None:
+                    arrival_times.append([job['buffer'], node, dst, time + propagation_latency])
+                # print(
+                #     f"In time {time}, node {node} sent buffer {job} to node {dst} will start receive at {time + transmission_latency}, finish received at {time + transmission_latency + propagation_latency} via {link_type}")
+                if topology.nodes[node]['type'] == 'switch' and topology.nodes[dst]['type'] == 'GPU':
+                    if 'served_gpu_once' not in topology.nodes[node]:
+                        topology.nodes[node]['served_gpu_once'] = set()
+                    topology.nodes[node]['served_gpu_once'].add(job['buffer'])
+                    for other in successors:
+                        if topology.nodes[other]['type'] == 'GPU' and other != dst:
+                            if (node, other) in topology.nodes[node]['job']:
+                                try:
+                                    topology.nodes[node]['job'][(node, other)].remove({'buffer': job['buffer']})
+                                except ValueError:
+                                    pass
                 memory_state[dst][job['buffer']] = 1
                 if dst == 1:
                     memory_state[0][job['buffer']] = 1
@@ -257,9 +280,13 @@ def select_node_job(topology, dst, time, node):
             jobs[(src, dst_i)] = []
             if (src, dst_i) not in topology.nodes[src]['job'].keys():
                 continue
+            if not topology.has_edge(src, dst_i):
+                continue
             job = topology.nodes[src]['job'][(src, dst_i)]
             # print('job',src,dst_i, job)
             estimated_time[(src, dst_i)] = 0
+            if not topology.has_edge(src, dst_i):
+                continue
             link_jobs = topology.edges[src, dst_i]['job']
             for link_job in link_jobs:
                 if link_job["sent_time"] - time > estimated_time[(src, dst_i)]:
@@ -304,13 +331,15 @@ def select_node_job(topology, dst, time, node):
 
         jobs[min_src_dst_i].append(buffer)
         estimated_time[min_src_dst_i] += topology.edges[min_src_dst_i]['transmission_latency']
-    buffers = jobs[(node, dst)]
+    if not topology.has_edge(node, dst):
+        return []
+    buffers = jobs.get((node, dst), [])
     # print(jobs)
     job = None
     if len(buffers) == 0:
         return []
     else:
-        if topology.edges[node, dst]['connect']:
+        if topology.has_edge(node, dst) and topology.edges[node, dst].get('connect', False):
             for job in buffers:
                 if job not in config.connect_matrix:
                     config.connect_matrix.append(job)
@@ -324,6 +353,8 @@ def select_node_job(topology, dst, time, node):
                 # print(topology.nodes[src]['job'][(src, dst)], {'buffer': job})
                 for dst_i in dst_list:
                     if (src, dst_i) not in topology.nodes[src]['job'].keys():
+                        continue
+                    if not topology.has_edge(src, dst_i):
                         continue
                     if {'buffer': job} in topology.nodes[src]['job'][(src, dst_i)]:
                         # print("remove job")
@@ -404,6 +435,121 @@ def deduplicate_balanced(input_dict):
 
     return result
 
+def deduplicate_balanced_weighted_by_wan(input_dict, topology):
+    result = {k: [] for k in input_dict}
+    key_load = {}
+    cap_map = {}
+    for k, lst in input_dict.items():
+        src, dst = k
+        dst_dc = topology.nodes[dst].get('DC')
+        cap_sum = 0.0
+        for n in topology.successors(dst):
+            if topology.nodes[n].get('type') == 'switch' and topology.nodes[n].get('DC') != dst_dc:
+                e = topology.edges[(dst, n)]
+                cap_val = e.get('link_capcapacity', 0)
+                try:
+                    cap_sum += float(cap_val)
+                except Exception:
+                    pass
+        if cap_sum <= 0.0:
+            cap_sum = 1e-9
+        cap_map[k] = cap_sum
+        penalty = 0
+        for x in lst:
+            if isinstance(x, int) and x == -1:
+                penalty += 1
+        key_load[k] = penalty
+    # 全局容量与已分配计数（跨 GPU 累计）
+    br_cap = topology.graph.setdefault('br_chunk_capacity', {})
+    br_assigned = topology.graph.setdefault('br_chunk_assigned', {})
+    # 建立元素 -> 候选键 映射
+    element_to_keys = {}
+    for k, lst in input_dict.items():
+        s = set(lst)
+        for item in s:
+            if isinstance(item, int) and item >= 0:
+                element_to_keys.setdefault(item, []).append(k)
+    # 逐元素分配
+    for item in sorted(element_to_keys.keys()):
+        keys = element_to_keys[item]
+        chosen = None
+        if len(keys) == 1:
+            chosen = keys[0]
+        else:
+            # 优先按“剩余名额 = 容量 - 已分配”选择
+            best_k = None
+            best_rem = None
+            for k in keys:
+                _, dst = k
+                cap = int(br_cap.get(dst, 0))
+                used = int(br_assigned.get(dst, 0))
+                rem = cap - used
+                if (best_rem is None) or (rem > best_rem) or (rem == best_rem and key_load.get(k, 0) < key_load.get(best_k, 0)):
+                    best_k = k
+                    best_rem = rem
+            if best_k is not None and best_rem is not None and best_rem > 0:
+                chosen = best_k
+            else:
+                # 如果都满额，退化到按 key_load/cap_map 的旧策略
+                best = None
+                best_score = None
+                for k in keys:
+                    score = key_load[k] / cap_map.get(k, 1e-9)
+                    if best is None or score < best_score:
+                        best = k
+                        best_score = score
+                chosen = best
+        result[chosen].append(item)
+        key_load[chosen] = key_load.get(chosen, 0) + 1
+        # 选中后递增该 BR 的已分配计数
+        dst = chosen[1]
+        br_assigned[dst] = int(br_assigned.get(dst, 0)) + 1
+    # 回写
+    topology.graph['br_chunk_assigned'] = br_assigned
+    return result
+def _ensure_fixed_gpu_ingress(topology):
+    if topology.graph.get('fixed_gpu_ingress_ready', False):
+        return
+    for n in topology.nodes:
+        if topology.nodes[n].get('type') == 'switch':
+            preds = list(topology.predecessors(n))
+            gpus = [g for g in preds if topology.nodes[g].get('type') == 'GPU']
+            in_caps = []
+            for g in gpus:
+                try:
+                    cap = topology.edges[(g, n)].get('link_capcapacity', 0)
+                except Exception:
+                    cap = 0
+                try:
+                    cap = float(cap)
+                except Exception:
+                    cap = 0.0
+                in_caps.append((g, cap))
+            target = 0.0
+            for v in topology.successors(n):
+                try:
+                    c2 = topology.edges[(n, v)].get('link_capcapacity', 0)
+                except Exception:
+                    c2 = 0
+                try:
+                    target += float(c2)
+                except Exception:
+                    pass
+            in_caps.sort(key=lambda x: x[1], reverse=True)
+            chosen = []
+            total = 0.0
+            for g, c in in_caps:
+                if total < target:
+                    chosen.append((g, c))
+                    total += c
+            if chosen:
+                d_over = abs(total - target)
+                lg, lc = chosen[-1]
+                d_under = abs((total - lc) - target)
+                if d_under < d_over:
+                    chosen.pop()
+            topology.nodes[n]['fixed_gpu_senders'] = set(g for g, _ in chosen)
+    topology.graph['fixed_gpu_ingress_ready'] = True
 def add_node_job(topology, src, time, memory_state, sent_matrix, DC0, DC1, WAN_buffer,buffer_num_dict):
     # print(time)
     DC_0_switch = [0,1]
@@ -425,6 +571,70 @@ def add_node_job(topology, src, time, memory_state, sent_matrix, DC0, DC1, WAN_b
     print("successors:", successors)
     print("job:", topology.nodes[src]['job'])"""
     if Type == 'GPU':
+        # 一次性初始化各 DC 下 BR 的 chunk 容量（按出链路速率之和的比例）
+        if not topology.graph.get('br_chunk_capacity_inited', False):
+            def _sum_wan_cap(br_node):
+                total = 0.0
+                dc = topology.nodes[br_node].get('DC')
+                for n in topology.successors(br_node):
+                    if topology.nodes[n].get('type') == 'switch' and topology.nodes[n].get('DC') != dc:
+                        try:
+                            val = float(topology.edges[(br_node, n)].get('link_capcapacity', 0))
+                        except Exception:
+                            val = 0.0
+                        total += val
+                return max(total, 0.0)
+            # DC0: 0,1; DC1: 2,3
+            dc0_brs = [0, 1]
+            dc1_brs = [2, 3]
+            # 计算总 chunk（取 unique）
+            dc0_total = len(set(DC0))
+            dc1_total = len(set(DC1))
+            # 计算比例与整数名额（最大余数法）
+            def _alloc_quota(brs, total_chunks):
+                caps = {b: _sum_wan_cap(b) for b in brs}
+                s = sum(caps.values())
+                if s <= 0.0:
+                    base = {b: total_chunks // len(brs) for b in brs}
+                    rem = total_chunks - sum(base.values())
+                    order = sorted(brs)
+                    for i in range(rem):
+                        base[order[i % len(order)]] += 1
+                    return base
+                quota = {b: (caps[b] / s) * total_chunks for b in brs}
+                base = {b: int(quota[b] // 1) for b in brs}
+                rest = total_chunks - sum(base.values())
+                remainders = sorted(brs, key=lambda b: (quota[b] - base[b], -b), reverse=True)
+                for i in range(rest):
+                    base[remainders[i % len(brs)]] += 1
+                return base
+            cap_dc0 = _alloc_quota(dc0_brs, dc0_total)
+            cap_dc1 = _alloc_quota(dc1_brs, dc1_total)
+            # 合并
+            br_cap = {}
+            br_cap.update(cap_dc0)
+            br_cap.update(cap_dc1)
+            topology.graph['br_chunk_capacity'] = br_cap
+            def _assign_buffers_to_brs(buffers, brs, cap_map):
+                buffers_sorted = sorted(set(buffers))
+                buf_to_br = {}
+                cursor = 0
+                for br in brs:
+                    k = int(cap_map.get(br, 0))
+                    for buf in buffers_sorted[cursor: cursor + k]:
+                        buf_to_br[buf] = br
+                    cursor += k
+                if cursor < len(buffers_sorted):
+                    order = sorted(brs)
+                    for i, buf in enumerate(buffers_sorted[cursor:]):
+                        buf_to_br[buf] = order[i % len(order)]
+                return buf_to_br
+
+            buf_target = {}
+            buf_target.update(_assign_buffers_to_brs(DC0, dc0_brs, cap_dc0))
+            buf_target.update(_assign_buffers_to_brs(DC1, dc1_brs, cap_dc1))
+            topology.graph['buf_target_br'] = buf_target
+            topology.graph['br_chunk_capacity_inited'] = True
         switch_job = {}
         for buffer_index, buffer in memory.items():
             # link = topology.edges[src, dst]
@@ -451,6 +661,11 @@ def add_node_job(topology, src, time, memory_state, sent_matrix, DC0, DC1, WAN_b
                             continue
                         if buffer['buffer'] in WAN_buffer:
                             continue
+                        target_map = topology.graph.get('buf_target_br')
+                        if target_map is not None:
+                            target_br = target_map.get(buffer['buffer'])
+                            if target_br is not None and dst != target_br:
+                                continue
                         # else:
                         #     print('buffer[buffer]', src, buffer['buffer'], WAN_buffer)
 
@@ -478,7 +693,7 @@ def add_node_job(topology, src, time, memory_state, sent_matrix, DC0, DC1, WAN_b
                     # topology.nodes[src]['added_job'][(src, dst)].append(B['buffer'])
             # print('&&&&&', switch_job[(src, dst)])
 
-        switch_job = deduplicate_balanced(switch_job)
+        switch_job = deduplicate_balanced_weighted_by_wan(switch_job, topology)
         switch_switch = []
         for (src, dst), value in switch_job.items():
                 topology.nodes[src]['job'][(src, dst)] = []
@@ -502,6 +717,9 @@ def add_node_job(topology, src, time, memory_state, sent_matrix, DC0, DC1, WAN_b
             buffer_index = buffer['buffer']
             if buffer['buffer'] is not None:
                 for dst in successors:
+                    if topology.nodes[dst]['type'] == 'GPU':
+                        if buffer['buffer'] in topology.nodes[src].get('served_gpu_once', set()):
+                            continue
                     if src in DC_0_switch and dst in DC_1_switch:
                         if buffer['buffer'] in DC1:
                             continue
@@ -556,7 +774,7 @@ def add_node_job(topology, src, time, memory_state, sent_matrix, DC0, DC1, WAN_b
 
 
         switch_job=deduplicate_balanced(switch_job)
-        # Switch2gpu_job=deduplicate_balanced(Switch2gpu_job)
+        Switch2gpu_job=deduplicate_balanced(Switch2gpu_job)
         for (src, dst), value in switch_job.items():
             if len(topology.nodes[src]['job'][(src, dst)]) > 0:
                 for B in topology.nodes[src]['job'][(src, dst)]:
@@ -625,6 +843,52 @@ def add_node_job(topology, src, time, memory_state, sent_matrix, DC0, DC1, WAN_b
 
 
 
+
+def extract_gpu_gpu_policies(topology, policy):
+    from collections import defaultdict
+    import networkx as nx
+    edges_by_buffer = defaultdict(list)
+    for item in policy:
+        if len(item) < 3:
+            continue
+        b = item[0]
+        s = item[1]
+        d = item[2]
+        edges_by_buffer[b].append((s, d))
+    result = {}
+    for b, edges in edges_by_buffer.items():
+        G = nx.DiGraph()
+        G.add_edges_from(edges)
+        gpus = [n for n in G.nodes if topology.nodes[n].get('type') == 'GPU']
+        buffer_dict = {}
+        seen = set()
+        for src in gpus:
+            if src not in G:
+                continue
+            for dst in gpus:
+                if src == dst:
+                    continue
+                if (src, dst) in seen:
+                    continue
+                try:
+                    paths = nx.all_simple_paths(G, source=src, target=dst)
+                except nx.NetworkXNoPath:
+                    continue
+                chosen = None
+                for path in paths:
+                    ok = True
+                    for node in path[1:-1]:
+                        if topology.nodes[node].get('type') == 'GPU':
+                            ok = False
+                            break
+                    if ok:
+                        chosen = path
+                        break
+                if chosen is not None:
+                    buffer_dict[(src, dst)] = chosen
+                    seen.add((src, dst))
+        result[b] = buffer_dict
+    return result
 
 from copy import deepcopy
 
