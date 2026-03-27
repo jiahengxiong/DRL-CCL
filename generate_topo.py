@@ -252,4 +252,4 @@ def gen_topo(conectivity, num_samples=1):
 if __name__ == '__main__':
     connectivity_list= [0.3, 0.5, 0.7, 0.9]
     for connectivity in connectivity_list:
-        gen_topo(connectivity, num_samples=1000)
+        gen_topo(connectivity, num_samples=1)

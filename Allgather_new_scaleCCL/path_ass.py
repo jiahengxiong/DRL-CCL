@@ -33,10 +33,7 @@ def solve_time_indexed_milp(flows, shared_paths, flow_path_map, time_horizon, ti
     
     # Parameters
     num_flows = len(flows)
-    Delta = time_slot_duration
-    arrivals_rounded = [round(float(flow['arrival_time']), 9) for flow in flows]
     horizon_rounded = round(float(time_horizon), 9)
-    event_times = sorted(set([0.0] + arrivals_rounded + [horizon_rounded]))
 
     # Use provided paths mapping
     paths_per_flow = flow_path_map
@@ -63,42 +60,26 @@ def solve_time_indexed_milp(flows, shared_paths, flow_path_map, time_horizon, ti
         C[p['id']] = p['capacity']
         d[p['id']] = p['delay']
 
-    # --- Dynamic Subslot Logic ---
-    # Calculate target slot size based on user heuristic
-    min_size = min(s.values()) if s else 0.0
-    max_cap = max(C.values()) if C else 1.0
-    target_slot = (min_size / max_cap) / 10.0 if max_cap > 0 else 1e-5
-    
-    # Re-calculate time slots with dynamic sizing
-    # Discard the initial simple calculation above and rebuild properly
+    min_size = float(min(s.values())) if s else 0.0
+    max_cap = float(max(C.values())) if C else 0.0
+    if min_size > 0 and max_cap > 0:
+        Delta = min_size / max_cap
+    else:
+        Delta = float(time_slot_duration) if float(time_slot_duration) > 0 else 1e-5
+
     start_times = []
     end_times = []
     durations = []
-    
-    for k in range(len(event_times) - 1):
-        seg_start = event_times[k]
-        seg_end = event_times[k + 1]
-        seg_len = seg_end - seg_start
-        
-        if seg_len <= 1e-9:
-            continue
-            
-        # Determine number of subslots dynamically
-        n_sub = subslots_per_segment
-        if subslots_per_segment > 0:
-            calculated_subslots = int(seg_len / target_slot)
-            n_sub = max(subslots_per_segment, calculated_subslots)
-            # Cap at reasonable upper bound to prevent explosion on long idle periods
-            n_sub = min(n_sub, 100) 
-            
-        step = seg_len / float(n_sub)
-        for sub in range(n_sub):
-            start_times.append(seg_start + sub * step)
-            end_times.append(seg_start + (sub + 1) * step)
-            durations.append(step)
-            
+    t = 0.0
+    while t < horizon_rounded - 1e-12:
+        t2 = min(horizon_rounded, t + Delta)
+        start_times.append(t)
+        end_times.append(t2)
+        durations.append(t2 - t)
+        t = t2
+
     K = len(durations)
-    print(f"Refined MILP with dynamic subslots: {K} total slots (target_slot ~ {target_slot:.2e}s)")
+    print(f"MILP timeslot: Delta={Delta:.6g}s, K={K}")
         
     # Big M constants
     # Use time_horizon for upper bound on total service time
