@@ -102,7 +102,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 290 rows and 174 columns
-Presolve time: 0.03s
+Presolve time: 0.04s
 Presolved: 788 rows, 465 columns, 2712 nonzeros
 Variable types: 309 continuous, 156 integer (156 binary)
 
@@ -146,7 +146,7 @@ Cutting planes:
   Relax-and-lift: 14
   BQP: 3
 
-Explored 1 nodes (1820 simplex iterations) in 0.41 seconds (0.29 work units)
+Explored 1 nodes (1820 simplex iterations) in 0.44 seconds (0.29 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.0119813 0.0143676 
@@ -212,7 +212,7 @@ H    0     0                       0.0052201    0.00522  0.00%     -    0s
 Cutting planes:
   Flow cover: 2
 
-Explored 1 nodes (83 simplex iterations) in 0.03 seconds (0.01 work units)
+Explored 1 nodes (83 simplex iterations) in 0.02 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.00522012 0.0069435 0.00866687 
@@ -322,7 +322,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 123 rows and 63 columns
-Presolve time: 0.01s
+Presolve time: 0.00s
 Presolved: 216 rows, 139 columns, 615 nonzeros
 Variable types: 97 continuous, 42 integer (42 binary)
 Found heuristic solution: objective 0.0067161
@@ -341,7 +341,7 @@ H    0     0                       0.0050495    0.00505  0.00%     -    0s
 Cutting planes:
   MIR: 1
 
-Explored 1 nodes (118 simplex iterations) in 0.03 seconds (0.01 work units)
+Explored 1 nodes (118 simplex iterations) in 0.02 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00504954 0.00671606 
@@ -385,11 +385,11 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 294 rows and 162 columns
-Presolve time: 0.07s
+Presolve time: 0.04s
 Presolved: 1320 rows, 787 columns, 4535 nonzeros
 Variable types: 355 continuous, 432 integer (432 binary)
 
-Root relaxation: objective 9.884936e-04, 437 iterations, 0.01 seconds (0.00 work units)
+Root relaxation: objective 9.884936e-04, 437 iterations, 0.00 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
@@ -429,7 +429,7 @@ Cutting planes:
   Relax-and-lift: 4
   BQP: 1
 
-Explored 618 nodes (29097 simplex iterations) in 0.72 seconds (0.69 work units)
+Explored 618 nodes (29097 simplex iterations) in 0.63 seconds (0.69 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 5: 0.00136389 0.00173929 0.00249008 ... 0.00278226
@@ -476,7 +476,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 218 rows and 117 columns
-Presolve time: 0.01s
+Presolve time: 0.00s
 Presolved: 121 rows, 85 columns, 351 nonzeros
 Variable types: 55 continuous, 30 integer (30 binary)
 
@@ -491,7 +491,7 @@ H    0     0                       0.0050820    0.00396  22.0%     -    0s
 Cutting planes:
   MIR: 1
 
-Explored 1 nodes (38 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 1 nodes (38 simplex iterations) in 0.01 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 1: 0.00508205 
@@ -535,13 +535,13 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 427 rows and 258 columns
-Presolve time: 0.02s
+Presolve time: 0.01s
 Presolved: 161 rows, 91 columns, 442 nonzeros
 Variable types: 30 continuous, 61 integer (61 binary)
 Found heuristic solution: objective 0.0013900
 Found heuristic solution: objective 0.0008157
 
-Explored 0 nodes (0 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 0 nodes (0 simplex iterations) in 0.01 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.0008157 0.00138998 
@@ -587,7 +587,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 156 rows and 75 columns
-Presolve time: 0.01s
+Presolve time: 0.00s
 Presolved: 183 rows, 127 columns, 501 nonzeros
 Variable types: 97 continuous, 30 integer (30 binary)
 Found heuristic solution: objective 0.0092754
@@ -600,7 +600,7 @@ Root relaxation: objective 4.029291e-03, 45 iterations, 0.00 seconds (0.00 work 
      0     0    0.00403    0    9    0.00928    0.00403  56.6%     -    0s
 H    0     0                       0.0051662    0.00403  22.0%     -    0s
 
-Explored 1 nodes (45 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 1 nodes (45 simplex iterations) in 0.01 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00516623 0.0092754 
@@ -644,11 +644,11 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 290 rows and 174 columns
-Presolve time: 0.04s
+Presolve time: 0.03s
 Presolved: 788 rows, 465 columns, 2712 nonzeros
 Variable types: 309 continuous, 156 integer (156 binary)
 
-Root relaxation: objective 5.188656e-03, 238 iterations, 0.00 seconds (0.00 work units)
+Root relaxation: objective 5.188656e-03, 238 iterations, 0.01 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
@@ -690,7 +690,7 @@ Cutting planes:
   Relax-and-lift: 16
   BQP: 6
 
-Explored 251 nodes (11788 simplex iterations) in 0.69 seconds (0.48 work units)
+Explored 251 nodes (11788 simplex iterations) in 0.63 seconds (0.48 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.0110887 0.0132965 
@@ -825,7 +825,7 @@ Cutting planes:
   RLT: 1
   Relax-and-lift: 6
 
-Explored 1 nodes (156 simplex iterations) in 0.04 seconds (0.02 work units)
+Explored 1 nodes (156 simplex iterations) in 0.03 seconds (0.02 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.00461752 0.00614002 0.0072085 
@@ -871,7 +871,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 123 rows and 63 columns
-Presolve time: 0.01s
+Presolve time: 0.00s
 Presolved: 216 rows, 139 columns, 615 nonzeros
 Variable types: 97 continuous, 42 integer (42 binary)
 Found heuristic solution: objective 0.0067674
@@ -1024,7 +1024,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 156 rows and 75 columns
-Presolve time: 0.00s
+Presolve time: 0.01s
 Presolved: 183 rows, 127 columns, 501 nonzeros
 Variable types: 97 continuous, 30 integer (30 binary)
 Found heuristic solution: objective 0.0088572
@@ -1086,7 +1086,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 435 rows and 260 columns
-Presolve time: 0.01s
+Presolve time: 0.02s
 Presolved: 225 rows, 131 columns, 632 nonzeros
 Variable types: 35 continuous, 96 integer (96 binary)
 Found heuristic solution: objective 0.0015762
@@ -1098,7 +1098,7 @@ Root relaxation: objective 8.130853e-04, 71 iterations, 0.00 seconds (0.00 work 
 
 *    0     0               0       0.0008131    0.00081  0.00%     -    0s
 
-Explored 1 nodes (71 simplex iterations) in 0.01 seconds (0.01 work units)
+Explored 1 nodes (71 simplex iterations) in 0.02 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.000813085 0.00157617 
@@ -1162,7 +1162,7 @@ Cutting planes:
   Cover: 1
   MIR: 2
 
-Explored 1 nodes (54 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 1 nodes (54 simplex iterations) in 0.03 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00533675 0.00950788 
@@ -1206,7 +1206,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 334 rows and 192 columns
-Presolve time: 0.05s
+Presolve time: 0.04s
 Presolved: 850 rows, 509 columns, 3026 nonzeros
 Variable types: 341 continuous, 168 integer (168 binary)
 
@@ -1338,7 +1338,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 110 rows and 68 columns
-Presolve time: 0.01s
+Presolve time: 0.00s
 Presolved: 262 rows, 155 columns, 740 nonzeros
 Variable types: 103 continuous, 52 integer (52 binary)
 
@@ -1504,7 +1504,7 @@ Cutting planes:
   RLT: 27
   Relax-and-lift: 5
 
-Explored 1002 nodes (32520 simplex iterations) in 0.64 seconds (0.62 work units)
+Explored 1002 nodes (32520 simplex iterations) in 0.61 seconds (0.62 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 6: 0.0013755 0.00232228 0.00251164 ... 0.0113179
@@ -1609,7 +1609,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 435 rows and 260 columns
-Presolve time: 0.01s
+Presolve time: 0.02s
 Presolved: 225 rows, 131 columns, 632 nonzeros
 Variable types: 35 continuous, 96 integer (96 binary)
 Found heuristic solution: objective 0.0015712
@@ -1730,7 +1730,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 334 rows and 192 columns
-Presolve time: 0.05s
+Presolve time: 0.04s
 Presolved: 850 rows, 509 columns, 3026 nonzeros
 Variable types: 341 continuous, 168 integer (168 binary)
 
@@ -1760,7 +1760,7 @@ Cutting planes:
   RLT: 7
   Relax-and-lift: 13
 
-Explored 1 nodes (716 simplex iterations) in 0.18 seconds (0.12 work units)
+Explored 1 nodes (716 simplex iterations) in 0.19 seconds (0.12 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.00872155 0.0104559 0.0180016 
@@ -1807,7 +1807,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 77 rows and 45 columns
-Presolve time: 0.01s
+Presolve time: 0.00s
 Presolved: 152 rows, 93 columns, 408 nonzeros
 Variable types: 63 continuous, 30 integer (30 binary)
 Found heuristic solution: objective 0.0034539
@@ -1991,11 +1991,11 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 294 rows and 162 columns
-Presolve time: 0.07s
+Presolve time: 0.04s
 Presolved: 1320 rows, 787 columns, 4535 nonzeros
 Variable types: 355 continuous, 432 integer (432 binary)
 
-Root relaxation: objective 9.905230e-04, 446 iterations, 0.01 seconds (0.00 work units)
+Root relaxation: objective 9.905230e-04, 446 iterations, 0.00 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
@@ -2033,7 +2033,7 @@ Cutting planes:
   RLT: 20
   Relax-and-lift: 5
 
-Explored 1376 nodes (41115 simplex iterations) in 0.78 seconds (0.69 work units)
+Explored 1376 nodes (41115 simplex iterations) in 0.73 seconds (0.69 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 6: 0.00136673 0.00174294 0.00211915 ... 0.011246
@@ -2094,7 +2094,7 @@ Root relaxation: objective 8.032774e-04, 48 iterations, 0.00 seconds (0.00 work 
 H    0     0                       0.0008033    0.00080  0.00%     -    0s
      0     0    0.00080    0    2    0.00080    0.00080  0.00%     -    0s
 
-Explored 1 nodes (48 simplex iterations) in 0.01 seconds (0.01 work units)
+Explored 1 nodes (48 simplex iterations) in 0.02 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.000803277 0.00136824 
@@ -2215,7 +2215,7 @@ Cutting planes:
   Flow cover: 3
   Relax-and-lift: 2
 
-Explored 1 nodes (75 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 1 nodes (75 simplex iterations) in 0.03 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.000984418 0.0011713 0.00154507 
@@ -2336,7 +2336,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 77 rows and 45 columns
-Presolve time: 0.00s
+Presolve time: 0.01s
 Presolved: 152 rows, 93 columns, 408 nonzeros
 Variable types: 63 continuous, 30 integer (30 binary)
 Found heuristic solution: objective 0.0033780
@@ -2392,7 +2392,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 190 rows and 96 columns
-Presolve time: 0.01s
+Presolve time: 0.02s
 Presolved: 326 rows, 211 columns, 964 nonzeros
 Variable types: 147 continuous, 64 integer (64 binary)
 
@@ -2416,7 +2416,7 @@ Cutting planes:
   MIR: 1
   Relax-and-lift: 2
 
-Explored 1 nodes (167 simplex iterations) in 0.05 seconds (0.02 work units)
+Explored 1 nodes (167 simplex iterations) in 0.06 seconds (0.02 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.0073215 0.0120411 
@@ -2571,7 +2571,7 @@ Cutting planes:
   Relax-and-lift: 12
   BQP: 2
 
-Explored 205 nodes (5211 simplex iterations) in 0.38 seconds (0.21 work units)
+Explored 205 nodes (5211 simplex iterations) in 0.36 seconds (0.21 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00669809 0.0108004 
@@ -2700,7 +2700,7 @@ Cutting planes:
   Flow cover: 2
   Relax-and-lift: 3
 
-Explored 1 nodes (114 simplex iterations) in 0.04 seconds (0.02 work units)
+Explored 1 nodes (114 simplex iterations) in 0.05 seconds (0.02 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00687053 0.00857566 
@@ -2766,7 +2766,7 @@ Cutting planes:
   Flow cover: 3
   Relax-and-lift: 2
 
-Explored 1 nodes (76 simplex iterations) in 0.03 seconds (0.01 work units)
+Explored 1 nodes (76 simplex iterations) in 0.02 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.000978319 0.00116398 0.00153531 
@@ -2862,7 +2862,7 @@ Cutting planes:
   Flow cover: 11
   Relax-and-lift: 6
 
-Explored 154 nodes (6059 simplex iterations) in 0.73 seconds (0.44 work units)
+Explored 154 nodes (6059 simplex iterations) in 0.70 seconds (0.44 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00999943 0.0119893 
@@ -2990,7 +2990,7 @@ Cutting planes:
   MIR: 1
   Relax-and-lift: 1
 
-Explored 1 nodes (144 simplex iterations) in 0.04 seconds (0.02 work units)
+Explored 1 nodes (144 simplex iterations) in 0.05 seconds (0.02 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00658053 0.0111694 
@@ -3143,7 +3143,7 @@ Cutting planes:
   RLT: 19
   Relax-and-lift: 2
 
-Explored 1342 nodes (34398 simplex iterations) in 0.69 seconds (0.66 work units)
+Explored 1342 nodes (34398 simplex iterations) in 0.66 seconds (0.66 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 7: 0.00134325 0.00171275 0.00226699 ... 0.011066
@@ -3190,7 +3190,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 293 rows and 173 columns
-Presolve time: 0.01s
+Presolve time: 0.00s
 Presolved: 157 rows, 93 columns, 437 nonzeros
 Variable types: 31 continuous, 62 integer (62 binary)
 Found heuristic solution: objective 0.0013791
@@ -3407,7 +3407,7 @@ Cutting planes:
   Relax-and-lift: 10
   BQP: 1
 
-Explored 710 nodes (29267 simplex iterations) in 0.57 seconds (0.49 work units)
+Explored 710 nodes (29267 simplex iterations) in 0.55 seconds (0.49 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 5: 0.00995208 0.0139129 0.0158933 ... 0.0190973
@@ -3632,7 +3632,7 @@ Presolve time: 0.04s
 Presolved: 1290 rows, 781 columns, 4358 nonzeros
 Variable types: 355 continuous, 426 integer (426 binary)
 
-Root relaxation: objective 9.758192e-04, 421 iterations, 0.00 seconds (0.00 work units)
+Root relaxation: objective 9.758192e-04, 421 iterations, 0.01 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
@@ -3680,7 +3680,7 @@ Cutting planes:
   Zero half: 6
   RLT: 13
 
-Explored 931 nodes (28849 simplex iterations) in 0.69 seconds (0.59 work units)
+Explored 931 nodes (28849 simplex iterations) in 0.74 seconds (0.59 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 5: 0.00134615 0.00190164 0.00227197 ... 0.01109
@@ -3922,7 +3922,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 290 rows and 174 columns
-Presolve time: 0.03s
+Presolve time: 0.04s
 Presolved: 788 rows, 465 columns, 2715 nonzeros
 Variable types: 309 continuous, 156 integer (156 binary)
 
@@ -3969,7 +3969,7 @@ Cutting planes:
   RLT: 1
   Relax-and-lift: 12
 
-Explored 111 nodes (4995 simplex iterations) in 0.50 seconds (0.33 work units)
+Explored 111 nodes (4995 simplex iterations) in 0.47 seconds (0.33 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 4: 0.00981321 0.0117658 0.0189426 0.0892377 
@@ -4030,7 +4030,7 @@ Root relaxation: objective 7.966906e-04, 54 iterations, 0.00 seconds (0.00 work 
 H    0     0                       0.0007967    0.00080  0.00%     -    0s
      0     0    0.00080    0    4    0.00080    0.00080  0.00%     -    0s
 
-Explored 1 nodes (54 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 1 nodes (54 simplex iterations) in 0.01 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.000796691 0.00135671 
@@ -4074,7 +4074,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 435 rows and 260 columns
-Presolve time: 0.02s
+Presolve time: 0.01s
 Presolved: 225 rows, 131 columns, 632 nonzeros
 Variable types: 35 continuous, 96 integer (96 binary)
 Found heuristic solution: objective 0.0015716
@@ -4086,7 +4086,7 @@ Root relaxation: objective 8.107913e-04, 76 iterations, 0.00 seconds (0.00 work 
 
 *    0     0               0       0.0008108    0.00081  0.00%     -    0s
 
-Explored 1 nodes (76 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 1 nodes (76 simplex iterations) in 0.01 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.000810791 0.00157158 
@@ -4194,7 +4194,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 324 rows and 168 columns
-Presolve time: 0.04s
+Presolve time: 0.07s
 Presolved: 1290 rows, 781 columns, 4358 nonzeros
 Variable types: 355 continuous, 426 integer (426 binary)
 
@@ -4221,7 +4221,7 @@ H    0     0                       0.0026511    0.00098  62.9%     -    0s
 H  119    74                       0.0024653    0.00116  52.8%  55.7    0s
 H  174   109                       0.0022795    0.00116  48.9%  49.1    0s
 *  366   159              19       0.0019079    0.00116  39.0%  35.2    0s
-H 3328   346                       0.0013505    0.00135  0.00%  19.2    0s
+H 3328   346                       0.0013505    0.00135  0.00%  19.2    1s
 
 Cutting planes:
   Learned: 4
@@ -4237,7 +4237,7 @@ Cutting planes:
   RLT: 22
   Relax-and-lift: 5
 
-Explored 3425 nodes (67588 simplex iterations) in 0.93 seconds (0.96 work units)
+Explored 3425 nodes (67588 simplex iterations) in 1.04 seconds (0.96 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 5: 0.00135053 0.00190789 0.00227947 ... 0.00265105
@@ -4430,7 +4430,7 @@ Cutting planes:
   MIR: 1
   Relax-and-lift: 4
 
-Explored 1 nodes (79 simplex iterations) in 0.03 seconds (0.01 work units)
+Explored 1 nodes (79 simplex iterations) in 0.02 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.00532711 0.00884519 0.00934315 
@@ -4474,7 +4474,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 290 rows and 174 columns
-Presolve time: 0.03s
+Presolve time: 0.04s
 Presolved: 788 rows, 465 columns, 2715 nonzeros
 Variable types: 309 continuous, 156 integer (156 binary)
 
@@ -4511,7 +4511,7 @@ Cutting planes:
   RLT: 6
   Relax-and-lift: 11
 
-Explored 783 nodes (33529 simplex iterations) in 0.56 seconds (0.54 work units)
+Explored 783 nodes (33529 simplex iterations) in 0.61 seconds (0.54 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 5: 0.00957469 0.0114796 0.0152895 ... 0.0872709
@@ -4616,7 +4616,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 435 rows and 260 columns
-Presolve time: 0.01s
+Presolve time: 0.02s
 Presolved: 225 rows, 131 columns, 632 nonzeros
 Variable types: 35 continuous, 96 integer (96 binary)
 Found heuristic solution: objective 0.0015825
@@ -4674,13 +4674,13 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 276 rows and 161 columns
-Presolve time: 0.00s
+Presolve time: 0.01s
 Presolved: 63 rows, 41 columns, 168 nonzeros
 Variable types: 26 continuous, 15 integer (15 binary)
 Found heuristic solution: objective 0.0087075
 Found heuristic solution: objective 0.0052445
 
-Explored 0 nodes (0 simplex iterations) in 0.00 seconds (0.00 work units)
+Explored 0 nodes (0 simplex iterations) in 0.01 seconds (0.00 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.0052445 0.00870749 
@@ -4724,7 +4724,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 294 rows and 162 columns
-Presolve time: 0.04s
+Presolve time: 0.06s
 Presolved: 1320 rows, 787 columns, 4542 nonzeros
 Variable types: 355 continuous, 432 integer (432 binary)
 
@@ -4766,7 +4766,7 @@ Cutting planes:
   RLT: 25
   Relax-and-lift: 10
 
-Explored 1064 nodes (30850 simplex iterations) in 0.65 seconds (0.64 work units)
+Explored 1064 nodes (30850 simplex iterations) in 0.66 seconds (0.64 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 6: 0.00136515 0.00174091 0.00211666 ... 0.0112364
@@ -4869,7 +4869,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 110 rows and 68 columns
-Presolve time: 0.00s
+Presolve time: 0.01s
 Presolved: 262 rows, 155 columns, 740 nonzeros
 Variable types: 103 continuous, 52 integer (52 binary)
 
@@ -4999,7 +4999,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 260 rows and 168 columns
-Presolve time: 0.04s
+Presolve time: 0.02s
 Presolved: 818 rows, 471 columns, 2832 nonzeros
 Variable types: 309 continuous, 162 integer (162 binary)
 
@@ -5045,7 +5045,7 @@ Cutting planes:
   Relax-and-lift: 9
   BQP: 11
 
-Explored 4 nodes (2433 simplex iterations) in 0.48 seconds (0.30 work units)
+Explored 4 nodes (2433 simplex iterations) in 0.46 seconds (0.30 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.0094355 0.0851378 
@@ -5156,7 +5156,7 @@ Variable types: 30 continuous, 61 integer (61 binary)
 Found heuristic solution: objective 0.0013757
 Found heuristic solution: objective 0.0008075
 
-Explored 0 nodes (0 simplex iterations) in 0.01 seconds (0.01 work units)
+Explored 0 nodes (0 simplex iterations) in 0.02 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.000807545 0.0013757 
@@ -5288,7 +5288,7 @@ Cutting planes:
   RLT: 8
   Relax-and-lift: 2
 
-Explored 1 nodes (1763 simplex iterations) in 0.13 seconds (0.09 work units)
+Explored 1 nodes (1763 simplex iterations) in 0.12 seconds (0.09 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.000998232 0.000998232 0.00192464 
@@ -5335,7 +5335,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 77 rows and 45 columns
-Presolve time: 0.01s
+Presolve time: 0.00s
 Presolved: 152 rows, 93 columns, 408 nonzeros
 Variable types: 63 continuous, 30 integer (30 binary)
 Found heuristic solution: objective 0.0033977
@@ -5525,7 +5525,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 468 rows and 228 columns
-Presolve time: 0.03s
+Presolve time: 0.05s
 Presolved: 822 rows, 535 columns, 2854 nonzeros
 Variable types: 373 continuous, 162 integer (162 binary)
 
@@ -5549,7 +5549,7 @@ Cutting planes:
   Flow cover: 8
   Relax-and-lift: 17
 
-Explored 1 nodes (468 simplex iterations) in 0.12 seconds (0.08 work units)
+Explored 1 nodes (468 simplex iterations) in 0.14 seconds (0.08 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00739142 0.0138622 
@@ -5665,7 +5665,7 @@ Variable types: 30 continuous, 61 integer (61 binary)
 Found heuristic solution: objective 0.0013822
 Found heuristic solution: objective 0.0008112
 
-Explored 0 nodes (0 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 0 nodes (0 simplex iterations) in 0.01 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.000811234 0.00138216 
@@ -5730,7 +5730,7 @@ H    0     0                       0.0053134    0.00531  0.00%     -    0s
 Cutting planes:
   MIR: 1
 
-Explored 1 nodes (114 simplex iterations) in 0.03 seconds (0.01 work units)
+Explored 1 nodes (114 simplex iterations) in 0.02 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00531344 0.00706792 
@@ -5813,7 +5813,7 @@ Cutting planes:
   RLT: 20
   Relax-and-lift: 3
 
-Explored 2049 nodes (58503 simplex iterations) in 0.91 seconds (0.95 work units)
+Explored 2049 nodes (58503 simplex iterations) in 0.93 seconds (0.95 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 5: 0.00144373 0.00164283 0.00184194 ... 0.0118586
@@ -5927,7 +5927,7 @@ Variable types: 30 continuous, 61 integer (61 binary)
 Found heuristic solution: objective 0.0013478
 Found heuristic solution: objective 0.0007916
 
-Explored 0 nodes (0 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 0 nodes (0 simplex iterations) in 0.01 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.000791574 0.00134775 
@@ -6039,7 +6039,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 408 rows and 216 columns
-Presolve time: 0.03s
+Presolve time: 0.06s
 Presolved: 882 rows, 547 columns, 3192 nonzeros
 Variable types: 373 continuous, 174 integer (174 binary)
 
@@ -6067,7 +6067,7 @@ Cutting planes:
   Relax-and-lift: 10
   BQP: 1
 
-Explored 1 nodes (446 simplex iterations) in 0.13 seconds (0.09 work units)
+Explored 1 nodes (446 simplex iterations) in 0.15 seconds (0.09 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00737061 0.0134921 
@@ -6273,7 +6273,7 @@ H    0     0                       0.0051857    0.00519  0.00%     -    0s
 Cutting planes:
   MIR: 1
 
-Explored 1 nodes (112 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 1 nodes (112 simplex iterations) in 0.03 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00518573 0.00689764 
@@ -6317,7 +6317,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 274 rows and 152 columns
-Presolve time: 0.04s
+Presolve time: 0.05s
 Presolved: 1339 rows, 797 columns, 4620 nonzeros
 Variable types: 359 continuous, 438 integer (438 binary)
 
@@ -6356,7 +6356,7 @@ Cutting planes:
   RLT: 21
   Relax-and-lift: 4
 
-Explored 1490 nodes (48723 simplex iterations) in 0.75 seconds (0.82 work units)
+Explored 1490 nodes (48723 simplex iterations) in 0.79 seconds (0.82 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 6: 0.00144092 0.00183833 0.00243444 ... 0.0118347
@@ -6403,7 +6403,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 156 rows and 75 columns
-Presolve time: 0.00s
+Presolve time: 0.01s
 Presolved: 183 rows, 127 columns, 501 nonzeros
 Variable types: 97 continuous, 30 integer (30 binary)
 Found heuristic solution: objective 0.0086127
@@ -6420,7 +6420,7 @@ H    0     0                       0.0049838    0.00498  0.00%     -    0s
 Cutting planes:
   MIR: 2
 
-Explored 1 nodes (52 simplex iterations) in 0.01 seconds (0.01 work units)
+Explored 1 nodes (52 simplex iterations) in 0.02 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00498376 0.00861266 
@@ -6464,7 +6464,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 435 rows and 260 columns
-Presolve time: 0.02s
+Presolve time: 0.01s
 Presolved: 225 rows, 131 columns, 632 nonzeros
 Variable types: 35 continuous, 96 integer (96 binary)
 Found heuristic solution: objective 0.0015330
@@ -6522,7 +6522,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 138 rows and 66 columns
-Presolve time: 0.01s
+Presolve time: 0.00s
 Presolved: 201 rows, 136 columns, 561 nonzeros
 Variable types: 97 continuous, 39 integer (39 binary)
 
@@ -6544,7 +6544,7 @@ Cutting planes:
   MIR: 1
   Relax-and-lift: 4
 
-Explored 1 nodes (71 simplex iterations) in 0.03 seconds (0.01 work units)
+Explored 1 nodes (71 simplex iterations) in 0.02 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.0048757 0.00809283 0.0085317 
@@ -6588,7 +6588,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 394 rows and 204 columns
-Presolve time: 0.04s
+Presolve time: 0.03s
 Presolved: 790 rows, 497 columns, 2736 nonzeros
 Variable types: 341 continuous, 156 integer (156 binary)
 
@@ -6613,7 +6613,7 @@ Cutting planes:
   RLT: 8
   Relax-and-lift: 12
 
-Explored 1 nodes (445 simplex iterations) in 0.12 seconds (0.07 work units)
+Explored 1 nodes (445 simplex iterations) in 0.10 seconds (0.07 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 1: 0.0074325 
@@ -6845,11 +6845,11 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 274 rows and 152 columns
-Presolve time: 0.06s
+Presolve time: 0.05s
 Presolved: 1339 rows, 797 columns, 4620 nonzeros
 Variable types: 359 continuous, 438 integer (438 binary)
 
-Root relaxation: objective 1.037460e-03, 417 iterations, 0.00 seconds (0.01 work units)
+Root relaxation: objective 1.037460e-03, 417 iterations, 0.01 seconds (0.01 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
@@ -6935,7 +6935,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 293 rows and 173 columns
-Presolve time: 0.01s
+Presolve time: 0.00s
 Presolved: 157 rows, 93 columns, 437 nonzeros
 Variable types: 31 continuous, 62 integer (62 binary)
 Found heuristic solution: objective 0.0013608
@@ -6993,7 +6993,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 435 rows and 260 columns
-Presolve time: 0.02s
+Presolve time: 0.01s
 Presolved: 225 rows, 131 columns, 632 nonzeros
 Variable types: 35 continuous, 96 integer (96 binary)
 Found heuristic solution: objective 0.0015344
@@ -7114,7 +7114,7 @@ Presolve time: 0.05s
 Presolved: 882 rows, 547 columns, 3192 nonzeros
 Variable types: 373 continuous, 174 integer (174 binary)
 
-Root relaxation: objective 2.897906e-03, 249 iterations, 0.01 seconds (0.00 work units)
+Root relaxation: objective 2.897906e-03, 249 iterations, 0.00 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
@@ -7365,11 +7365,11 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 294 rows and 162 columns
-Presolve time: 0.05s
+Presolve time: 0.06s
 Presolved: 1320 rows, 787 columns, 4535 nonzeros
 Variable types: 355 continuous, 432 integer (432 binary)
 
-Root relaxation: objective 1.027103e-03, 451 iterations, 0.01 seconds (0.00 work units)
+Root relaxation: objective 1.027103e-03, 451 iterations, 0.00 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
@@ -7408,7 +7408,7 @@ Cutting planes:
   RLT: 21
   Relax-and-lift: 5
 
-Explored 1136 nodes (31348 simplex iterations) in 0.65 seconds (0.67 work units)
+Explored 1136 nodes (31348 simplex iterations) in 0.70 seconds (0.67 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 5: 0.00141794 0.00219963 0.00259047 ... 0.0116514
@@ -7571,7 +7571,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 210 rows and 112 columns
-Presolve time: 0.01s
+Presolve time: 0.02s
 Presolved: 298 rows, 186 columns, 831 nonzeros
 Variable types: 94 continuous, 92 integer (92 binary)
 Found heuristic solution: objective 0.0016737
@@ -7628,7 +7628,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 394 rows and 204 columns
-Presolve time: 0.04s
+Presolve time: 0.05s
 Presolved: 790 rows, 497 columns, 2736 nonzeros
 Variable types: 341 continuous, 156 integer (156 binary)
 
@@ -7650,7 +7650,7 @@ Cutting planes:
   Clique: 7
   Relax-and-lift: 14
 
-Explored 1 nodes (444 simplex iterations) in 0.11 seconds (0.07 work units)
+Explored 1 nodes (444 simplex iterations) in 0.12 seconds (0.07 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 1: 0.00726424 
@@ -7697,7 +7697,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 77 rows and 45 columns
-Presolve time: 0.00s
+Presolve time: 0.01s
 Presolved: 152 rows, 93 columns, 408 nonzeros
 Variable types: 63 continuous, 30 integer (30 binary)
 Found heuristic solution: objective 0.0034761
@@ -7847,7 +7847,7 @@ Cutting planes:
   Flow cover: 2
   Relax-and-lift: 2
 
-Explored 1 nodes (74 simplex iterations) in 0.03 seconds (0.01 work units)
+Explored 1 nodes (74 simplex iterations) in 0.02 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.00102712 0.00122255 0.00171724 
@@ -7925,7 +7925,7 @@ Cutting planes:
   RLT: 3
   Relax-and-lift: 16
 
-Explored 265 nodes (5095 simplex iterations) in 0.20 seconds (0.14 work units)
+Explored 265 nodes (5095 simplex iterations) in 0.22 seconds (0.14 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.00644745 0.00964617 0.0105207 
@@ -8114,7 +8114,7 @@ Root relaxation: objective 1.000166e-03, 93 iterations, 0.00 seconds (0.00 work 
 H    0     0                       0.0010002    0.00100  0.00%     -    0s
      0     0    0.00100    0    6    0.00100    0.00100  0.00%     -    0s
 
-Explored 1 nodes (93 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 1 nodes (93 simplex iterations) in 0.03 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.00100017 0.0011902 0.00157027 
@@ -8158,7 +8158,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 334 rows and 192 columns
-Presolve time: 0.04s
+Presolve time: 0.03s
 Presolved: 850 rows, 509 columns, 3018 nonzeros
 Variable types: 341 continuous, 168 integer (168 binary)
 
@@ -8189,7 +8189,7 @@ Cutting planes:
   RLT: 12
   Relax-and-lift: 8
 
-Explored 1 nodes (654 simplex iterations) in 0.19 seconds (0.11 work units)
+Explored 1 nodes (654 simplex iterations) in 0.18 seconds (0.11 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.00777634 0.0093216 0.0853833 
@@ -8250,7 +8250,7 @@ Root relaxation: objective 8.121406e-04, 51 iterations, 0.00 seconds (0.00 work 
 H    0     0                       0.0008121    0.00081  0.00%     -    0s
      0     0    0.00081    0    4    0.00081    0.00081  0.00%     -    0s
 
-Explored 1 nodes (51 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 1 nodes (51 simplex iterations) in 0.01 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.000812141 0.00138375 
@@ -8322,7 +8322,7 @@ Cutting planes:
   RLT: 3
   Relax-and-lift: 2
 
-Explored 1 nodes (180 simplex iterations) in 0.05 seconds (0.03 work units)
+Explored 1 nodes (180 simplex iterations) in 0.06 seconds (0.03 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.00659962 0.00987443 0.0108661 
@@ -8463,7 +8463,7 @@ Cutting planes:
   RLT: 26
   Relax-and-lift: 6
 
-Explored 1135 nodes (39381 simplex iterations) in 0.74 seconds (0.74 work units)
+Explored 1135 nodes (39381 simplex iterations) in 0.81 seconds (0.74 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 8: 0.00138366 0.00157418 0.00176471 ... 0.0113813
@@ -8510,7 +8510,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 274 rows and 162 columns
-Presolve time: 0.00s
+Presolve time: 0.01s
 Presolved: 121 rows, 72 columns, 333 nonzeros
 Variable types: 26 continuous, 46 integer (46 binary)
 Found heuristic solution: objective 0.0008099
@@ -8619,7 +8619,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 210 rows and 112 columns
-Presolve time: 0.01s
+Presolve time: 0.02s
 Presolved: 298 rows, 186 columns, 831 nonzeros
 Variable types: 94 continuous, 92 integer (92 binary)
 Found heuristic solution: objective 0.0016725
@@ -8632,7 +8632,7 @@ Root relaxation: objective 1.004861e-03, 77 iterations, 0.00 seconds (0.00 work 
 
 *    0     0               0       0.0010049    0.00100  0.00%     -    0s
 
-Explored 1 nodes (141 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 1 nodes (141 simplex iterations) in 0.03 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.00100486 0.00138681 0.00167247 
@@ -8676,7 +8676,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 334 rows and 192 columns
-Presolve time: 0.05s
+Presolve time: 0.04s
 Presolved: 850 rows, 509 columns, 3018 nonzeros
 Variable types: 341 continuous, 168 integer (168 binary)
 
@@ -8707,7 +8707,7 @@ Cutting planes:
   RLT: 7
   Relax-and-lift: 13
 
-Explored 1 nodes (1172 simplex iterations) in 0.35 seconds (0.25 work units)
+Explored 1 nodes (1172 simplex iterations) in 0.34 seconds (0.25 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.0076253 0.00914036 0.0837977 
@@ -8870,7 +8870,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 281 rows and 159 columns
-Presolve time: 0.02s
+Presolve time: 0.01s
 Presolved: 227 rows, 139 columns, 635 nonzeros
 Variable types: 61 continuous, 78 integer (78 binary)
 Found heuristic solution: objective 0.0017174
@@ -8891,7 +8891,7 @@ Cutting planes:
   Flow cover: 2
   Relax-and-lift: 2
 
-Explored 1 nodes (74 simplex iterations) in 0.03 seconds (0.01 work units)
+Explored 1 nodes (74 simplex iterations) in 0.02 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.00102896 0.00122475 0.00171741 
@@ -8935,11 +8935,11 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 294 rows and 162 columns
-Presolve time: 0.07s
+Presolve time: 0.06s
 Presolved: 1320 rows, 787 columns, 4542 nonzeros
 Variable types: 355 continuous, 432 integer (432 binary)
 
-Root relaxation: objective 1.007080e-03, 402 iterations, 0.01 seconds (0.00 work units)
+Root relaxation: objective 1.007080e-03, 402 iterations, 0.00 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
@@ -8974,7 +8974,7 @@ Cutting planes:
   RLT: 19
   Relax-and-lift: 3
 
-Explored 2208 nodes (52396 simplex iterations) in 0.84 seconds (0.85 work units)
+Explored 2208 nodes (52396 simplex iterations) in 0.86 seconds (0.85 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 5: 0.00138991 0.00177274 0.00215558 ... 0.0114309
@@ -9146,7 +9146,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 210 rows and 112 columns
-Presolve time: 0.02s
+Presolve time: 0.01s
 Presolved: 298 rows, 186 columns, 831 nonzeros
 Variable types: 94 continuous, 92 integer (92 binary)
 Found heuristic solution: objective 0.0016828
@@ -9159,7 +9159,7 @@ Root relaxation: objective 1.013952e-03, 77 iterations, 0.00 seconds (0.00 work 
 
 *    0     0               0       0.0010140    0.00101  0.00%     -    0s
 
-Explored 1 nodes (143 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 1 nodes (143 simplex iterations) in 0.03 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.00101395 0.00139953 0.00168285 
@@ -9203,11 +9203,11 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 334 rows and 192 columns
-Presolve time: 0.04s
+Presolve time: 0.05s
 Presolved: 850 rows, 509 columns, 3018 nonzeros
 Variable types: 341 continuous, 168 integer (168 binary)
 
-Root relaxation: objective 3.462415e-03, 276 iterations, 0.01 seconds (0.00 work units)
+Root relaxation: objective 3.462415e-03, 276 iterations, 0.00 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
@@ -9230,7 +9230,7 @@ Cutting planes:
   RLT: 17
   Relax-and-lift: 16
 
-Explored 1 nodes (675 simplex iterations) in 0.16 seconds (0.10 work units)
+Explored 1 nodes (675 simplex iterations) in 0.18 seconds (0.10 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00736232 0.0152164 
@@ -9291,7 +9291,7 @@ Root relaxation: objective 8.291520e-04, 52 iterations, 0.00 seconds (0.00 work 
 H    0     0                       0.0008292    0.00083  0.00%     -    0s
      0     0    0.00083    0    4    0.00083    0.00083  0.00%     -    0s
 
-Explored 1 nodes (52 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 1 nodes (52 simplex iterations) in 0.01 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.000829152 0.00141352 
@@ -9347,7 +9347,7 @@ Root relaxation: objective 8.186296e-04, 72 iterations, 0.00 seconds (0.00 work 
 
 *    0     0               0       0.0008186    0.00082  0.00%     -    0s
 
-Explored 1 nodes (72 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 1 nodes (72 simplex iterations) in 0.01 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00081863 0.00158726 
@@ -9493,7 +9493,7 @@ Cutting planes:
   Zero half: 15
   RLT: 20
 
-Explored 887 nodes (32851 simplex iterations) in 0.73 seconds (0.72 work units)
+Explored 887 nodes (32851 simplex iterations) in 0.75 seconds (0.72 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 6: 0.00139694 0.00235904 0.00255146 ... 0.0114871
@@ -9540,7 +9540,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 77 rows and 45 columns
-Presolve time: 0.00s
+Presolve time: 0.01s
 Presolved: 152 rows, 93 columns, 408 nonzeros
 Variable types: 63 continuous, 30 integer (30 binary)
 Found heuristic solution: objective 0.0026803
@@ -9620,7 +9620,7 @@ Cutting planes:
   Flow cover: 1
   Relax-and-lift: 6
 
-Explored 1 nodes (175 simplex iterations) in 0.04 seconds (0.01 work units)
+Explored 1 nodes (175 simplex iterations) in 0.03 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00448218 0.00595957 
@@ -9732,7 +9732,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 334 rows and 192 columns
-Presolve time: 0.05s
+Presolve time: 0.03s
 Presolved: 850 rows, 509 columns, 3018 nonzeros
 Variable types: 341 continuous, 168 integer (168 binary)
 
@@ -9762,7 +9762,7 @@ Cutting planes:
   RLT: 12
   Relax-and-lift: 6
 
-Explored 1 nodes (672 simplex iterations) in 0.16 seconds (0.10 work units)
+Explored 1 nodes (672 simplex iterations) in 0.14 seconds (0.10 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.00711917 0.008533 0.0784589 
@@ -9989,7 +9989,7 @@ Presolve time: 0.06s
 Presolved: 1320 rows, 787 columns, 4542 nonzeros
 Variable types: 355 continuous, 432 integer (432 binary)
 
-Root relaxation: objective 1.020911e-03, 409 iterations, 0.01 seconds (0.00 work units)
+Root relaxation: objective 1.020911e-03, 409 iterations, 0.00 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
@@ -10027,7 +10027,7 @@ Cutting planes:
   RLT: 19
   Relax-and-lift: 3
 
-Explored 1445 nodes (42799 simplex iterations) in 0.75 seconds (0.73 work units)
+Explored 1445 nodes (42799 simplex iterations) in 0.76 seconds (0.73 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 7: 0.00140928 0.00160346 0.002186 ... 0.0115888
@@ -10222,7 +10222,7 @@ Cutting planes:
   MIR: 1
   Relax-and-lift: 4
 
-Explored 1 nodes (85 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 1 nodes (85 simplex iterations) in 0.03 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00517431 0.00901236 
@@ -10266,11 +10266,11 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 364 rows and 198 columns
-Presolve time: 0.05s
+Presolve time: 0.03s
 Presolved: 820 rows, 503 columns, 2883 nonzeros
 Variable types: 341 continuous, 162 integer (162 binary)
 
-Root relaxation: objective 3.290109e-03, 287 iterations, 0.00 seconds (0.00 work units)
+Root relaxation: objective 3.290109e-03, 287 iterations, 0.01 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
@@ -10292,7 +10292,7 @@ Cutting planes:
   RLT: 14
   Relax-and-lift: 16
 
-Explored 1 nodes (522 simplex iterations) in 0.14 seconds (0.08 work units)
+Explored 1 nodes (522 simplex iterations) in 0.12 seconds (0.08 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00838171 0.0773912 
@@ -10467,7 +10467,7 @@ H    0     0                       0.0053273    0.00357  33.0%     -    0s
 Cutting planes:
   Flow cover: 1
 
-Explored 1 nodes (57 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 1 nodes (57 simplex iterations) in 0.03 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00532732 0.00884553 
@@ -10512,7 +10512,7 @@ Coefficient statistics:
 
 Presolve added 88 rows and 0 columns
 Presolve removed 0 rows and 6 columns
-Presolve time: 0.03s
+Presolve time: 0.02s
 Presolved: 1172 rows, 633 columns, 3538 nonzeros
 Variable types: 171 continuous, 462 integer (462 binary)
 Found heuristic solution: objective 0.0019282
@@ -10670,7 +10670,7 @@ Cutting planes:
   RLT: 4
   Relax-and-lift: 2
 
-Explored 1 nodes (349 simplex iterations) in 0.06 seconds (0.03 work units)
+Explored 1 nodes (349 simplex iterations) in 0.07 seconds (0.03 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.000816754 0.00146683 0.00434215 
@@ -10782,7 +10782,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 364 rows and 198 columns
-Presolve time: 0.03s
+Presolve time: 0.04s
 Presolved: 820 rows, 503 columns, 2888 nonzeros
 Variable types: 341 continuous, 162 integer (162 binary)
 
@@ -10812,7 +10812,7 @@ Cutting planes:
   Implied bound: 31
   MIR: 16
 
-Explored 1 nodes (1042 simplex iterations) in 0.31 seconds (0.20 work units)
+Explored 1 nodes (1042 simplex iterations) in 0.35 seconds (0.20 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00899574 0.0158109 
@@ -10878,7 +10878,7 @@ Cutting planes:
   MIR: 1
   Flow cover: 2
 
-Explored 1 nodes (94 simplex iterations) in 0.03 seconds (0.01 work units)
+Explored 1 nodes (94 simplex iterations) in 0.02 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00540449 0.00897415 
@@ -10922,7 +10922,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 427 rows and 258 columns
-Presolve time: 0.02s
+Presolve time: 0.01s
 Presolved: 161 rows, 91 columns, 442 nonzeros
 Variable types: 30 continuous, 61 integer (61 binary)
 Found heuristic solution: objective 0.0013862
@@ -11037,7 +11037,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 324 rows and 168 columns
-Presolve time: 0.06s
+Presolve time: 0.05s
 Presolved: 1290 rows, 781 columns, 4366 nonzeros
 Variable types: 355 continuous, 426 integer (426 binary)
 
@@ -11081,7 +11081,7 @@ Cutting planes:
   RLT: 20
   Relax-and-lift: 6
 
-Explored 1570 nodes (39865 simplex iterations) in 0.82 seconds (0.79 work units)
+Explored 1570 nodes (39865 simplex iterations) in 0.79 seconds (0.79 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 6: 0.00141186 0.00160642 0.00199552 ... 0.00277373
@@ -11149,7 +11149,7 @@ Cutting planes:
   MIR: 1
   Relax-and-lift: 4
 
-Explored 1 nodes (72 simplex iterations) in 0.03 seconds (0.01 work units)
+Explored 1 nodes (72 simplex iterations) in 0.02 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.0050205 0.00833416 
@@ -11317,11 +11317,11 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 364 rows and 198 columns
-Presolve time: 0.03s
+Presolve time: 0.05s
 Presolved: 820 rows, 503 columns, 2888 nonzeros
 Variable types: 341 continuous, 162 integer (162 binary)
 
-Root relaxation: objective 3.520639e-03, 229 iterations, 0.01 seconds (0.00 work units)
+Root relaxation: objective 3.520639e-03, 229 iterations, 0.00 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
@@ -11411,7 +11411,7 @@ Cutting planes:
   MIR: 1
   Flow cover: 2
 
-Explored 1 nodes (75 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 1 nodes (75 simplex iterations) in 0.03 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.0054101 0.00898349 
@@ -11473,7 +11473,7 @@ Cutting planes:
   Implied bound: 4
   Relax-and-lift: 4
 
-Explored 1 nodes (151 simplex iterations) in 0.03 seconds (0.01 work units)
+Explored 1 nodes (151 simplex iterations) in 0.02 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 1: 0.00408806 
@@ -11584,7 +11584,7 @@ Presolve time: 0.05s
 Presolved: 1290 rows, 781 columns, 4366 nonzeros
 Variable types: 355 continuous, 426 integer (426 binary)
 
-Root relaxation: objective 1.016885e-03, 448 iterations, 0.01 seconds (0.00 work units)
+Root relaxation: objective 1.016885e-03, 448 iterations, 0.00 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
@@ -11616,7 +11616,7 @@ Cutting planes:
   RLT: 16
   Relax-and-lift: 1
 
-Explored 1378 nodes (40097 simplex iterations) in 0.76 seconds (0.70 work units)
+Explored 1378 nodes (40097 simplex iterations) in 0.69 seconds (0.70 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 5: 0.00140364 0.00198377 0.0025639 ... 0.0115488
@@ -11663,7 +11663,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 138 rows and 66 columns
-Presolve time: 0.00s
+Presolve time: 0.01s
 Presolved: 201 rows, 136 columns, 561 nonzeros
 Variable types: 97 continuous, 39 integer (39 binary)
 Found heuristic solution: objective 0.0084964
@@ -11685,7 +11685,7 @@ Cutting planes:
   MIR: 1
   Relax-and-lift: 3
 
-Explored 1 nodes (78 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 1 nodes (78 simplex iterations) in 0.03 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.00503714 0.00836191 0.00849636 
@@ -11729,7 +11729,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 435 rows and 260 columns
-Presolve time: 0.01s
+Presolve time: 0.02s
 Presolved: 225 rows, 131 columns, 632 nonzeros
 Variable types: 35 continuous, 96 integer (96 binary)
 Found heuristic solution: objective 0.0015993
@@ -11852,7 +11852,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 334 rows and 192 columns
-Presolve time: 0.03s
+Presolve time: 0.05s
 Presolved: 850 rows, 509 columns, 3026 nonzeros
 Variable types: 341 continuous, 168 integer (168 binary)
 
@@ -11880,7 +11880,7 @@ Cutting planes:
   RLT: 17
   Relax-and-lift: 10
 
-Explored 1 nodes (657 simplex iterations) in 0.14 seconds (0.10 work units)
+Explored 1 nodes (657 simplex iterations) in 0.18 seconds (0.10 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.00755352 0.00905422 0.0157049 
@@ -11927,7 +11927,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 77 rows and 45 columns
-Presolve time: 0.00s
+Presolve time: 0.01s
 Presolved: 152 rows, 93 columns, 408 nonzeros
 Variable types: 63 continuous, 30 integer (30 binary)
 Found heuristic solution: objective 0.0035665
@@ -12009,7 +12009,7 @@ Cutting planes:
   RLT: 1
   Relax-and-lift: 5
 
-Explored 1 nodes (185 simplex iterations) in 0.03 seconds (0.01 work units)
+Explored 1 nodes (185 simplex iterations) in 0.04 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.00400607 0.00532476 0.00631622 
@@ -12055,13 +12055,13 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 219 rows and 114 columns
-Presolve time: 0.01s
+Presolve time: 0.02s
 Presolved: 289 rows, 184 columns, 801 nonzeros
 Variable types: 94 continuous, 90 integer (90 binary)
 Found heuristic solution: objective 0.0015959
 Found heuristic solution: objective 0.0010162
 
-Explored 0 nodes (0 simplex iterations) in 0.01 seconds (0.01 work units)
+Explored 0 nodes (0 simplex iterations) in 0.02 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00101617 0.00159588 
@@ -12105,7 +12105,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 324 rows and 168 columns
-Presolve time: 0.06s
+Presolve time: 0.05s
 Presolved: 1290 rows, 781 columns, 4366 nonzeros
 Variable types: 355 continuous, 426 integer (426 binary)
 
@@ -12314,7 +12314,7 @@ Variable types: 94 continuous, 90 integer (90 binary)
 Found heuristic solution: objective 0.0016076
 Found heuristic solution: objective 0.0010235
 
-Explored 0 nodes (0 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 0 nodes (0 simplex iterations) in 0.01 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00102351 0.00160762 
@@ -12358,7 +12358,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 364 rows and 198 columns
-Presolve time: 0.05s
+Presolve time: 0.03s
 Presolved: 820 rows, 503 columns, 2888 nonzeros
 Variable types: 341 continuous, 162 integer (162 binary)
 
@@ -12385,7 +12385,7 @@ Cutting planes:
   Relax-and-lift: 10
   PSD: 1
 
-Explored 1 nodes (458 simplex iterations) in 0.14 seconds (0.09 work units)
+Explored 1 nodes (458 simplex iterations) in 0.13 seconds (0.09 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 1: 0.00923136 
@@ -12432,7 +12432,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 77 rows and 45 columns
-Presolve time: 0.00s
+Presolve time: 0.01s
 Presolved: 152 rows, 93 columns, 408 nonzeros
 Variable types: 63 continuous, 30 integer (30 binary)
 Found heuristic solution: objective 0.0034592
@@ -12615,7 +12615,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 324 rows and 168 columns
-Presolve time: 0.04s
+Presolve time: 0.05s
 Presolved: 1290 rows, 781 columns, 4366 nonzeros
 Variable types: 355 continuous, 426 integer (426 binary)
 
@@ -12653,7 +12653,7 @@ Cutting planes:
   RLT: 20
   Relax-and-lift: 5
 
-Explored 2552 nodes (57307 simplex iterations) in 0.80 seconds (0.81 work units)
+Explored 2552 nodes (57307 simplex iterations) in 0.81 seconds (0.81 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 4: 0.00137216 0.0019388 0.00280115 0.0113007 
@@ -12714,7 +12714,7 @@ Root relaxation: objective 8.124272e-04, 48 iterations, 0.00 seconds (0.00 work 
 H    0     0                       0.0008124    0.00081  0.00%     -    0s
      0     0    0.00081    0    2    0.00081    0.00081  0.00%     -    0s
 
-Explored 1 nodes (48 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 1 nodes (48 simplex iterations) in 0.01 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.000812427 0.00138425 
@@ -12758,7 +12758,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 435 rows and 260 columns
-Presolve time: 0.02s
+Presolve time: 0.01s
 Presolved: 225 rows, 131 columns, 632 nonzeros
 Variable types: 35 continuous, 96 integer (96 binary)
 Found heuristic solution: objective 0.0016093
@@ -12770,7 +12770,7 @@ Root relaxation: objective 8.296698e-04, 72 iterations, 0.00 seconds (0.00 work 
 
 *    0     0               0       0.0008297    0.00083  0.00%     -    0s
 
-Explored 1 nodes (72 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 1 nodes (72 simplex iterations) in 0.01 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00082967 0.00160934 
@@ -12816,7 +12816,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 281 rows and 159 columns
-Presolve time: 0.02s
+Presolve time: 0.01s
 Presolved: 227 rows, 139 columns, 635 nonzeros
 Variable types: 61 continuous, 78 integer (78 binary)
 Found heuristic solution: objective 0.0017142
@@ -12875,7 +12875,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 334 rows and 192 columns
-Presolve time: 0.05s
+Presolve time: 0.04s
 Presolved: 850 rows, 509 columns, 3026 nonzeros
 Variable types: 341 continuous, 168 integer (168 binary)
 
@@ -12904,7 +12904,7 @@ Cutting planes:
   Relax-and-lift: 12
   BQP: 1
 
-Explored 1 nodes (677 simplex iterations) in 0.18 seconds (0.11 work units)
+Explored 1 nodes (677 simplex iterations) in 0.17 seconds (0.11 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.00765895 0.00918075 
@@ -13007,7 +13007,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 170 rows and 92 columns
-Presolve time: 0.01s
+Presolve time: 0.02s
 Presolved: 346 rows, 215 columns, 1040 nonzeros
 Variable types: 147 continuous, 68 integer (68 binary)
 
@@ -13083,7 +13083,7 @@ Coefficient statistics:
   GenCon coe range [1e+00, 1e+00]
 
 Presolve removed 210 rows and 112 columns
-Presolve time: 0.01s
+Presolve time: 0.02s
 Presolved: 298 rows, 186 columns, 831 nonzeros
 Variable types: 94 continuous, 92 integer (92 binary)
 Found heuristic solution: objective 0.0015701
@@ -13102,7 +13102,7 @@ Cutting planes:
   Flow cover: 1
   Relax-and-lift: 1
 
-Explored 1 nodes (90 simplex iterations) in 0.02 seconds (0.01 work units)
+Explored 1 nodes (90 simplex iterations) in 0.03 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.00100006 0.00138009 0.0015701 
@@ -13185,7 +13185,7 @@ Cutting planes:
   Relax-and-lift: 22
   BQP: 6
 
-Explored 419 nodes (7599 simplex iterations) in 0.27 seconds (0.19 work units)
+Explored 419 nodes (7599 simplex iterations) in 0.25 seconds (0.19 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 3: 0.00638056 0.00954584 0.0104426 
@@ -13246,7 +13246,7 @@ Root relaxation: objective 8.200563e-04, 51 iterations, 0.00 seconds (0.00 work 
 H    0     0                       0.0008201    0.00082  0.00%     -    0s
      0     0    0.00082    0    2    0.00082    0.00082  0.00%     -    0s
 
-Explored 1 nodes (51 simplex iterations) in 0.01 seconds (0.01 work units)
+Explored 1 nodes (51 simplex iterations) in 0.02 seconds (0.01 work units)
 Thread count was 16 (of 16 available processors)
 
 Solution count 2: 0.000820056 0.0013976 
@@ -13330,4 +13330,4 @@ Step 150/150: Finish time: 2814.381884047576788781690983 us
 Collective times over steps (us):
 ['8369.464990415154 us', '3501.6225092970982 us', '8094.64649289113 us', '3495.4545621807293 us', '9388.065332446049 us', '1025.5733480193244 us', '9408.796029900756 us', '1029.3031804902975 us', '9404.18837379806 us', '6486.106359422883 us', '8013.040595671837 us', '8544.663875056866 us', '8014.42880708525 us', '3338.1599401269575 us', '7893.503345650175 us', '3244.3197597168067 us', '7735.212948598739 us', '3186.042527802118 us', '7510.805571826515 us', '1797.3098774244503 us', '6556.811983428123 us', '3424.262744205616 us', '6456.444555435147 us', '3422.9129906708797 us', '6458.84087390946 us', '1050.369833855579 us', '6426.9824030405084 us', '1050.4560181728833 us', '7018.7799265190726 us', '6828.913227375817 us', '7394.001405248376 us', '7542.27126536203 us', '7082.64830152456 us', '3486.103087630116 us', '7521.947009444286 us', '3498.9283707201574 us', '7517.690123418421 us', '3507.780382381769 us', '7009.5828946063745 us', '2603.5607592283672 us', '6825.167844809083 us', '3466.8385033783224 us', '7149.232526784512 us', '3479.7176467644374 us', '7564.771469841927 us', '1027.251396545326 us', '7432.9497154552145 us', '1021.7288131397235 us', '7471.168919710573 us', '7089.933502883509 us']
 Comulative time: 277868.75692331145 us
-代码运行时间: 491.475931 秒
+代码运行时间: 477.465253 秒
