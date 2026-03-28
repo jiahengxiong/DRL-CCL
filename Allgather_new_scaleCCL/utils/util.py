@@ -129,7 +129,7 @@ def _apply_synthetic_correction(data: dict, pair) -> dict:
         cursor += T
 
         x1 = x.astype(np.float32).reshape(-1)
-        x_new = (0.5 * x1 + 0.5 * fx).astype(np.float32).reshape(-1, 1)
+        x_new = (0.1 * x1 + 0.9 * fx).astype(np.float32).reshape(-1, 1)
         seg.x = x_new
 
     return data
