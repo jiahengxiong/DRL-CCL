@@ -1,0 +1,71 @@
+WAN_link_dataset dir: C:\Users\IceCould\Downloads\DRL-CCL\Allgather_new_scaleCCL\WAN_link_dataset
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+WAN links with dataset/model: 8, fallback links: 0
+Initializing global_policy with t=0 data...
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Initial (t=0) Finish time: 1743.393709355736956869048626 us
+Starting 150 steps simulation loop...
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Step 110 stats -> min:0.0563, max:0.5042, mean:0.1908
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Step 110/150: Finish time: 3233.503713899333629027276400 us
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Step 120 stats -> min:0.0572, max:0.5227, mean:0.2536
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Step 120/150: Finish time: 2842.442861252914973003934482 us
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Step 130 stats -> min:0.0567, max:0.4949, mean:0.1884
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Step 130/150: Finish time: 3138.285251678437454650340080 us
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Step 140 stats -> min:0.0583, max:0.5083, mean:0.2537
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Step 140/150: Finish time: 3390.480790016577698086684940 us
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Step 150 stats -> min:0.0572, max:0.4994, mean:0.1894
+Loading topology from: C:\Users\IceCould\Downloads\DRL-CCL\TOPO\0.5\network_topology_0.json
+Step 150/150: Finish time: 3103.195099773190215536013878 us
+Collective times over steps (us):
+['2780.5834139590815 us', '2396.461974344957 us', '2813.378579475861 us', '2369.0052015040187 us', '2969.9431881576783 us', '2920.3097854912144 us', '2971.479821765533 us', '2946.3564294251576 us', '2971.6993582604586 us', '2899.5376532165015 us', '1766.3164041640225 us', '2863.2377229175533 us', '1836.2994971035719 us', '1795.2987012500444 us', '1822.808215141458 us', '2874.6815329976664 us', '1805.2683397583227 us', '2916.8272648682006 us', '1675.9355021880203 us', '2909.733253464119 us', '2800.504967242058 us', '2742.008783888731 us', '2750.283735216891 us', '2939.2555500567766 us', '2780.621076138429 us', '2838.318504882493 us', '2800.0086091426227 us', '2776.3509410616972 us', '2865.069934233905 us', '2762.0213586262575 us', '2940.479542551146 us', '2850.3062520435236 us', '2928.5912044811 us', '1704.0185046279007 us', '2915.9279412629673 us', '2776.3943991472536 us', '2903.0090745067053 us', '2684.3656435436105 us', '1699.0508178879515 us', '2706.2725016373025 us', '2842.8127729804476 us', '2679.674294976702 us', '2675.297007261994 us', '2811.317875697477 us', '2852.444156269855 us', '2753.6224576258602 us', '2471.4744948619353 us', '2821.6414026746 us', '2845.1492663256043 us', '2811.2720733546146 us']
+Comulative time: 132032.72698366185 us
+代码运行时间: 231.454358 秒
