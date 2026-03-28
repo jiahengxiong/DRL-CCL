@@ -5,7 +5,7 @@ import sys
 
 # ================= 配置区域 =================
 # 实验序号，修改此处即可改变输出文件名的后缀
-EXP_ID = "05_2" # alpha = 0.5, chunk_size = 4
+EXP_ID = "05_16" # alpha = 0.5, chunk_size = 4
 
 # 需要执行的脚本列表
 SCRIPTS = ["baseline.py", "fast_slow.py", "fast.py", "slow.py"]
