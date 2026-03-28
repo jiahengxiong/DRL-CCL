@@ -17,7 +17,7 @@ def visualize_csv_data(file_path):
 
     # 3. 提取 X 轴原始数据
     x_col_name = df.columns[0]
-    x_values = df[x_col_name] # 这里保留原始的小数 (如 0.1, 0.2)
+    x_values = df[x_col_name]
     
     # 4. 设置绘图参数
     x_indices = np.arange(len(x_values)) 
@@ -58,12 +58,11 @@ def visualize_csv_data(file_path):
                                      label=attribute))
 
     # 6. 修饰图表
-    # 严格按照您的要求设置 X 轴标签
     ax.set_xlabel('Original data ratio') 
     ax.set_ylabel('Cumulative time (ms)')
     ax.set_title('')
     
-    # 7. 设置 X 轴刻度：直接使用原始数据（保留小数点）
+    # 7. 设置 X 轴刻度
     ax.set_xticks(x_indices)
     ax.set_xticklabels(x_values) 
     

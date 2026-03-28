@@ -1,0 +1,12 @@
+__pycache__/config.cpython-311.pyc
+Allgather/utils/__pycache__/custom.cpython-311.pyc
+Allgather_new_scaleCCL/__pycache__/path_ass.cpython-311.pyc
+Allgather_new_scaleCCL/utils/__pycache__/simulate.cpython-311.pyc
+Allgather_new_scaleCCL/utils/__pycache__/tools.cpython-311.pyc
+Allgather_new_scaleCCL/utils/__pycache__/util.cpython-311.pyc
+Allgather_TECCL/utils/__pycache__/DGX.cpython-311.pyc
+Allgather_TECCL/utils/__pycache__/NVD2_1_topology.cpython-311.pyc
+NewAgent/__pycache__/deploy.cpython-311.pyc
+NewAgent/__pycache__/load_dataset.cpython-311.pyc
+NewAgent/__pycache__/model.cpython-311.pyc
+NewAgent/__pycache__/train.cpython-311.pyc
