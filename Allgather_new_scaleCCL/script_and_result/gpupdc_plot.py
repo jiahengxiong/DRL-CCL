@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import Patch
 
-def visualize_csv_data(file_path):
+def visualize_gpu_data(file_path):
     # 1. 读取数据
     try:
         df = pd.read_csv(file_path)
@@ -11,9 +11,8 @@ def visualize_csv_data(file_path):
         print(f"错误：找不到文件 '{file_path}'，请检查文件名或路径。")
         return
 
-    # 2. 数据处理：将单位从 us 转换为 ms
+    # 2. 数据处理：保持原始单位 s
     y_labels = df.columns[1:]
-    df[y_labels] = df[y_labels] / 1000
 
     # 3. 提取 X 轴原始数据
     x_col_name = df.columns[0]
@@ -22,23 +21,18 @@ def visualize_csv_data(file_path):
     # 4. 设置绘图参数
     x_indices = np.arange(len(x_values)) 
     num_bars = len(y_labels)
-    width = 0.18 # 柱子宽度
+    width = 0.18 
     
-    # 定义纹理列表
     patterns = ['/', '\\\\', 'xxx', '...', '---'] 
-    # 更新字体大小以适应图表
     plt.rcParams.update({'font.size': 16})
-    # 获取颜色循环
     colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
     fig, ax = plt.subplots(figsize=(10, 6), layout='constrained')
 
-    # 存储自定义图例句柄
     legend_elements = []
 
     # 5. 循环绘制每一组数据
     for i, attribute in enumerate(y_labels):
-        # 居中对齐逻辑
         offset = (i - (num_bars - 1) / 2) * width
         pos = x_indices + offset
         
@@ -61,8 +55,11 @@ def visualize_csv_data(file_path):
 
     # 6. 修饰图表
     ax.set_xlabel(x_col_name)
-    ax.set_ylabel('Cumulative time (ms)')
+    ax.set_ylabel('Cumulative time (s)') 
     ax.set_title('')
+    
+    # --- 新增：设置纵坐标范围 ---
+    ax.set_ylim(0, 600) 
     
     # 7. 设置 X 轴刻度
     ax.set_xticks(x_indices)
@@ -70,7 +67,7 @@ def visualize_csv_data(file_path):
     
     # 8. 优化图例
     ax.legend(handles=legend_elements, 
-              loc='upper left', 
+              loc='upper right', 
               frameon=True, 
               edgecolor='gray',
               handlelength=2.5, 
@@ -79,10 +76,10 @@ def visualize_csv_data(file_path):
     ax.grid(axis='y', linestyle='--', alpha=0.4)
 
     # 9. 保存并显示
-    plt.savefig('alpha_result.png', dpi=300)
+    plt.savefig('gpu_result.png', dpi=300)
     plt.show()
 
 if __name__ == "__main__":
-    # 使用原始字符串(r)防止反斜杠转义（特别是 \a 会被误认为响铃符）
-    target_csv = r"script_and_result\alpha_result.csv"
-    visualize_csv_data(target_csv)
+    # 使用 r 前缀防止路径转义
+    target_csv = r"script_and_result\gpu_result_linux.csv"
+    visualize_gpu_data(target_csv)

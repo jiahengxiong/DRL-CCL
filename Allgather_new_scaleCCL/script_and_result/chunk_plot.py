@@ -26,6 +26,8 @@ def visualize_csv_data(file_path):
     
     # 定义纹理列表
     patterns = ['/', '\\\\', 'xxx', '...', '---'] 
+    # 更新字体大小以适应图表
+    plt.rcParams.update({'font.size': 16})
     # 获取颜色循环
     colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
