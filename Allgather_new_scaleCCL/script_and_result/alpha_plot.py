@@ -58,7 +58,7 @@ def visualize_csv_data(file_path):
                                      label=attribute))
 
     # 6. 修饰图表
-    ax.set_xlabel('Chunk Size(MB)') 
+    ax.set_xlabel('Congestion Degree') 
     ax.set_ylabel('Cumulative time (ms)')
     ax.set_title('')
     
@@ -68,7 +68,7 @@ def visualize_csv_data(file_path):
     
     # 8. 优化图例
     ax.legend(handles=legend_elements, 
-              loc='upper left', 
+              loc='upper right', 
               frameon=True, 
               edgecolor='gray',
               handlelength=2.5, 
@@ -77,9 +77,10 @@ def visualize_csv_data(file_path):
     ax.grid(axis='y', linestyle='--', alpha=0.4)
 
     # 9. 保存并显示
-    plt.savefig('chunk_size_result_0.1.png', dpi=300)
+    plt.savefig('alpha_result.png', dpi=300)
     plt.show()
 
 if __name__ == "__main__":
-    target_csv = "script_and_result\chunk_size_result_0.1.csv"
+    # 使用原始字符串(r)防止反斜杠转义（特别是 \a 会被误认为响铃符）
+    target_csv = r"script_and_result\alpha_result.csv"
     visualize_csv_data(target_csv)

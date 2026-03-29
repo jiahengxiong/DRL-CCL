@@ -1,4 +1,4 @@
-chunk_size,baseline,slow,fast,fast_slow
+chunk_size,Baseline,Slow Pace,Fast Pace,Fast + Slow Pace
 1,77956.353,65436.933,56938.269,46261.664
 2,150718.351,132032.726,111986.384,89963.423
 4,303277.876,253240.734,219372.282,179411.201
