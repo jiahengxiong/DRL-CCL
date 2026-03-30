@@ -350,6 +350,9 @@ def main(collective_time, chunk):
     print("Initializing global_policy with t=0 data...")
     current_stream = {}
     step_times_us = []
+    # 预测误差分析数据结构
+    # 格式: diff_data[t][pair] = {'pred': pred_next, 'true': x_next_t, 'abs_diff': abs(pred_next - x_next_t)}
+    diff_data = {}
     
     # 准备初始流 (t=0)
     for pair, env in wan_env.items():
@@ -392,7 +395,22 @@ def main(collective_time, chunk):
                 # continual_learning=True: 在预测后利用当前的 x_t 更新模型
                 pred_next = deployer.predict(x_t, continual_learning=True)
                 val = float(pred_next)
+
+                # 计算绝对差值
+                abs_diff = abs(pred_next - x_next_t)
+
+                # 存储差值数据
+                if t not in diff_data:
+                    diff_data[t] = {}
+                diff_data[t][pair] = {
+                    'pred': pred_next,
+                    'true': x_next_t,
+                    'abs_diff': abs_diff
+                }
             else:
+                # 使用默认值
+                val = 1.0
+                x_next_t = 1.0
                 print(f"Step {t}: No data for {pair}, using default val={val}")
             
             # 使用预测值作为下一步的容量依据，确保传入 numpy 数组
@@ -437,8 +455,49 @@ def main(collective_time, chunk):
     print("Collective times over steps (us):")
     print(step_times_us)
     print(f"Comulative time: {comulative_time} us")
-    
+
+    # 保存预测误差分析结果
+    if diff_data:  # 仅当有数据时保存
+        save_prediction_analysis(diff_data, num_steps)
+    else:
+        print("警告: 未收集到预测误差数据")
+
     return policy, arrival_times
+
+
+def save_prediction_analysis(diff_data, num_steps, output_filename="prediction_error_analysis.txt"):
+    """
+    保存预测误差分析结果到txt文件
+
+    参数:
+        diff_data: 差值数据字典
+        num_steps: 总时间步数
+        output_filename: 输出文件名
+    """
+    import os
+
+    # 获取当前文件所在目录
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    filepath = os.path.join(current_dir, output_filename)
+
+    # 准备数据
+    lines = []
+    lines.append("时间步,链路对,预测值,真实值,绝对差值")
+
+    for t in sorted(diff_data.keys()):
+        for pair, data in diff_data[t].items():
+            lines.append(f"{t},{pair},{data['pred']:.6f},{data['true']:.6f},{data['abs_diff']:.6f}")
+
+    # 写入文件
+    try:
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write('\n'.join(lines))
+        print(f"预测误差分析已保存到: {filepath}")
+        print(f"共记录 {len(diff_data)} 个时间步的数据")
+    except Exception as e:
+        print(f"保存预测误差分析时出错: {e}")
+
+    return filepath
 
 import numpy as np
 

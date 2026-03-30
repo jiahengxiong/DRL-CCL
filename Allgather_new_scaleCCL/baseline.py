@@ -370,9 +370,9 @@ def main(collective_time, chunk):
     # step_times_us.append(f"{t0_us.normalize()} us")
     
     # 步骤4: 循环100个time step，单步预测
-    num_steps = 150
+    num_steps = 10
     print(f"Starting {num_steps} steps simulation loop...")
-    comulative_timne = 0
+    comulative_time = 0
     
     for t in range(num_steps):
         next_stream = {}
@@ -397,7 +397,7 @@ def main(collective_time, chunk):
             next_stream[pair] = np.asarray([val], dtype=np.float32)
             true_stream[pair] = np.asarray([x_next_t], dtype=np.float32)
         
-        if t < 100:
+        if t < 5:
             continue
         
         if (t + 1) % 10 == 0:
@@ -421,7 +421,7 @@ def main(collective_time, chunk):
         # policy = build_path_ass_input(arrival_times, next_stream, topology, policy)
         t_sec = simulate_policy_with_true_stream(policy=policy, true_stream=true_stream, topology=topology)
         t_us = Decimal(str(t_sec)) * Decimal('1000000')
-        comulative_timne = comulative_timne + float(t_us)
+        comulative_time = comulative_time + float(t_us)
         step_times_us.append(f"{t_us.normalize()} us")
 
         
@@ -432,7 +432,7 @@ def main(collective_time, chunk):
     collective_time[config.connectivity][config.num_chunk][chunk] = step_times_us
     print("Collective times over steps (us):")
     print(step_times_us)
-    print(f"Comulative time: {comulative_timne} us")
+    print(f"Comulative time: {comulative_time} us")
     
     return policy, arrival_times
 

@@ -372,7 +372,7 @@ def main(collective_time, chunk):
     # step_times_us.append(f"{t0_us.normalize()} us")
     
     # 步骤4: 循环100个time step，单步预测
-    num_steps = 150
+    num_steps = 10
     print(f"Starting {num_steps} steps simulation loop...")
     comulative_time = 0
     
@@ -400,7 +400,7 @@ def main(collective_time, chunk):
             true_stream[pair] = np.asarray([x_next_t], dtype=np.float32)
             # next_stream[pair] = np.asarray([x_next_t], dtype=np.float32)
     
-        if t < 100:
+        if t < 5:
             continue
         
         if (t + 1) % 10 == 0:
