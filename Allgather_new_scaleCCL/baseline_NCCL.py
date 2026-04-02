@@ -25,6 +25,7 @@ from Allgather_new_scaleCCL.utils.util import (
     update_wan_caps,
     load_wan_models_and_data,
 )
+from Allgather_new_scaleCCL.utils.NCCL import nccl_topo
 
 from Allgather_new_scaleCCL.utils.simulate import simulate_policy_with_true_stream
 import simpy
@@ -229,27 +230,10 @@ def _update_wan_links(topology: nx.DiGraph, packet_size: 'Decimal', cap_value: '
                 e['weight'] = e.get('propagation_latency', 0) + e['transmission_latency']
 
 
+
+
 def global_policy(topology, datacenter, per_link_stream, per_link_pos):
-    # topology = topology.copy()
-    # nodes_to_process = [n for n in topology.nodes if topology.nodes[n].get('type') == 'switch']
-    # for u in nodes_to_process:
-    #     succs = list(topology.successors(u))
-    #     switch_succs = [v for v in succs if topology.nodes[v].get('type') == 'switch']
-    #     if len(switch_succs) > 1:
-    #         best_v = None
-    #         best_cap = None
-    #         for v in switch_succs:
-    #             try:
-    #                 cap = float(topology.edges[(u, v)].get('link_capcapacity', 0))
-    #             except Exception:
-    #                 cap = 0.0
-    #             if best_cap is None or cap > best_cap or (cap == best_cap and (best_v is None or v < best_v)):
-    #                 best_cap = cap
-    #                 best_v = v
-    #         to_remove = [v for v in switch_succs if v != best_v]
-    #         for v in to_remove:
-    #             if topology.has_edge(u, v):
-    #                 topology.remove_edge(u, v)
+    
     node_list = topology.nodes()
     buffer_matrix = [[0 for _ in range(len(node_list) * config.num_chunk * config.buffer_constant)]
                      for _ in range(len(node_list) * config.num_chunk * config.buffer_constant)]
@@ -326,6 +310,7 @@ def global_policy(topology, datacenter, per_link_stream, per_link_pos):
         index = bisect.bisect_right(sorted_event_list, time)
         if index < len(event_list):
             time = sorted_event_list[index]
+
     extracted = extract_gpu_gpu_policies(topology, policy)
     return extracted, arrival_times, time
 
@@ -372,8 +357,9 @@ def main(collective_time, chunk, propagation_latency: Optional[float] = None):
     topology.graph['debug_step'] = 0
     per_link_pos = {pair: 0 for pair in current_stream.keys()}
     update_wan_link_rates(topology, current_stream, datacenter, pos_map=per_link_pos, advance=False)
-    policy, arrival_times, time_val = global_policy(topology, datacenter, current_stream, per_link_pos)
-    # policy, arrival_times, time_val = global_policy(topology, datacenter, current_stream, per_link_pos)
+    NCCL_topology = nccl_topo(topology)
+    policy, arrival_times, time_val = global_policy(NCCL_topology, datacenter, current_stream, per_link_pos)
+    # policy = build_path_ass_input(arrival_times, current_stream, topology, policy)
     print(f"Initial (t=0) Finish time: {time_val * 1000000} us")
     t0_us = Decimal(str(time_val)) * Decimal('1000000')
     # step_times_us.append(f"{t0_us.normalize()} us")
@@ -428,9 +414,9 @@ def main(collective_time, chunk, propagation_latency: Optional[float] = None):
         per_link_pos = {pair: 0 for pair in next_stream.keys()}
         update_wan_link_rates(topology, next_stream, datacenter, pos_map=per_link_pos, advance=False)
         # 运行 global_policy (基于预测值，内部按时间推进 advance=True)
-        if t % 10 == 0:
-            policy, arrival_times, time_val = global_policy(topology, datacenter, next_stream, per_link_pos)
-            policy = build_path_ass_input(arrival_times, next_stream, topology, policy)
+        # if t % 10 == 0:
+        #     policy, arrival_times, time_val = global_policy(topology, datacenter, next_stream, per_link_pos)
+        # policy = build_path_ass_input(arrival_times, next_stream, topology, policy)
         t_sec = simulate_policy_with_true_stream(policy=policy, true_stream=true_stream, topology=topology)
         t_us = Decimal(str(t_sec)) * Decimal('1000000')
         comulative_time = comulative_time + float(t_us)

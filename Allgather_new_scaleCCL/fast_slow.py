@@ -30,12 +30,13 @@ from Allgather_new_scaleCCL.utils.simulate import simulate_policy_with_true_stre
 import simpy
 from Allgather_new_scaleCCL.path_ass import solve_time_indexed_milp
 
-def build_topology():
+def build_topology(propagation_latency: Optional[float] = None):
     dc = load_topology(
         packet_size=config.packet_size,
         num_chunk=config.num_chunk,
         chassis=config.chassis,
         name=config.topology_name,
+        propagation_latency=propagation_latency,
     )
     return dc, dc.topology
 
@@ -43,6 +44,8 @@ def update_wan_link_rates(topology, per_link_stream, datacenter, pos_map, advanc
     update_wan_caps(topology, per_link_stream, datacenter, pos_map=pos_map, advance=advance)
 
 def build_path_ass_input(arrival_time, per_link_stream, topology, policy):
+    if not arrival_time:
+        return policy
     flow_size = float(config.packet_size)
     DC1_BR = [0, 1]
     DC2_BR = [2, 3]
@@ -58,6 +61,8 @@ def build_path_ass_input(arrival_time, per_link_stream, topology, policy):
                     "arrival_time": float(arrival),
                     "rate_limit": float(topology[src][dst]["link_capcapacity"]),
                 })
+        if not flows:
+            continue
         # 2) 定义共享路径（capacity bps，delay 秒）
         shared_paths = []
         if BR in DC1_BR:
@@ -325,7 +330,7 @@ def global_policy(topology, datacenter, per_link_stream, per_link_pos):
     return extracted, arrival_times, time
 
 
-def main(collective_time, chunk):
+def main(collective_time, chunk, propagation_latency: Optional[float] = None):
     """
     主函数逻辑分为四个清晰步骤：
     1. 加载数据集，并划分为训练集和测试集
@@ -363,7 +368,8 @@ def main(collective_time, chunk):
         current_stream[pair] = np.asarray([val], dtype=np.float32)
     
     # 构建拓扑并应用 t=0 的 WAN 速率
-    datacenter, topology = build_topology()
+    datacenter, topology = build_topology(propagation_latency=propagation_latency)
+    topology.graph['debug_step'] = 0
     per_link_pos = {pair: 0 for pair in current_stream.keys()}
     update_wan_link_rates(topology, current_stream, datacenter, pos_map=per_link_pos, advance=False)
     policy, arrival_times, time_val = global_policy(topology, datacenter, current_stream, per_link_pos)
@@ -384,7 +390,7 @@ def main(collective_time, chunk):
             deployer = env.get('deployer')
             test_data = env.get('test_data')
             
-            if deployer and test_data is not None and t < len(test_data):
+            if deployer and test_data is not None and (t + 1) < len(test_data):
                 # 获取当前真实值 (t)
                 x_t = float(test_data[t])
                 x_next_t = float(test_data[t+1])
@@ -416,7 +422,8 @@ def main(collective_time, chunk):
                 print(f"Step {t+1} stats -> no values")
             
         # 为每个 step 重新构建拓扑，应用预测流作为 WAN 速率
-        datacenter, topology = build_topology()
+        datacenter, topology = build_topology(propagation_latency=propagation_latency)
+        topology.graph['debug_step'] = t
         per_link_pos = {pair: 0 for pair in next_stream.keys()}
         update_wan_link_rates(topology, next_stream, datacenter, pos_map=per_link_pos, advance=False)
         # 运行 global_policy (基于预测值，内部按时间推进 advance=True)
@@ -477,6 +484,7 @@ if __name__ == "__main__":
     chunk_size_list = [4]
     connectivity_list = [0.5]
     collective_time = {}
+    propagation_latency = 250e-6
     execute_time = {}
 
     for connectivity in connectivity_list:
@@ -500,7 +508,8 @@ if __name__ == "__main__":
                 config.collective = 'ALLGATHER'
                 config.topology_name = 'NVD2'
                 config.connect_matrix = []
-                policy, arrival_times = main(collective_time, chunk)
+                config.debug_br_quota = True
+                policy, arrival_times = main(collective_time, chunk, propagation_latency=propagation_latency)
 
                 end_time = time.time()
                 execution_time = end_time - start_time

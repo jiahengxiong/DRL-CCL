@@ -25,17 +25,19 @@ from Allgather_new_scaleCCL.utils.util import (
     update_wan_caps,
     load_wan_models_and_data,
 )
+from Allgather_new_scaleCCL.utils.NCCL import nccl_topo
 
 from Allgather_new_scaleCCL.utils.simulate import simulate_policy_with_true_stream
 import simpy
 from Allgather_new_scaleCCL.path_ass import solve_time_indexed_milp
 
-def build_topology():
+def build_topology(propagation_latency: Optional[float] = None):
     dc = load_topology(
         packet_size=config.packet_size,
         num_chunk=config.num_chunk,
         chassis=config.chassis,
         name=config.topology_name,
+        propagation_latency=propagation_latency,
     )
     return dc, dc.topology
 
@@ -43,6 +45,8 @@ def update_wan_link_rates(topology, per_link_stream, datacenter, pos_map, advanc
     update_wan_caps(topology, per_link_stream, datacenter, pos_map=pos_map, advance=advance)
 
 def build_path_ass_input(arrival_time, per_link_stream, topology, policy):
+    if not arrival_time:
+        return policy
     flow_size = float(config.packet_size)
     DC1_BR = [0, 1]
     DC2_BR = [2, 3]
@@ -58,6 +62,8 @@ def build_path_ass_input(arrival_time, per_link_stream, topology, policy):
                     "arrival_time": float(arrival),
                     "rate_limit": float(topology[src][dst]["link_capcapacity"]),
                 })
+        if not flows:
+            continue
         # 2) 定义共享路径（capacity bps，delay 秒）
         shared_paths = []
         if BR in DC1_BR:
@@ -111,7 +117,8 @@ def build_path_ass_input(arrival_time, per_link_stream, topology, policy):
                     switch_1 = value[2]
                     dst = value[-1]
                     if switch_0 != BR:
-                        print("ERROR! switch_0 != BR")
+                        # print("ERROR! switch_0 != BR")
+                        continue
                     else:
                         policy[chunk_id][key] = [src, switch_0, nest_hop, dst]
     
@@ -223,27 +230,10 @@ def _update_wan_links(topology: nx.DiGraph, packet_size: 'Decimal', cap_value: '
                 e['weight'] = e.get('propagation_latency', 0) + e['transmission_latency']
 
 
+
+
 def global_policy(topology, datacenter, per_link_stream, per_link_pos):
-    # topology = topology.copy()
-    # nodes_to_process = [n for n in topology.nodes if topology.nodes[n].get('type') == 'switch']
-    # for u in nodes_to_process:
-    #     succs = list(topology.successors(u))
-    #     switch_succs = [v for v in succs if topology.nodes[v].get('type') == 'switch']
-    #     if len(switch_succs) > 1:
-    #         best_v = None
-    #         best_cap = None
-    #         for v in switch_succs:
-    #             try:
-    #                 cap = float(topology.edges[(u, v)].get('link_capcapacity', 0))
-    #             except Exception:
-    #                 cap = 0.0
-    #             if best_cap is None or cap > best_cap or (cap == best_cap and (best_v is None or v < best_v)):
-    #                 best_cap = cap
-    #                 best_v = v
-    #         to_remove = [v for v in switch_succs if v != best_v]
-    #         for v in to_remove:
-    #             if topology.has_edge(u, v):
-    #                 topology.remove_edge(u, v)
+    
     node_list = topology.nodes()
     buffer_matrix = [[0 for _ in range(len(node_list) * config.num_chunk * config.buffer_constant)]
                      for _ in range(len(node_list) * config.num_chunk * config.buffer_constant)]
@@ -324,7 +314,7 @@ def global_policy(topology, datacenter, per_link_stream, per_link_pos):
     return extracted, arrival_times, time
 
 
-def main(collective_time, chunk):
+def main(collective_time, chunk, propagation_latency: Optional[float] = None):
     """
     主函数逻辑分为四个清晰步骤：
     1. 加载数据集，并划分为训练集和测试集
@@ -356,15 +346,18 @@ def main(collective_time, chunk):
         if test_data is not None and len(test_data) > 0:
             val = float(test_data[0])
         else:
-            val = 1.0
+            # val = 1.0
+            print(f"Current {pair} has no test data, using default val={val}")
         # 使用 numpy 数组，确保 update_wan_caps 能读取到 size 属性
         current_stream[pair] = np.asarray([val], dtype=np.float32)
     
     # 构建拓扑并应用 t=0 的 WAN 速率
-    datacenter, topology = build_topology()
+    datacenter, topology = build_topology(propagation_latency=propagation_latency)
+    topology.graph['debug_step'] = 0
     per_link_pos = {pair: 0 for pair in current_stream.keys()}
     update_wan_link_rates(topology, current_stream, datacenter, pos_map=per_link_pos, advance=False)
     policy, arrival_times, time_val = global_policy(topology, datacenter, current_stream, per_link_pos)
+    policy = build_path_ass_input(arrival_times, current_stream, topology, policy)
     print(f"Initial (t=0) Finish time: {time_val * 1000000} us")
     t0_us = Decimal(str(time_val)) * Decimal('1000000')
     # step_times_us.append(f"{t0_us.normalize()} us")
@@ -372,7 +365,7 @@ def main(collective_time, chunk):
     # 步骤4: 循环100个time step，单步预测
     num_steps = 150
     print(f"Starting {num_steps} steps simulation loop...")
-    comulative_timne = 0
+    comulative_time = 0
     
     for t in range(num_steps):
         next_stream = {}
@@ -391,12 +384,13 @@ def main(collective_time, chunk):
                 pred_next = deployer.predict(x_t, continual_learning=True)
                 val = float(pred_next)
             else:
-                val = 1.0
+                print(f"Step {t}: No data for {pair}, using default val={val}")
             
             # 使用预测值作为下一步的容量依据，确保传入 numpy 数组
             next_stream[pair] = np.asarray([val], dtype=np.float32)
             true_stream[pair] = np.asarray([x_next_t], dtype=np.float32)
-        
+            # next_stream[pair] = np.asarray([x_next_t], dtype=np.float32)
+    
         if t < 100:
             continue
         
@@ -413,26 +407,29 @@ def main(collective_time, chunk):
                 print(f"Step {t+1} stats -> no values")
             
         # 为每个 step 重新构建拓扑，应用预测流作为 WAN 速率
-        datacenter, topology = build_topology()
+        datacenter, topology = build_topology(propagation_latency=propagation_latency)
+        topology.graph['debug_step'] = t
         per_link_pos = {pair: 0 for pair in next_stream.keys()}
         update_wan_link_rates(topology, next_stream, datacenter, pos_map=per_link_pos, advance=False)
         # 运行 global_policy (基于预测值，内部按时间推进 advance=True)
-        # policy, arrival_times, time_val = global_policy(topology, datacenter, next_stream, per_link_pos)
+        # if t % 10 == 0:
+        #     policy, arrival_times, time_val = global_policy(topology, datacenter, next_stream, per_link_pos)
         # policy = build_path_ass_input(arrival_times, next_stream, topology, policy)
         t_sec = simulate_policy_with_true_stream(policy=policy, true_stream=true_stream, topology=topology)
         t_us = Decimal(str(t_sec)) * Decimal('1000000')
-        comulative_timne = comulative_timne + float(t_us)
+        comulative_time = comulative_time + float(t_us)
         step_times_us.append(f"{t_us.normalize()} us")
-
         
         if (t + 1) % 10 == 0:
             print(f"Step {t+1}/{num_steps}: Finish time: {time_val * 1000000} us")
     
     # 记录每一步的时间列表并在最后打印
     collective_time[config.connectivity][config.num_chunk][chunk] = step_times_us
+    
+    
     print("Collective times over steps (us):")
     print(step_times_us)
-    print(f"Comulative time: {comulative_timne} us")
+    print(f"Comulative time: {comulative_time} us")
     
     return policy, arrival_times
 
@@ -472,6 +469,7 @@ if __name__ == "__main__":
     chunk_size_list = [4]
     connectivity_list = [0.5]
     collective_time = {}
+    propagation_latency = 250e-6
     execute_time = {}
 
     for connectivity in connectivity_list:
@@ -495,7 +493,8 @@ if __name__ == "__main__":
                 config.collective = 'ALLGATHER'
                 config.topology_name = 'NVD2'
                 config.connect_matrix = []
-                policy, arrival_times = main(collective_time, chunk)
+                config.debug_br_quota = True
+                policy, arrival_times = main(collective_time, chunk, propagation_latency=propagation_latency)
 
                 end_time = time.time()
                 execution_time = end_time - start_time
