@@ -7,6 +7,12 @@ import networkx as nx
 import random
 import matplotlib.pyplot as plt
 
+
+def _add_bidir_edge(graph, u, v, edge_type, capacity, propagation_delay):
+    graph.add_edge(u, v, type=edge_type, capacity=capacity, propagation_delay=propagation_delay)
+    graph.add_edge(v, u, type=edge_type, capacity=capacity, propagation_delay=propagation_delay)
+
+
 def gen_topo(conectivity, num_samples=1):
 
     # Your provided code to create the graph
@@ -14,7 +20,7 @@ def gen_topo(conectivity, num_samples=1):
     num_DC = 2
     switch_first_DC = [0, 1]
     switch_second_DC = [2, 3]
-    GPUs_per_DC = 6
+    GPUs_per_DC = 6 # 9， 12， 15
     mapping_GPU_indices = list(range(0, GPUs_per_DC * num_DC))
     G = nx.DiGraph()
     for i in switch_first_DC:
@@ -22,35 +28,28 @@ def gen_topo(conectivity, num_samples=1):
             if i != j:
                 G.add_edge(i, j, type='WAN link', capacity=Decimal('12.5'), propagation_delay=Decimal('0.00005'))
                 G.add_edge(j, i, type='WAN link', capacity=Decimal('12.5'), propagation_delay=Decimal('0.00005'))
-    min_links = GPUs_per_DC + 1
+    min_links = GPUs_per_DC + 4
     max_links = (GPUs_per_DC + 2) * (GPUs_per_DC + 1) * 0.5 - 1
     first_DC_GPUs = list(range(4, GPUs_per_DC + 4))
     second_DC_GPUs = list(range(GPUs_per_DC + 4, 2 * GPUs_per_DC + 4))
+    first_DC_endpoint_GPUs = [first_DC_GPUs[0], first_DC_GPUs[-1]]
+    second_DC_endpoint_GPUs = [second_DC_GPUs[0], second_DC_GPUs[-1]]
     first_DC_used_Link = []
     second_DC_used_Link = []
-    first_DC_border_link = []
-    second_DC_border_link = []
 
-    for i in range(len(first_DC_GPUs) - 1):
-        # Intra-DC NVlink: capacity fixed at 50
-        G.add_edge(first_DC_GPUs[i], first_DC_GPUs[i + 1], type='NVlink', capacity=50,
-                   propagation_delay=Decimal('0.0000007'))
-        first_DC_used_Link.append((first_DC_GPUs[i], first_DC_GPUs[i + 1]))
-        G.add_edge(first_DC_GPUs[i + 1], first_DC_GPUs[i], type='NVlink', capacity=50,
-                   propagation_delay=Decimal('0.0000007'))
-        first_DC_used_Link.append((first_DC_GPUs[i + 1], first_DC_GPUs[i]))
+    for i in range(len(first_DC_GPUs)):
+        u = first_DC_GPUs[i]
+        v = first_DC_GPUs[(i + 1) % len(first_DC_GPUs)]
+        _add_bidir_edge(G, u, v, 'NVlink', 50, Decimal('0.0000007'))
+        first_DC_used_Link.append((u, v))
+        first_DC_used_Link.append((v, u))
 
-    for i in range(len(second_DC_GPUs) - 1):
-        # Intra-DC NVlink: capacity fixed at 50
-        G.add_edge(second_DC_GPUs[i], second_DC_GPUs[i + 1], type='NVlink', capacity=50,
-                   propagation_delay=Decimal('0.0000007'))
-        second_DC_used_Link.append((second_DC_GPUs[i], second_DC_GPUs[i + 1]))
-        G.add_edge(second_DC_GPUs[i + 1], second_DC_GPUs[i], type='NVlink', capacity=50,
-                   propagation_delay=Decimal('0.0000007'))
-        second_DC_used_Link.append((second_DC_GPUs[i + 1], second_DC_GPUs[i]))
-
-    # Border router links: capacity random between 20 and 200
-    
+    for i in range(len(second_DC_GPUs)):
+        u = second_DC_GPUs[i]
+        v = second_DC_GPUs[(i + 1) % len(second_DC_GPUs)]
+        _add_bidir_edge(G, u, v, 'NVlink', 50, Decimal('0.0000007'))
+        second_DC_used_Link.append((u, v))
+        second_DC_used_Link.append((v, u))
 
     remain_links_first_DC = []
     remain_links_second_DC = []
@@ -67,19 +66,6 @@ def gen_topo(conectivity, num_samples=1):
             if (u, v) not in second_DC_used_Link and (v, u) not in second_DC_used_Link:
                 remain_links_second_DC.append((u, v))
 
-    remain_links_first_DC_border = {}
-    remain_links_second_DC_border = {}
-    for i in switch_first_DC:
-        remain_links_first_DC_border[i] = []
-        for j in first_DC_GPUs:
-            if (i, j) not in first_DC_border_link and (j, i) not in first_DC_border_link:
-                remain_links_first_DC_border[i].append((i, j))
-    for i in switch_second_DC:
-        remain_links_second_DC_border[i] = []
-        for j in second_DC_GPUs:
-            if (i, j) not in second_DC_border_link and (j, i) not in second_DC_border_link:
-                remain_links_second_DC_border[i].append((i, j))
-
     print(first_DC_used_Link)
     print(remain_links_first_DC)
     print(second_DC_used_Link)
@@ -91,95 +77,66 @@ def gen_topo(conectivity, num_samples=1):
     save_dir = f"/Users/xiongjiaheng/RDMA/CCL/TOPO/{conectivity}"
     os.makedirs(save_dir, exist_ok=True)
     for connectivity in connectivity_list:
-        total_links_per_DC = math.floor(connectivity * max_links)
-        add_links_num = total_links_per_DC - min_links
-        all_first_candidates = remain_links_first_DC + remain_links_first_DC_border[0] + remain_links_first_DC_border[1]
-        all_second_candidates = remain_links_second_DC + remain_links_second_DC_border[2] + remain_links_second_DC_border[3]
+        total_links_per_DC = max(min_links, math.floor(connectivity * max_links))
 
-        # Ensure each border router connects to at least 2 GPUs (per DC), respecting connectivity budget
-        mandatory_first = []
-        for sw in switch_first_DC:
-            connected = [gpu for gpu in first_DC_GPUs if G.has_edge(sw, gpu)]
-            need = max(0, 2 - len(connected))
-            if need > 0:
-                candidates = [gpu for gpu in first_DC_GPUs if not G.has_edge(sw, gpu)]
-                pick = random.sample(candidates, min(need, len(candidates)))
-                for gpu in pick:
-                    mandatory_first.append((sw, gpu))
-        for (u, v) in mandatory_first:
-            G.add_edge(u, v, type='border link', capacity=Decimal('12.5'), propagation_delay=Decimal('0.0000007'))
-            G.add_edge(v, u, type='border link', capacity=Decimal('12.5'), propagation_delay=Decimal('0.0000007'))
-        mandatory_second = []
-        for sw in switch_second_DC:
-            connected = [gpu for gpu in second_DC_GPUs if G.has_edge(sw, gpu)]
-            need = max(0, 2 - len(connected))
-            if need > 0:
-                candidates = [gpu for gpu in second_DC_GPUs if not G.has_edge(sw, gpu)]
-                pick = random.sample(candidates, min(need, len(candidates)))
-                for gpu in pick:
-                    mandatory_second.append((sw, gpu))
-        for (u, v) in mandatory_second:
-            G.add_edge(u, v, type='border link', capacity=Decimal('12.5'), propagation_delay=Decimal('0.0000007'))
-            G.add_edge(v, u, type='border link', capacity=Decimal('12.5'), propagation_delay=Decimal('0.0000007'))
+        for gpu in first_DC_endpoint_GPUs:
+            for sw in switch_first_DC:
+                _add_bidir_edge(G, sw, gpu, 'border link', Decimal('12.5'), Decimal('0.0000007'))
+        for gpu in second_DC_endpoint_GPUs:
+            for sw in switch_second_DC:
+                _add_bidir_edge(G, sw, gpu, 'border link', Decimal('12.5'), Decimal('0.0000007'))
 
-        dual_first = []
-        for gpu in first_DC_GPUs:
-            has0 = G.has_edge(switch_first_DC[0], gpu)
-            has1 = G.has_edge(switch_first_DC[1], gpu)
-            if has0 ^ has1:
-                miss = switch_first_DC[0] if not has0 else switch_first_DC[1]
-                dual_first.append((miss, gpu))
-        for (u, v) in dual_first:
-            G.add_edge(u, v, type='border link', capacity=Decimal('12.5'), propagation_delay=Decimal('0.0000007'))
-            G.add_edge(v, u, type='border link', capacity=Decimal('12.5'), propagation_delay=Decimal('0.0000007'))
-        dual_second = []
-        for gpu in second_DC_GPUs:
-            has2 = G.has_edge(switch_second_DC[0], gpu)
-            has3 = G.has_edge(switch_second_DC[1], gpu)
-            if has2 ^ has3:
-                miss = switch_second_DC[0] if not has2 else switch_second_DC[1]
-                dual_second.append((miss, gpu))
-        for (u, v) in dual_second:
-            G.add_edge(u, v, type='border link', capacity=Decimal('12.5'), propagation_delay=Decimal('0.0000007'))
-            G.add_edge(v, u, type='border link', capacity=Decimal('12.5'), propagation_delay=Decimal('0.0000007'))
-        add_links_num_first = max(0, add_links_num - (len(mandatory_first) + len(dual_first)))
-        add_links_num_second = max(0, add_links_num - (len(mandatory_second) + len(dual_second)))
+        add_links_num_first = total_links_per_DC - min_links
+        add_links_num_second = total_links_per_DC - min_links
 
-        # Filter out already added edges from candidates
-        all_first_candidates = [(u, v) for (u, v) in all_first_candidates if not G.has_edge(u, v)]
-        all_second_candidates = [(u, v) for (u, v) in all_second_candidates if not G.has_edge(u, v)]
+        first_border_gpu_candidates = [gpu for gpu in first_DC_GPUs if gpu not in first_DC_endpoint_GPUs]
+        second_border_gpu_candidates = [gpu for gpu in second_DC_GPUs if gpu not in second_DC_endpoint_GPUs]
+        first_candidate_units = (
+            [('gpu', edge, 1) for edge in remain_links_first_DC]
+            + [('border', gpu, 2) for gpu in first_border_gpu_candidates]
+        )
+        second_candidate_units = (
+            [('gpu', edge, 1) for edge in remain_links_second_DC]
+            + [('border', gpu, 2) for gpu in second_border_gpu_candidates]
+        )
+        random.shuffle(first_candidate_units)
+        random.shuffle(second_candidate_units)
 
-        add_links_num_first = min(add_links_num_first, len(all_first_candidates))
-        add_links_num_second = min(add_links_num_second, len(all_second_candidates))
-
-        if add_links_num_first > 0:
-            selected_first_links = random.sample(all_first_candidates, add_links_num_first)
-        else:
-            selected_first_links = []
-        if add_links_num_second > 0:
-            selected_second_links = random.sample(all_second_candidates, add_links_num_second)
-        else:
-            selected_second_links = []
-        for (u, v) in selected_first_links:
-            if u in switch_first_DC or v in switch_first_DC:
-                G.add_edge(u, v, type='border link', capacity=Decimal('12.5'), propagation_delay=Decimal('0.0000007'))
-                G.add_edge(v, u, type='border link', capacity=Decimal('12.5'), propagation_delay=Decimal('0.0000007'))
+        for kind, payload, cost in first_candidate_units:
+            if cost > add_links_num_first:
+                continue
+            if kind == 'gpu':
+                u, v = payload
+                if G.has_edge(u, v):
+                    continue
+                _add_bidir_edge(G, u, v, 'Nv_link', 50, Decimal('0.0000007'))
             else:
-                # Nv_link GPU-GPU: capacity fixed at 50
-                G.add_edge(u, v, type='Nv_link', capacity=50,
-                           propagation_delay=Decimal('0.0000007'))
-                G.add_edge(v, u, type='Nv_link', capacity=50,
-                           propagation_delay=Decimal('0.0000007'))
-        for (u, v) in selected_second_links:
-            if u in switch_second_DC or v in switch_second_DC:
-                G.add_edge(u, v, type='border link', capacity=Decimal('12.5'), propagation_delay=Decimal('0.0000007'))
-                G.add_edge(v, u, type='border link', capacity=Decimal('12.5'), propagation_delay=Decimal('0.0000007'))
+                gpu = payload
+                if any(G.has_edge(sw, gpu) for sw in switch_first_DC):
+                    continue
+                for sw in switch_first_DC:
+                    _add_bidir_edge(G, sw, gpu, 'border link', Decimal('12.5'), Decimal('0.0000007'))
+            add_links_num_first -= cost
+            if add_links_num_first <= 0:
+                break
+
+        for kind, payload, cost in second_candidate_units:
+            if cost > add_links_num_second:
+                continue
+            if kind == 'gpu':
+                u, v = payload
+                if G.has_edge(u, v):
+                    continue
+                _add_bidir_edge(G, u, v, 'Nv_link', 50, Decimal('0.0000007'))
             else:
-                # Nv_link GPU-GPU: capacity fixed at 50
-                G.add_edge(u, v, type='Nv_link', capacity=50,
-                           propagation_delay=Decimal('0.0000007'))
-                G.add_edge(v, u, type='Nv_link', capacity=50,
-                           propagation_delay=Decimal('0.0000007'))
+                gpu = payload
+                if any(G.has_edge(sw, gpu) for sw in switch_second_DC):
+                    continue
+                for sw in switch_second_DC:
+                    _add_bidir_edge(G, sw, gpu, 'border link', Decimal('12.5'), Decimal('0.0000007'))
+            add_links_num_second -= cost
+            if add_links_num_second <= 0:
+                break
 
     # Visualization
     plt.figure(figsize=(12, 8))

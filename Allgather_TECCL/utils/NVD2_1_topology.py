@@ -1,4 +1,5 @@
 from decimal import Decimal
+from typing import Optional
 
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -63,7 +64,7 @@ class NDv2(Topology):
         
 
 class NVD2_1_topology(NDv2):
-    def __init__(self, packet_size, num_chunk):
+    def __init__(self, packet_size, num_chunk, propagation_latency: Optional[float] = None):
         super().__init__()
         # print("Initializing NVD2_1_topology")
         self.capacity = [
@@ -73,6 +74,9 @@ class NVD2_1_topology(NDv2):
         self.packet_size = Decimal(str(packet_size)) / Decimal(str(num_chunk))
         self.num_chunk = num_chunk
         self.num_gpu = len(self.capacity) - 4
+        self._propagation_latency_override = (
+            Decimal(str(propagation_latency)) if propagation_latency is not None else None
+        )
 
         self.topology = self.get_topology()
         # for node in self.topology.nodes:
@@ -114,7 +118,11 @@ class NVD2_1_topology(NDv2):
                         link_type = 'NVlink'
                         connect = False
 
-                    propagation_latency = self.pro[self.nodes[i]][self.nodes[j]]
+                    propagation_latency = (
+                        self._propagation_latency_override
+                        if self._propagation_latency_override is not None
+                        else self.pro[self.nodes[i]][self.nodes[j]]
+                    )
                     transmission_latency = self.packet_size / self.capacity[i][j]
                     
                     G.add_edge(self.nodes[i], self.nodes[j],
