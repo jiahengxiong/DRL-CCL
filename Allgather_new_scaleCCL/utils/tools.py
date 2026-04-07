@@ -94,6 +94,8 @@ def start_send(topology, node, time, memory_state, WAN_buffer, DC0, DC1, policy,
     # num_nodes = len(topology.nodes)
     # DC_0_GPUs = list(range(4, 4 + int((num_nodes - 4) / 2)))
     # DC_1_GPUs = list(range(4 + int((num_nodes - 4) / 2), num_nodes))
+    debug_br_quota = str(os.environ.get("BR_QUOTA_DEBUG", "")).strip().lower() not in ("", "0", "false", "no", "off") or bool(getattr(config, "debug_br_quota", False))
+    dbg_step = topology.graph.get('debug_step') if debug_br_quota else None
     for dst in successors:
         # dst_out_degree = len(list(topology.successors(dst)))
         # dst_GPU = 0
@@ -122,6 +124,35 @@ def start_send(topology, node, time, memory_state, WAN_buffer, DC0, DC1, policy,
             if len(selected_job) > 0:
                 job = selected_job[0]
                 # job = jobs[0]
+                if (
+                    debug_br_quota
+                    and topology.nodes[node].get('type') == 'GPU'
+                    and topology.nodes[dst].get('type') == 'switch'
+                    and dst in (0, 1, 2, 3)
+                ):
+                    cnts = topology.graph.setdefault('debug_br_quota_counts', {})
+                    k = f"gpu_to_br_{dst}"
+                    c = int(cnts.get(k, 0))
+                    # if c < 30:
+                    #     print(f"[GPU2BR] step={dbg_step} t={time} src={node} dst={dst} buf={job.get('buffer')}")
+                    cnts[k] = c + 1
+                if (
+                    topology.nodes[node].get('type') == 'GPU'
+                    and topology.nodes[dst].get('type') == 'switch'
+                    and dst in (0, 1, 2, 3)
+                ):
+                    dc_id = 0 if dst in (0, 1) else 1
+                    injected = topology.graph.setdefault('dc_wan_injected', {0: set(), 1: set()})
+                    if job['buffer'] in injected.get(dc_id, set()):
+                        topology.nodes[node]['job'][(node, dst)].remove(job)
+                        continue
+                    ingress_map = topology.graph.setdefault('dc_ingress_br', {0: {}, 1: {}})
+                    chosen = ingress_map[dc_id].get(job['buffer'])
+                    if chosen is None:
+                        ingress_map[dc_id][job['buffer']] = dst
+                    elif chosen != dst:
+                        topology.nodes[node]['job'][(node, dst)].remove(job)
+                        continue
                 link = topology.edges[node, dst]
                 transmission_latency = link['transmission_latency']
                 propagation_latency = link['propagation_latency']
@@ -139,6 +170,10 @@ def start_send(topology, node, time, memory_state, WAN_buffer, DC0, DC1, policy,
                 if topology.nodes[dst]['type'] == 'switch':
                     if job['buffer'] not in WAN_buffer:
                         WAN_buffer.append(job['buffer'])
+                    if topology.nodes[node].get('type') == 'GPU' and dst in (0, 1, 2, 3):
+                        dc_id = 0 if dst in (0, 1) else 1
+                        injected = topology.graph.setdefault('dc_wan_injected', {0: set(), 1: set()})
+                        injected[dc_id].add(job['buffer'])
                 # elif dst in DC_0_GPUs:
                 #     DC0.append(job['buffer'])
                 # elif dst in DC_1_GPUs:
@@ -439,6 +474,8 @@ def deduplicate_balanced_weighted_by_wan(input_dict, topology):
     result = {k: [] for k in input_dict}
     key_load = {}
     cap_map = {}
+    debug_br_quota = str(os.environ.get("BR_QUOTA_DEBUG", "")).strip().lower() not in ("", "0", "false", "no", "off") or bool(getattr(config, "debug_br_quota", False))
+    dbg_step = topology.graph.get('debug_step') if debug_br_quota and hasattr(topology, "graph") else None
     for k, lst in input_dict.items():
         src, dst = k
         dst_dc = topology.nodes[dst].get('DC')
@@ -472,6 +509,17 @@ def deduplicate_balanced_weighted_by_wan(input_dict, topology):
     # 逐元素分配
     for item in sorted(element_to_keys.keys()):
         keys = element_to_keys[item]
+        ingress_map = topology.graph.get('dc_ingress_br')
+        if isinstance(ingress_map, dict):
+            try:
+                dc_id = 0 if int(keys[0][1]) in (0, 1) else 1
+            except Exception:
+                dc_id = 0
+            chosen_dst = ingress_map.get(dc_id, {}).get(item)
+            if chosen_dst is not None:
+                filtered = [k for k in keys if k[1] == chosen_dst]
+                if filtered:
+                    keys = filtered
         chosen = None
         if len(keys) == 1:
             chosen = keys[0]
@@ -501,6 +549,12 @@ def deduplicate_balanced_weighted_by_wan(input_dict, topology):
                 chosen = best
         result[chosen].append(item)
         key_load[chosen] = key_load.get(chosen, 0) + 1
+        ingress_map = topology.graph.setdefault('dc_ingress_br', {0: {}, 1: {}})
+        try:
+            dc_id = 0 if int(chosen[1]) in (0, 1) else 1
+        except Exception:
+            dc_id = 0
+        ingress_map.setdefault(dc_id, {})[item] = chosen[1]
         # 选中后递增该 BR 的已分配计数
         dst = chosen[1]
         br_assigned[dst] = int(br_assigned.get(dst, 0)) + 1
@@ -573,6 +627,7 @@ def add_node_job(topology, src, time, memory_state, sent_matrix, DC0, DC1, WAN_b
     if Type == 'GPU':
         # 一次性初始化各 DC 下 BR 的 chunk 容量（按出链路速率之和的比例）
         if not topology.graph.get('br_chunk_capacity_inited', False):
+            debug_br_quota = str(os.environ.get("BR_QUOTA_DEBUG", "")).strip().lower() not in ("", "0", "false", "no", "off") or bool(getattr(config, "debug_br_quota", False))
             def _sum_wan_cap(br_node):
                 total = 0.0
                 dc = topology.nodes[br_node].get('DC')
@@ -590,24 +645,39 @@ def add_node_job(topology, src, time, memory_state, sent_matrix, DC0, DC1, WAN_b
             # 计算总 chunk（取 unique）
             dc0_total = len(set(DC0))
             dc1_total = len(set(DC1))
-            # 计算比例与整数名额（最大余数法）
             def _alloc_quota(brs, total_chunks):
-                caps = {b: _sum_wan_cap(b) for b in brs}
-                s = sum(caps.values())
-                if s <= 0.0:
+                ports = []
+                for b in brs:
+                    dc = topology.nodes[b].get('DC')
+                    for n in topology.successors(b):
+                        if topology.nodes[n].get('type') == 'switch' and topology.nodes[n].get('DC') != dc:
+                            try:
+                                cap = float(topology.edges[(b, n)].get('link_capcapacity', 0))
+                            except Exception:
+                                cap = 0.0
+                            if cap > 0.0:
+                                ports.append((int(b), int(n), float(cap)))
+                if not ports:
                     base = {b: total_chunks // len(brs) for b in brs}
                     rem = total_chunks - sum(base.values())
                     order = sorted(brs)
                     for i in range(rem):
                         base[order[i % len(order)]] += 1
                     return base
-                quota = {b: (caps[b] / s) * total_chunks for b in brs}
-                base = {b: int(quota[b] // 1) for b in brs}
-                rest = total_chunks - sum(base.values())
-                remainders = sorted(brs, key=lambda b: (quota[b] - base[b], -b), reverse=True)
-                for i in range(rest):
-                    base[remainders[i % len(brs)]] += 1
-                return base
+                cap_map = {(b, n): cap for b, n, cap in ports}
+                port_assigned = {(b, n): 0 for b, n, _ in ports}
+                br_assigned = {int(b): 0 for b in brs}
+                heap = []
+                for b, n, cap in ports:
+                    heapq.heappush(heap, (1.0 / cap, b, n))
+                for _ in range(int(total_chunks)):
+                    _, b, n = heapq.heappop(heap)
+                    port_assigned[(b, n)] += 1
+                    br_assigned[b] = int(br_assigned.get(b, 0)) + 1
+                    cap = float(cap_map.get((b, n), 0.0))
+                    next_t = (port_assigned[(b, n)] + 1) / cap if cap > 0.0 else float("inf")
+                    heapq.heappush(heap, (float(next_t), b, n))
+                return {b: int(br_assigned.get(int(b), 0)) for b in brs}
             cap_dc0 = _alloc_quota(dc0_brs, dc0_total)
             cap_dc1 = _alloc_quota(dc1_brs, dc1_total)
             # 合并
@@ -615,25 +685,27 @@ def add_node_job(topology, src, time, memory_state, sent_matrix, DC0, DC1, WAN_b
             br_cap.update(cap_dc0)
             br_cap.update(cap_dc1)
             topology.graph['br_chunk_capacity'] = br_cap
-            def _assign_buffers_to_brs(buffers, brs, cap_map):
-                buffers_sorted = sorted(set(buffers))
-                buf_to_br = {}
-                cursor = 0
-                for br in brs:
-                    k = int(cap_map.get(br, 0))
-                    for buf in buffers_sorted[cursor: cursor + k]:
-                        buf_to_br[buf] = br
-                    cursor += k
-                if cursor < len(buffers_sorted):
-                    order = sorted(brs)
-                    for i, buf in enumerate(buffers_sorted[cursor:]):
-                        buf_to_br[buf] = order[i % len(order)]
-                return buf_to_br
-
-            buf_target = {}
-            buf_target.update(_assign_buffers_to_brs(DC0, dc0_brs, cap_dc0))
-            buf_target.update(_assign_buffers_to_brs(DC1, dc1_brs, cap_dc1))
-            topology.graph['buf_target_br'] = buf_target
+            topology.graph['br_chunk_assigned'] = {0: 0, 1: 0, 2: 0, 3: 0}
+            if 'buf_target_br' in topology.graph:
+                topology.graph.pop('buf_target_br', None)
+            topology.graph['dc_ingress_br'] = {0: {}, 1: {}}
+            topology.graph['dc_wan_injected'] = {0: set(), 1: set()}
+            if debug_br_quota:
+                dbg_step = topology.graph.get('debug_step')
+                dc0_caps = {b: _sum_wan_cap(b) for b in dc0_brs}
+                dc1_caps = {b: _sum_wan_cap(b) for b in dc1_brs}
+                dc0_sum = sum(dc0_caps.values())
+                dc1_sum = sum(dc1_caps.values())
+                dc0_ratio = {b: (dc0_caps[b] / dc0_sum) if dc0_sum > 0 else 0.0 for b in dc0_brs}
+                dc1_ratio = {b: (dc1_caps[b] / dc1_sum) if dc1_sum > 0 else 0.0 for b in dc1_brs}
+                # print(
+                #     "[BR_QUOTA]"
+                #     f" step={dbg_step}"
+                #     f" dc0_total={dc0_total} dc1_total={dc1_total}"
+                #     f" dc0_caps={dc0_caps} dc1_caps={dc1_caps}"
+                #     f" dc0_ratio={dc0_ratio} dc1_ratio={dc1_ratio}"
+                #     f" cap_dc0={cap_dc0} cap_dc1={cap_dc1}"
+                # )
             topology.graph['br_chunk_capacity_inited'] = True
         switch_job = {}
         for buffer_index, buffer in memory.items():
@@ -661,11 +733,16 @@ def add_node_job(topology, src, time, memory_state, sent_matrix, DC0, DC1, WAN_b
                             continue
                         if buffer['buffer'] in WAN_buffer:
                             continue
-                        target_map = topology.graph.get('buf_target_br')
-                        if target_map is not None:
-                            target_br = target_map.get(buffer['buffer'])
-                            if target_br is not None and dst != target_br:
+                        if dst in (0, 1, 2, 3):
+                            dc_id = 0 if dst in (0, 1) else 1
+                            injected = topology.graph.get('dc_wan_injected')
+                            if isinstance(injected, dict) and buffer['buffer'] in injected.get(dc_id, set()):
                                 continue
+                            ingress_map = topology.graph.get('dc_ingress_br')
+                            if isinstance(ingress_map, dict):
+                                chosen = ingress_map.get(dc_id, {}).get(buffer['buffer'])
+                                if chosen is not None and chosen != dst:
+                                    continue
                         # else:
                         #     print('buffer[buffer]', src, buffer['buffer'], WAN_buffer)
 
@@ -913,6 +990,7 @@ def queue(topology, memory_state, time):
 
     DC0_GPU_SET = set(DC_0_GPU)
     DC1_GPU_SET = set(DC_1_GPU)
+    ingress_map = topology.graph.get('dc_ingress_br', {}) if hasattr(topology, "graph") else {}
 
     # ---- 统计各 BR 的“可用(非 busy)后继链路数”：仅统计出边且目的在对应 DC 的 GPU
     BR0_links = {}
@@ -933,54 +1011,80 @@ def queue(topology, memory_state, time):
         )
 
     # -------- DC_0: GPU -> BR
-    DC_0_GPU_BR = {}
+    DC_0_GPU_BR_movable = {}
+    DC_0_GPU_BR_fixed = {}
     for GPU in DC_0_GPU:
         for BR in DC_0_BR:
-            if (GPU, BR) in topology.nodes[GPU]['job']:
-                DC_0_GPU_BR[(GPU, BR)] = []
+            if (GPU, BR) in topology.nodes[GPU]['job'] and topology.has_edge(GPU, BR):
+                DC_0_GPU_BR_movable[(GPU, BR)] = []
+                DC_0_GPU_BR_fixed[(GPU, BR)] = []
                 edge_t = topology.edges[(GPU, BR)]['transmission_latency']
                 for value in topology.nodes[GPU]['job'][(GPU, BR)]:
-                    DC_0_GPU_BR[(GPU, BR)].append({
-                        'buffer': value['buffer'],
-                        'transmission_time': edge_t
-                    })
+                    buf = value.get('buffer') if isinstance(value, dict) else value
+                    if buf is None:
+                        continue
+                    try:
+                        buf_key = int(buf)
+                    except Exception:
+                        buf_key = buf
+                    tgt = ingress_map.get(0, {}).get(buf_key) if isinstance(ingress_map, dict) else None
+                    item = {'buffer': buf_key, 'transmission_time': edge_t}
+                    if tgt in (0, 1):
+                        DC_0_GPU_BR_fixed[(GPU, int(tgt))].append(item)
+                    else:
+                        DC_0_GPU_BR_movable[(GPU, BR)].append(item)
                 if topology.nodes[GPU].get(f'sender to {BR}') == 'busy':
                     sent_t = topology.nodes[GPU].get(f'sender to {BR} job', {}).get('sent_time', time)
-                    DC_0_GPU_BR[(GPU, BR)].append({
+                    DC_0_GPU_BR_movable[(GPU, BR)].append({
                         'buffer': -1,
                         'transmission_time': max(0.0, sent_t - time)
                     })
 
-    DC_0_GPU_BR = balance_gpu_br_exact(DC_0_GPU_BR, (0, 1))
+    DC_0_GPU_BR_movable = balance_gpu_br_exact(DC_0_GPU_BR_movable, (0, 1))
     # DC_0_GPU_BR = balance_gpu_br_cumulative(DC_0_GPU_BR, (0, 1), memory_state)
 
-    for (GPU, BR), q in list(DC_0_GPU_BR.items()):
-        topology.nodes[GPU]['job'][(GPU, BR)] = _strip_placeholders_and_buffer_only(q)
+    for (GPU, BR) in list(DC_0_GPU_BR_movable.keys()):
+        fixed_q = DC_0_GPU_BR_fixed.get((GPU, BR), [])
+        movable_q = DC_0_GPU_BR_movable.get((GPU, BR), [])
+        topology.nodes[GPU]['job'][(GPU, BR)] = _strip_placeholders_and_buffer_only(list(fixed_q) + list(movable_q))
 
     # -------- DC_1: GPU -> BR
-    DC_1_GPU_BR = {}
+    DC_1_GPU_BR_movable = {}
+    DC_1_GPU_BR_fixed = {}
     for GPU in DC_1_GPU:
         for BR in DC_1_BR:
-            if (GPU, BR) in topology.nodes[GPU]['job']:
-                DC_1_GPU_BR[(GPU, BR)] = []
+            if (GPU, BR) in topology.nodes[GPU]['job'] and topology.has_edge(GPU, BR):
+                DC_1_GPU_BR_movable[(GPU, BR)] = []
+                DC_1_GPU_BR_fixed[(GPU, BR)] = []
                 edge_t = topology.edges[(GPU, BR)]['transmission_latency']
                 for value in topology.nodes[GPU]['job'][(GPU, BR)]:
-                    DC_1_GPU_BR[(GPU, BR)].append({
-                        'buffer': value['buffer'],
-                        'transmission_time': edge_t
-                    })
+                    buf = value.get('buffer') if isinstance(value, dict) else value
+                    if buf is None:
+                        continue
+                    try:
+                        buf_key = int(buf)
+                    except Exception:
+                        buf_key = buf
+                    tgt = ingress_map.get(1, {}).get(buf_key) if isinstance(ingress_map, dict) else None
+                    item = {'buffer': buf_key, 'transmission_time': edge_t}
+                    if tgt in (2, 3):
+                        DC_1_GPU_BR_fixed[(GPU, int(tgt))].append(item)
+                    else:
+                        DC_1_GPU_BR_movable[(GPU, BR)].append(item)
                 if topology.nodes[GPU].get(f'sender to {BR}') == 'busy':
                     sent_t = topology.nodes[GPU].get(f'sender to {BR} job', {}).get('sent_time', time)
-                    DC_1_GPU_BR[(GPU, BR)].append({
+                    DC_1_GPU_BR_movable[(GPU, BR)].append({
                         'buffer': -1,
                         'transmission_time': max(0.0, sent_t - time)
                     })
 
-    DC_1_GPU_BR = balance_gpu_br_exact(DC_1_GPU_BR, (2, 3))
+    DC_1_GPU_BR_movable = balance_gpu_br_exact(DC_1_GPU_BR_movable, (2, 3))
     # DC_1_GPU_BR = balance_gpu_br_cumulative(DC_1_GPU_BR, (2, 3), memory_state)
 
-    for (GPU, BR), q in list(DC_1_GPU_BR.items()):
-        topology.nodes[GPU]['job'][(GPU, BR)] = _strip_placeholders_and_buffer_only(q)
+    for (GPU, BR) in list(DC_1_GPU_BR_movable.keys()):
+        fixed_q = DC_1_GPU_BR_fixed.get((GPU, BR), [])
+        movable_q = DC_1_GPU_BR_movable.get((GPU, BR), [])
+        topology.nodes[GPU]['job'][(GPU, BR)] = _strip_placeholders_and_buffer_only(list(fixed_q) + list(movable_q))
 
     try:
         lb = memory_state.setdefault('lb_counts', defaultdict(int))

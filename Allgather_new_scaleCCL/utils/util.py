@@ -9,10 +9,14 @@ from NewAgent.train import train_rnn_from_path_and_save, train_rnn_from_loaded_d
 from NewAgent.deploy import RNNDeployer
 
 
-def load_topology(packet_size, num_chunk, chassis, name):
+def load_topology(packet_size, num_chunk, chassis, name, propagation_latency=None):
     global topology
     if name == 'NVD2':
-        topology = NVD2_1_topology(num_chunk=num_chunk, packet_size=packet_size)
+        topology = NVD2_1_topology(
+            num_chunk=num_chunk,
+            packet_size=packet_size,
+            propagation_latency=propagation_latency,
+        )
     elif name == 'DGX':
         topology = DGX2(num_chunk=config.num_chunk, packet_size=config.packet_size)
 
@@ -73,6 +77,23 @@ def _maybe_int(x):
         return None
 
 
+def _wan_synth_weight() -> float:
+    try:
+        w = float(getattr(config, "wan_synth_weight", 0.9))
+    except Exception:
+        w = 0.9
+    if w < 0.0:
+        return 0.0
+    if w > 1.0:
+        return 1.0
+    return w
+
+
+def _mix_real_syn(real: np.ndarray, syn: np.ndarray) -> np.ndarray:
+    w = _wan_synth_weight()
+    return ((1.0 - w) * real + w * syn).astype(np.float32)
+
+
 def _synthetic_4link_values(T: int) -> np.ndarray:
     t = np.arange(T)
     k = np.floor(t / 10)
@@ -101,36 +122,41 @@ def _apply_synthetic_correction(data: dict, pair) -> dict:
     if u_i is None or v_i is None:
         return data
 
-    col_map = {(0, 2): 0, (0, 3): 1, (1, 2): 2, (1, 3): 3,(2, 0): 0, (3, 0): 1, (2, 1): 2, (3, 1): 3}
-    col = col_map.get((u_i, v_i))
+    forward_map = {(0, 2): 0, (0, 3): 1, (1, 2): 2, (1, 3): 3}
+    reverse_map = {(2, 0): 0, (2, 1): 1, (3, 0): 2, (3, 1): 3}
+    col = forward_map.get((u_i, v_i))
+    if col is None:
+        col = reverse_map.get((u_i, v_i))
     if col is None:
         return data
 
     train_days = data.get("train_days", [])
     test_days = data.get("test_days", [])
 
-    total_len = 0
-    for seg in list(train_days) + list(test_days):
-        x = getattr(seg, "x", None)
-        if x is None:
-            continue
-        total_len += int(x.shape[0])
-    if total_len <= 0:
-        return data
+    def _apply_segments(segments, col_idx: int):
+        total_len = 0
+        for seg in list(segments):
+            x = getattr(seg, "x", None)
+            if x is None:
+                continue
+            total_len += int(x.shape[0])
+        if total_len <= 0:
+            return
+        f_all = _synthetic_4link_values(total_len)[:, col_idx]
+        cursor = 0
+        for seg in list(segments):
+            x = getattr(seg, "x", None)
+            if x is None or x.shape[0] == 0:
+                continue
+            T = int(x.shape[0])
+            fx = f_all[cursor : cursor + T]
+            cursor += T
+            x1 = x.astype(np.float32).reshape(-1)
+            x_new = _mix_real_syn(x1, fx.astype(np.float32)).reshape(-1, 1)
+            seg.x = x_new
 
-    f_all = _synthetic_4link_values(total_len)[:, col]
-    cursor = 0
-    for seg in list(train_days) + list(test_days):
-        x = getattr(seg, "x", None)
-        if x is None or x.shape[0] == 0:
-            continue
-        T = int(x.shape[0])
-        fx = f_all[cursor : cursor + T]
-        cursor += T
-
-        x1 = x.astype(np.float32).reshape(-1)
-        x_new = (0.1 * x1 + 0.9 * fx).astype(np.float32).reshape(-1, 1)
-        seg.x = x_new
+    _apply_segments(train_days, col)
+    _apply_segments(test_days, col)
 
     return data
 
@@ -215,6 +241,17 @@ def load_wan_models_and_data(graph, dataset_dir, model_dir):
             if chosen_path:
                 # 加载数据 (只取测试集)
                 data = load_snvang_dataset_by_day(chosen_path, train_ratio=0.5, scale_range=(0.1, 1.0))
+
+                xs_raw = []
+                for seg in data.get("test_days", []):
+                    x = getattr(seg, "x", None)
+                    if x is None:
+                        continue
+                    if hasattr(x, "ndim") and x.ndim == 2 and x.shape[1] == 1:
+                        x = x[:, 0]
+                    xs_raw.append(x.astype(np.float32))
+                raw_test_stream = np.concatenate(xs_raw, axis=0) if len(xs_raw) > 0 else np.zeros((0,), dtype=np.float32)
+
                 data = _apply_synthetic_correction(data, pair)
 
                 model_name = f"rnn_link_{u}_{v}.pt"
@@ -226,16 +263,11 @@ def load_wan_models_and_data(graph, dataset_dir, model_dir):
                         hidden_dim=64,
                         lr=1e-3,
                         epochs=200,
+                        early_stop_patience=5,
+                        early_stop_min_delta=0.0,
                     )
 
-                # 拼接所有测试集天数的数据
-                xs = []
-                for seg in data["test_days"]:
-                    x = seg.x
-                    if hasattr(x, "ndim") and x.ndim == 2 and x.shape[1] == 1:
-                        x = x[:, 0]
-                    xs.append(x.astype(np.float32))
-                test_stream = np.concatenate(xs, axis=0) if len(xs) > 0 else np.zeros((0,), dtype=np.float32)
+                test_stream = raw_test_stream
                 
                 # 加载 Deployer
                 deployer = RNNDeployer.from_checkpoint(model_path)
@@ -253,11 +285,83 @@ def load_wan_models_and_data(graph, dataset_dir, model_dir):
                     'test_data': np.ones((1000,), dtype=np.float32), # 假数据
                     'data_path': None
                 }
-                
+
+    lengths_real = []
+    for env in wan_env.values():
+        td = env.get("test_data")
+        if env.get("data_path") is not None and td is not None and int(getattr(td, "shape", [0])[0]) > 1:
+            lengths_real.append(int(td.shape[0]))
+    if lengths_real:
+        min_len = min(lengths_real)
+    else:
+        lengths_any = []
+        for env in wan_env.values():
+            td = env.get("test_data")
+            if td is not None and int(getattr(td, "shape", [0])[0]) > 1:
+                lengths_any.append(int(td.shape[0]))
+        min_len = min(lengths_any) if lengths_any else 0
+
+    target_len = max(int(min_len), 1000)
+    if target_len < 2:
+        target_len = 2
+
+    forward_map = {(0, 2): 0, (0, 3): 1, (1, 2): 2, (1, 3): 3}
+    reverse_map = {(2, 0): 0, (2, 1): 1, (3, 0): 2, (3, 1): 3}
+    syn = _synthetic_4link_values(target_len)
+
+    def _pad_to_len(x: np.ndarray, n: int) -> np.ndarray:
+        x = np.asarray(x, dtype=np.float32).reshape(-1)
+        if x.shape[0] >= n:
+            return x[:n].astype(np.float32)
+        if x.shape[0] == 0:
+            return np.ones((n,), dtype=np.float32)
+        pad_val = np.float32(x[-1])
+        pad = np.full((n - x.shape[0],), pad_val, dtype=np.float32)
+        return np.concatenate([x, pad], axis=0)
+
+    for pair, env in wan_env.items():
+        u_i = _maybe_int(pair[0])
+        v_i = _maybe_int(pair[1])
+        col = None
+        if u_i is not None and v_i is not None:
+            col = forward_map.get((u_i, v_i))
+            if col is None:
+                col = reverse_map.get((u_i, v_i))
+        if col is not None:
+            td = env.get("test_data")
+            if td is None:
+                td = np.ones((target_len,), dtype=np.float32)
+            else:
+                td = np.asarray(td, dtype=np.float32).reshape(-1)
+                if min_len > 0:
+                    td = td[:min_len]
+                td = _pad_to_len(td, target_len)
+            env["test_data"] = _mix_real_syn(td, syn[:, col].astype(np.float32))
+        else:
+            td = env.get("test_data")
+            if td is None:
+                td = np.ones((target_len,), dtype=np.float32)
+            else:
+                td = np.asarray(td, dtype=np.float32).reshape(-1)
+                if min_len > 0:
+                    td = td[:min_len]
+                td = _pad_to_len(td, target_len)
+            env["test_data"] = td
+
     return wan_env
 
 
-def train_model_if_needed(data_path, model_dir, src, dst, epochs=5, hidden_dim=64, lr=1e-3):
+def train_model_if_needed(
+    data_path,
+    model_dir,
+    src,
+    dst,
+    epochs=5,
+    hidden_dim=64,
+    lr=1e-3,
+    early_stop_patience: int = 5,
+    early_stop_min_delta: float = 0.0,
+):
     if not data_path:
         return
     model_name = f"rnn_link_{src}_{dst}.pt"
@@ -272,6 +376,8 @@ def train_model_if_needed(data_path, model_dir, src, dst, epochs=5, hidden_dim=6
         hidden_dim=hidden_dim,
         lr=lr,
         epochs=epochs,
+        early_stop_patience=early_stop_patience,
+        early_stop_min_delta=early_stop_min_delta,
     )
 
 

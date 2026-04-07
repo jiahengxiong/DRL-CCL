@@ -279,7 +279,7 @@ def _build_sim_topology(base: nx.DiGraph, true_stream: Dict[Tuple[Any, Any], np.
             continue
         base_rate = float(true_stream[(u, v)][0]) if (u, v) in true_stream else float(base.edges[(u, v)].get("link_capcapacity", 1e-9))
         r = float(base_rate) * float(rate_scale)
-        D = float(base.edges[(u, v)].get("propagation_latency", 0.0))
+        D = float(base.edges[(u, v)]["propagation_latency"])
         route = routes[(u, v)]
         k = max(1, len(route) - 1)
         per_pd = D / float(k)
