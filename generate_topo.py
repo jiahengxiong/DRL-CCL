@@ -20,7 +20,7 @@ def gen_topo(conectivity, num_samples=1):
     num_DC = 2
     switch_first_DC = [0, 1]
     switch_second_DC = [2, 3]
-    GPUs_per_DC = 9 # 6, 9， 12， 15
+    GPUs_per_DC = 15 # 6, 9， 12， 15
     mapping_GPU_indices = list(range(0, GPUs_per_DC * num_DC))
     G = nx.DiGraph()
     for i in switch_first_DC:

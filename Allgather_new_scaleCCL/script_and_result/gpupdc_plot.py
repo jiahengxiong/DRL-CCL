@@ -59,7 +59,7 @@ def visualize_gpu_data(file_path):
 
     # 6. 修饰图表
     ax.set_xlabel(x_col_name)
-    ax.set_ylabel('Cumulative time (s)') 
+    ax.set_ylabel('Computation time (s)') 
     ax.set_title('')
     plt.rcParams.update({
         'font.family': 'serif',
@@ -67,7 +67,7 @@ def visualize_gpu_data(file_path):
         'font.size': 16
     })
     # --- 新增：设置纵坐标范围 ---
-    ax.set_ylim(0, 600) 
+    ax.set_ylim(0, 900) 
     
     # 7. 设置 X 轴刻度
     ax.set_xticks(x_indices)
@@ -89,5 +89,5 @@ def visualize_gpu_data(file_path):
 
 if __name__ == "__main__":
     # 使用 r 前缀防止路径转义
-    target_csv = r"script_and_result\gpu_result_linux.csv"
+    target_csv = r"script_and_result\gpu_result.csv"
     visualize_gpu_data(target_csv)
