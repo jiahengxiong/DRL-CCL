@@ -27,7 +27,11 @@ def visualize_csv_data(file_path):
     # 定义纹理列表
     patterns = ['/', '\\\\', 'xxx', '...', '---'] 
     # 更新字体大小以适应图表
-    plt.rcParams.update({'font.size': 16})
+    plt.rcParams.update({
+        'font.family': 'serif',
+        'font.serif': ['Times New Roman'],
+        'font.size': 24
+    })
     # 获取颜色循环
     colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
@@ -63,7 +67,11 @@ def visualize_csv_data(file_path):
     ax.set_xlabel('Chunk Size (MB)') 
     ax.set_ylabel('Cumulative time (ms)')
     ax.set_title('')
-    
+    plt.rcParams.update({
+        'font.family': 'serif',
+        'font.serif': ['Times New Roman'],
+        'font.size': 16
+    })
     # 7. 设置 X 轴刻度
     ax.set_xticks(x_indices)
     ax.set_xticklabels(x_values) 

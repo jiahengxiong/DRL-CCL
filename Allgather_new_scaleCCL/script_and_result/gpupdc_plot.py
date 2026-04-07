@@ -24,7 +24,11 @@ def visualize_gpu_data(file_path):
     width = 0.18 
     
     patterns = ['/', '\\\\', 'xxx', '...', '---'] 
-    plt.rcParams.update({'font.size': 16})
+    plt.rcParams.update({
+        'font.family': 'serif',
+        'font.serif': ['Times New Roman'],
+        'font.size': 24
+    })
     colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
     fig, ax = plt.subplots(figsize=(10, 6), layout='constrained')
@@ -57,7 +61,11 @@ def visualize_gpu_data(file_path):
     ax.set_xlabel(x_col_name)
     ax.set_ylabel('Cumulative time (s)') 
     ax.set_title('')
-    
+    plt.rcParams.update({
+        'font.family': 'serif',
+        'font.serif': ['Times New Roman'],
+        'font.size': 16
+    })
     # --- 新增：设置纵坐标范围 ---
     ax.set_ylim(0, 600) 
     
